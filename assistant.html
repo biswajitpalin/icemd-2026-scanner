@@ -891,19 +891,29 @@ function showResult(
   }
 
 
-  else {
+else {
 
+  resultBox.innerHTML =
+    "❌ INVALID REGISTRATION<br><br>" +
+    message +
+    "<br><br>" +
+    "<small>Registration ID scanned: " +
+    (
+      data.registrationID ||
+      "not returned by server"
+    ) +
+    "</small>";
 
-    resultBox.innerHTML =
-      "❌ INVALID REGISTRATION<br><br>" +
-      message;
+  status.innerHTML =
+    "Registration could not be verified.<br>" +
+    "Please check the registration ID.";
 
+  console.log(
+    "FULL APPS SCRIPT RESPONSE:",
+    data
+  );
 
-    status.innerHTML =
-      "Registration could not be verified.<br>" +
-      "You may scan the next guest.";
-
-  }
+}
 
 }
 
