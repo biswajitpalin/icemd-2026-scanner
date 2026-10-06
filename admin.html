@@ -72,9 +72,9 @@
       font-size: 16px;
     }
 
-    input:focus {
-      outline: none;
-      border-color: #17365d;
+    input[readonly] {
+      background: #f7f7f7;
+      color: #222;
     }
 
     button {
@@ -85,11 +85,6 @@
       border-radius: 8px;
       font-size: 16px;
       cursor: pointer;
-    }
-
-    button:disabled {
-      background: #999 !important;
-      cursor: not-allowed;
     }
 
     .button {
@@ -176,10 +171,10 @@
     </label>
 
     <input
-      type="email"
+      type="text"
       id="adminEmail"
-      placeholder="Enter email address"
-      autocomplete="email"
+      value="pal.17@iitj.ac.in"
+      readonly
     >
 
 
@@ -190,14 +185,15 @@
     <input
       type="password"
       id="adminPassword"
-      placeholder="Enter password"
-      autocomplete="current-password"
+      value="icemd@20260317"
+      readonly
     >
 
 
     <button
       id="loginButton"
       class="button"
+      type="button"
       onclick="adminLogin()"
     >
       Login
@@ -206,6 +202,7 @@
 
     <button
       class="button secondary"
+      type="button"
       onclick="goBack()"
     >
       Back
@@ -233,7 +230,7 @@
 
 
   <!-- =================================================
-       ADMIN HOME PAGE
+       SIMPLE ADMIN DASHBOARD
   ================================================== -->
 
   <div
@@ -256,7 +253,8 @@
 
     <button
       class="button"
-      onclick="alert('Admin console will be added here.')"
+      type="button"
+      onclick="alert('Admin Console will be added here.')"
     >
       Admin Console
     </button>
@@ -264,6 +262,7 @@
 
     <button
       class="button secondary"
+      type="button"
       onclick="adminLogout()"
     >
       Logout
@@ -289,47 +288,11 @@
 <script>
 
 /* =====================================================
-   FIXED ADMIN CREDENTIALS
-
-   GitHub-only test version.
-   No Apps Script.
-   No Google Sheet.
-   No API.
+   FIXED CREDENTIALS
 ===================================================== */
 
-const ADMIN_EMAIL = "pal.17@iitj.ac.in";
-const ADMIN_PASSWORD = "icemd@20260317";
-
-
-/* =====================================================
-   SHOW MESSAGE
-===================================================== */
-
-function showMessage(message, type) {
-
-  const box =
-    document.getElementById("adminMessage");
-
-  box.textContent = message;
-
-  box.className =
-    "message " +
-    (type === "success" ? "success" : "error");
-}
-
-
-/* =====================================================
-   CLEAR MESSAGE
-===================================================== */
-
-function clearMessage() {
-
-  const box =
-    document.getElementById("adminMessage");
-
-  box.textContent = "";
-  box.className = "message";
-}
+const FIXED_EMAIL = "pal.17@iitj.ac.in";
+const FIXED_PASSWORD = "icemd@20260317";
 
 
 /* =====================================================
@@ -338,37 +301,16 @@ function clearMessage() {
 
 function adminLogin() {
 
-  const emailInput =
-    document.getElementById("adminEmail");
-
-  const passwordInput =
-    document.getElementById("adminPassword");
-
   const email =
-    String(emailInput.value || "")
-      .trim()
-      .toLowerCase();
+    document.getElementById("adminEmail").value;
 
   const password =
-    String(passwordInput.value || "");
-
-  clearMessage();
-
-
-  if (!email || !password) {
-
-    showMessage(
-      "Please enter email and password.",
-      "error"
-    );
-
-    return;
-  }
+    document.getElementById("adminPassword").value;
 
 
   if (
-    email === ADMIN_EMAIL &&
-    password === ADMIN_PASSWORD
+    email === FIXED_EMAIL &&
+    password === FIXED_PASSWORD
   ) {
 
     document
@@ -383,10 +325,14 @@ function adminLogin() {
   }
 
 
-  showMessage(
-    "Invalid Admin email or password.",
-    "error"
-  );
+  const message =
+    document.getElementById("adminMessage");
+
+  message.textContent =
+    "Invalid Admin email or password.";
+
+  message.className =
+    "message error";
 }
 
 
@@ -397,22 +343,13 @@ function adminLogin() {
 function adminLogout() {
 
   document
-    .getElementById("adminEmail")
-    .value = "";
-
-  document
-    .getElementById("adminPassword")
-    .value = "";
-
-  clearMessage();
-
-  document
     .getElementById("adminHomePage")
     .classList.add("hidden");
 
   document
     .getElementById("adminLoginPage")
     .classList.remove("hidden");
+
 }
 
 
@@ -425,24 +362,6 @@ function goBack() {
   window.history.back();
 
 }
-
-
-/* =====================================================
-   ENTER KEY
-===================================================== */
-
-document
-  .getElementById("adminPassword")
-  .addEventListener(
-    "keydown",
-    function(event) {
-
-      if (event.key === "Enter") {
-        adminLogin();
-      }
-
-    }
-  );
 
 </script>
 
