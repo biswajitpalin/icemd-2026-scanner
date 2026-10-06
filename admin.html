@@ -1,2549 +1,406 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ICEMD-2026 Admin Console</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <title>ICEMD-2026 Admin Login</title>
 
-<style>
-*{box-sizing:border-box}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-body{
-  margin:0;
-  padding:20px;
-  font-family:Arial,sans-serif;
-  background:#f5f5f5;
-  color:#222;
-}
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      color: #222;
+    }
 
-.container{
-  max-width:500px;
-  margin:0 auto;
-}
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
 
-.card{
-  background:#fff;
-  padding:22px;
-  border-radius:12px;
-  box-shadow:0 3px 12px rgba(0,0,0,.08);
-}
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
 
-h1{
-  text-align:center;
-  font-size:24px;
-  margin:0 0 5px;
-}
+    h1 {
+      text-align: center;
+      font-size: 24px;
+      margin-top: 0;
+      margin-bottom: 5px;
+    }
 
-h2{
-  text-align:center;
-  font-size:20px;
-  margin:10px 0 10px;
-  color:#17365d;
-}
+    h2 {
+      text-align: center;
+      font-size: 20px;
+      color: #17365d;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
 
-h3{
-  color:#17365d;
-  margin-top:25px;
-}
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 25px;
+      font-size: 18px;
+    }
 
-.subtitle{
-  text-align:center;
-  color:#666;
-  margin-bottom:25px;
-}
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
 
-.welcome{
-  text-align:center;
-  color:#555;
-  line-height:1.5;
-  margin-bottom:20px;
-}
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      font-size: 16px;
+    }
 
-label{
-  display:block;
-  margin-top:15px;
-  margin-bottom:6px;
-  font-size:14px;
-  font-weight:bold;
-}
+    input:focus {
+      outline: none;
+      border-color: #17365d;
+    }
 
-input{
-  width:100%;
-  padding:12px;
-  border:1px solid #ccc;
-  border-radius:7px;
-  font-size:16px;
-}
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
 
-input:focus{
-  outline:none;
-  border-color:#17365d;
-}
+    button:hover {
+      opacity: 0.92;
+    }
 
-button{
-  width:100%;
-  padding:14px;
-  margin-top:15px;
-  border:none;
-  border-radius:8px;
-  font-size:16px;
-  cursor:pointer;
-}
+    .button {
+      background: #17365d;
+      color: white;
+    }
 
-button:disabled{
-  background:#999!important;
-  cursor:not-allowed;
-  opacity:.75;
-}
+    .secondary {
+      background: #666;
+      color: white;
+    }
 
-.button{
-  background:#17365d;
-  color:#fff;
-}
+    .message {
+      display: none;
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 7px;
+      text-align: center;
+      line-height: 1.5;
+    }
 
-.button:hover{opacity:.92}
+    .message.success {
+      display: block;
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #b8dfc1;
+    }
 
-.secondary{
-  background:#666;
-  color:#fff;
-}
+    .message.error {
+      display: block;
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f1bfc4;
+    }
 
-.success-button{
-  background:#198754;
-  color:#fff;
-}
+    .footer {
+      text-align: center;
+      color: #666;
+      margin-top: 20px;
+      font-size: 14px;
+    }
 
-.danger{
-  background:#b02a37;
-  color:#fff;
-}
-
-.message{
-  margin-top:15px;
-  padding:12px;
-  border-radius:7px;
-  text-align:center;
-  line-height:1.5;
-  display:none;
-}
-
-.message.success{
-  display:block;
-  background:#d4edda;
-  color:#155724;
-  border:1px solid #b8dfc1;
-}
-
-.message.error{
-  display:block;
-  background:#f8d7da;
-  color:#721c24;
-  border:1px solid #f1bfc4;
-}
-
-.hidden{display:none!important}
-
-.page{display:none}
-
-.dashboard-card{
-  max-width:850px;
-  margin:0 auto;
-}
-
-.dashboard-button{
-  margin-top:12px;
-}
-
-.limit-box{
-  background:#eef3f8;
-  border-radius:7px;
-  padding:12px;
-  text-align:center;
-  margin-bottom:20px;
-  font-weight:bold;
-}
-
-.table-wrapper{
-  overflow-x:auto;
-  -webkit-overflow-scrolling:touch;
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:15px;
-  min-width:650px;
-}
-
-th,td{
-  padding:10px;
-  border-bottom:1px solid #ddd;
-  text-align:left;
-  font-size:13px;
-}
-
-th{
-  background:#eef3f8;
-  color:#17365d;
-}
-
-.status-active{
-  color:#198754;
-  font-weight:bold;
-}
-
-.status-inactive{
-  color:#b42318;
-  font-weight:bold;
-}
-
-.action-button{
-  border:none;
-  padding:7px 10px;
-  border-radius:5px;
-  cursor:pointer;
-  margin:2px;
-  width:auto;
-  margin-top:2px;
-  font-size:13px;
-  background:#17365d;
-  color:#fff;
-}
-
-.action-button.danger{
-  background:#b02a37;
-}
-
-.upload-box{
-  border:2px dashed #b7c4d3;
-  border-radius:10px;
-  padding:30px 20px;
-  text-align:center;
-  background:#f8fafc;
-  margin-top:20px;
-}
-
-.upload-box p{
-  color:#666;
-  font-size:14px;
-  line-height:1.5;
-}
-
-.file-input{
-  margin-top:15px;
-  margin-bottom:5px;
-}
-
-.file-name{
-  margin-top:10px;
-  font-size:14px;
-  color:#17365d;
-  font-weight:bold;
-  word-break:break-word;
-}
-
-.preview-box{
-  display:none;
-  margin-top:25px;
-}
-
-.preview-title{
-  color:#17365d;
-  font-weight:bold;
-  margin-bottom:10px;
-}
-
-.preview-table{
-  max-height:300px;
-  overflow:auto;
-}
-
-.preview-table table{
-  min-width:500px;
-}
-
-.upload-summary{
-  margin-top:20px;
-  padding:15px;
-  border-radius:8px;
-  background:#eef3f8;
-  display:none;
-  line-height:1.6;
-}
-
-.upload-summary strong{
-  color:#17365d;
-}
-
-.error-list{
-  margin-top:10px;
-  color:#842029;
-  font-size:13px;
-  max-height:180px;
-  overflow-y:auto;
-}
-
-.qr-info-box{
-  background:#eef3f8;
-  border-radius:8px;
-  padding:15px;
-  margin-top:20px;
-  font-size:14px;
-  line-height:1.5;
-}
-
-.qr-info-box strong{
-  color:#17365d;
-}
-
-.qr-actions{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-  margin-top:20px;
-}
-
-.qr-actions .button{
-  flex:1;
-  min-width:200px;
-}
-
-.qr-loading{
-  display:none;
-  margin-top:20px;
-  padding:15px;
-  text-align:center;
-  background:#eef3f8;
-  border-radius:8px;
-  color:#17365d;
-  font-weight:bold;
-}
-
-.qr-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-  gap:25px;
-  margin-top:30px;
-}
-
-.qr-card{
-  background:#fff;
-  border:1px solid #d8dee5;
-  border-radius:12px;
-  padding:20px;
-  text-align:center;
-  box-shadow:0 2px 8px rgba(0,0,0,.08);
-}
-
-.qr-card img{
-  width:180px;
-  height:180px;
-  display:block;
-  margin:0 auto 15px;
-}
-
-.qr-name{
-  font-size:17px;
-  font-weight:bold;
-  color:#222;
-  margin-top:8px;
-  word-break:break-word;
-}
-
-.qr-institute{
-  font-size:14px;
-  color:#555;
-  margin-top:7px;
-  line-height:1.4;
-  word-break:break-word;
-}
-
-.qr-id{
-  font-size:14px;
-  font-weight:bold;
-  color:#17365d;
-  margin-top:9px;
-}
-
-.qr-count{
-  grid-column:1/-1;
-  margin-top:0;
-  padding:12px;
-  background:#d9f2df;
-  color:#176b2c;
-  border-radius:7px;
-  text-align:center;
-  font-weight:bold;
-}
-
-.small-note{
-  text-align:center;
-  font-size:12px;
-  color:#777;
-  margin-top:12px;
-  line-height:1.5;
-}
-
-@media(max-width:600px){
-  body{padding:20px}
-  .card{padding:22px}
-  .dashboard-card{max-width:500px}
-  .qr-grid{grid-template-columns:1fr}
-  .qr-actions{display:block}
-  .qr-actions .button{width:100%}
-}
-</style>
+    .hidden {
+      display: none !important;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="container">
+  <div class="container">
 
-  <!-- ADMIN LOGIN -->
-  <div id="adminLoginPage" class="card">
-
-    <h1>ICEMD-2026</h1>
-    <h2>Admin Login</h2>
-    <p class="subtitle">Registration Desk</p>
-
-    <label for="adminEmail">Email</label>
-    <input
-      type="email"
-      id="adminEmail"
-      autocomplete="username"
-      placeholder="Enter Admin email"
-    >
-
-    <label for="adminPassword">Password</label>
-    <input
-      type="password"
-      id="adminPassword"
-      autocomplete="current-password"
-      placeholder="Enter password"
-    >
-
-    <button
-      id="adminLoginButton"
-      class="button"
-      onclick="loginAdmin()"
-    >Login</button>
-
-    <button
-      class="button secondary"
-      onclick="goBackToMain()"
-    >Back</button>
-
-    <div id="adminMessage" class="message"></div>
-
-    <p class="small-note">
-      ICEMD-2026 IIT Jodhpur Registration Desk
-    </p>
-
-  </div>
-
-
-  <!-- ADMIN DASHBOARD -->
-  <div id="adminDashboardPage" class="page">
-
-    <div class="card dashboard-card">
+    <!-- ADMIN LOGIN -->
+    <div id="loginPage" class="card">
 
       <h1>ICEMD-2026</h1>
+
+      <h2>Admin Login</h2>
+
+      <p class="subtitle">
+        Registration Desk
+      </p>
+
+      <label for="email">
+        Email
+      </label>
+
+      <input
+        type="email"
+        id="email"
+        placeholder="Enter email address"
+        autocomplete="username"
+      >
+
+      <label for="password">
+        Password
+      </label>
+
+      <input
+        type="password"
+        id="password"
+        placeholder="Enter password"
+        autocomplete="current-password"
+      >
+
+      <button
+        class="button"
+        onclick="login()"
+      >
+        Login
+      </button>
+
+      <button
+        class="secondary"
+        onclick="goBack()"
+      >
+        Back
+      </button>
+
+      <div id="message" class="message"></div>
+
+      <div class="footer">
+        ICEMD-2026 IIT Jodhpur Registration Desk
+      </div>
+
+    </div>
+
+
+    <!-- SIMPLE SUCCESS PAGE -->
+    <div id="successPage" class="card hidden">
+
+      <h1>ICEMD-2026</h1>
+
       <h2>Admin Dashboard</h2>
 
-      <p id="adminWelcome" class="welcome"></p>
+      <p class="subtitle">
+        Welcome, Biswajit Pal
+      </p>
 
-      <button class="button dashboard-button"
-              onclick="showManageAssistants()">
-        Manage Assistants
-      </button>
-
-      <button class="button dashboard-button"
-              onclick="showUploadGuests()">
-        Upload Guest Excel
-      </button>
-
-      <button class="button dashboard-button"
-              onclick="showGenerateQR()">
-        Generate QR Codes
-      </button>
-
-      <button class="button dashboard-button"
-              onclick="downloadQRPDF()">
-        Download QR PDF
-      </button>
-
-      <button class="button secondary"
-              onclick="logoutAdmin()">
+      <button
+        class="secondary"
+        onclick="logout()"
+      >
         Logout
       </button>
 
+      <div class="footer">
+        ICEMD-2026 IIT Jodhpur Registration Desk
+      </div>
+
     </div>
+
   </div>
 
 
-  <!-- MANAGE ASSISTANTS -->
-  <div id="manageAssistantsPage" class="page">
+  <script>
 
-    <div class="card dashboard-card">
+    /*
+     * =====================================================
+     * FIXED ADMIN LOGIN
+     *
+     * This version is intentionally standalone.
+     * No Apps Script.
+     * No Google Sheet.
+     * No API.
+     * No JSONP.
+     * =====================================================
+     */
 
-      <h2>Manage Assistants</h2>
-
-      <div id="assistantLimitBox" class="limit-box">
-        Loading assistant information...
-      </div>
-
-      <h3>Add New Assistant</h3>
-
-      <label for="newAssistantFirstName">First Name</label>
-      <input type="text"
-             id="newAssistantFirstName"
-             placeholder="First Name">
-
-      <label for="newAssistantLastName">Last Name</label>
-      <input type="text"
-             id="newAssistantLastName"
-             placeholder="Last Name">
-
-      <label for="newAssistantEmail">Email</label>
-      <input type="email"
-             id="newAssistantEmail"
-             placeholder="Enter email address">
-
-      <button class="button success-button"
-              onclick="addNewAssistant()">
-        Add Assistant
-      </button>
-
-      <div id="manageMessage" class="message"></div>
-
-      <h3>Authorized Assistants</h3>
-
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Status</th>
-              <th>Created At</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="assistantTableBody">
-            <tr>
-              <td colspan="5" style="text-align:center;">
-                Loading...
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <button class="button secondary"
-              onclick="backToDashboard()">
-        Back to Dashboard
-      </button>
-
-    </div>
-  </div>
+    const ADMIN_EMAIL = "pal.17@iitj.ac.in";
+    const ADMIN_PASSWORD = "icemd@20260317";
 
 
-  <!-- UPLOAD GUEST EXCEL -->
-  <div id="uploadGuestsPage" class="page">
+    /*
+     * =====================================================
+     * SHOW MESSAGE
+     * =====================================================
+     */
 
-    <div class="card dashboard-card">
+    function showMessage(message, type) {
 
-      <h2>Upload Guest Excel</h2>
+      const box =
+        document.getElementById("message");
 
-      <p class="welcome">
-        Upload your guest Excel file containing
-        <strong>Name</strong>, <strong>Email</strong> and
-        <strong>Institute</strong>.
-      </p>
+      box.innerText = message;
 
-      <div class="upload-box">
-        <p>
-          Please make sure the first row of your Excel file
-          contains these column headings:
-          <br><br>
-          <strong>
-            Name &nbsp; | &nbsp; Email &nbsp; | &nbsp; Institute
-          </strong>
-          <br><br>
-          The order of the columns does not matter.
-        </p>
-
-        <input type="file"
-               id="guestExcelFile"
-               class="file-input"
-               accept=".xlsx,.xls"
-               onchange="handleGuestFile(this)">
-
-        <div id="guestFileName" class="file-name"></div>
-      </div>
-
-      <div id="guestPreview" class="preview-box">
-
-        <div class="preview-title">Guest Preview</div>
-
-        <div class="preview-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Institute</th>
-              </tr>
-            </thead>
-            <tbody id="guestPreviewBody"></tbody>
-          </table>
-        </div>
-
-        <button id="uploadGuestButton"
-                class="button success-button"
-                onclick="uploadGuestData()">
-          Upload Guests
-        </button>
-
-      </div>
-
-      <div id="uploadMessage" class="message"></div>
-
-      <div id="uploadSummary" class="upload-summary">
-        <div id="summaryText"></div>
-        <div id="errorList" class="error-list"></div>
-      </div>
-
-      <button class="button secondary"
-              onclick="backToDashboard()">
-        Back to Dashboard
-      </button>
-
-    </div>
-  </div>
-
-
-  <!-- GENERATE QR -->
-  <div id="generateQRPage" class="page">
-
-    <div class="card dashboard-card">
-
-      <h2>Generate QR Codes</h2>
-
-      <p class="welcome">
-        Generate a unique QR code for each registered guest.
-      </p>
-
-      <div class="qr-info-box">
-        <strong>QR Code Information</strong>
-        <br><br>
-        Each QR code contains only the guest's unique
-        <strong>Registration ID</strong>.
-        <br>
-        For example:
-        <strong>ICEMD26-0001</strong>
-        <br><br>
-        Guest name and institute are displayed below the QR
-        code for printing purposes. They are
-        <strong>not</strong> stored inside the QR code.
-      </div>
-
-      <div class="qr-actions">
-
-        <button id="generateQRButton"
-                class="button success-button"
-                onclick="loadGuestsForQR()">
-          Generate QR Codes
-        </button>
-
-        <button class="button secondary"
-                onclick="backToDashboard()">
-          Back to Dashboard
-        </button>
-
-      </div>
-
-      <div id="qrLoading" class="qr-loading">
-        Loading registered guests and generating QR codes...
-      </div>
-
-      <div id="qrMessage" class="message"></div>
-
-      <div id="qrContainer" class="qr-grid"></div>
-
-    </div>
-  </div>
-
-</div>
-
-
-<script>
-/* =====================================================
-   APPS SCRIPT API
-===================================================== */
-
-const APPS_SCRIPT_URL =
-  "https://script.google.com/a/macros/iitj.ac.in/s/AKfycbwRp-RAfstklkMP7Xmg0f5O46AxMMiODytXNXyJPK0sYHcdOZpNOgZQmYxRQAd66pTv/exec";
-
-
-/* =====================================================
-   GLOBAL DATA
-===================================================== */
-
-let guestData = [];
-
-
-/* =====================================================
-   GENERIC JSONP API CALL
-   Same communication style as Assistant GitHub page.
-===================================================== */
-
-function apiCall(action, params, successHandler, failureHandler) {
-
-  const callbackName =
-    "icemdAdmin_" +
-    String(action).replace(/[^a-zA-Z0-9_$]/g, "") +
-    "_" +
-    Date.now() +
-    "_" +
-    Math.floor(Math.random() * 100000);
-
-  const script =
-    document.createElement("script");
-
-  const query =
-    new URLSearchParams();
-
-  query.append("action", action);
-  query.append("callback", callbackName);
-
-  if (action !== "checkAdmin") {
-
-    const sessionToken =
-      sessionStorage.getItem("ICEMD_ADMIN_SESSION") || "";
-
-    if (sessionToken) {
-      query.append("sessionToken", sessionToken);
+      box.className =
+        "message " +
+        (type === "success" ? "success" : "error");
     }
 
-  }
 
-  Object.keys(params || {}).forEach(function(key) {
+    /*
+     * =====================================================
+     * CLEAR MESSAGE
+     * =====================================================
+     */
 
-    const value = params[key];
+    function clearMessage() {
 
-    if (value === undefined || value === null) {
-      return;
+      const box =
+        document.getElementById("message");
+
+      box.innerText = "";
+      box.className = "message";
     }
 
-    query.append(
-      key,
-      typeof value === "string"
-        ? value
-        : String(value)
-    );
 
-  });
+    /*
+     * =====================================================
+     * ADMIN LOGIN
+     * =====================================================
+     */
 
-  let finished = false;
+    function login() {
 
-  const cleanup =
-    function() {
-
-      if (finished) {
-        return;
-      }
-
-      finished = true;
-
-      try {
-        delete window[callbackName];
-      } catch (error) {}
-
-      if (
-        script &&
-        script.parentNode
-      ) {
-        script.parentNode.removeChild(script);
-      }
-
-    };
-
-
-  window[callbackName] =
-    function(data) {
-
-      cleanup();
-
-      if (
-        data &&
-        data.success === false &&
-        data.message === "Admin session expired. Please login again."
-      ) {
-        sessionStorage.removeItem("ICEMD_ADMIN_SESSION");
-      }
-
-      if (typeof successHandler === "function") {
-        successHandler(data);
-      }
-
-    };
-
-
-  script.onerror =
-    function() {
-
-      cleanup();
-
-      if (typeof failureHandler === "function") {
-
-        failureHandler(
-          new Error(
-            "Unable to connect to the ICEMD-2026 server."
-          )
-        );
-
-      }
-
-    };
-
-
-  script.src =
-    APPS_SCRIPT_URL +
-    "?" +
-    query.toString();
-
-  document.body.appendChild(script);
-
-}
-
-
-/* =====================================================
-   PAGE CONTROL
-===================================================== */
-
-function hideAllPages() {
-
-  document
-    .querySelectorAll(".page")
-    .forEach(function(page) {
-      page.style.display = "none";
-    });
-
-  document
-    .getElementById("adminLoginPage")
-    .style.display = "none";
-
-}
-
-
-function showLoginPage() {
-
-  hideAllPages();
-
-  document
-    .getElementById("adminLoginPage")
-    .style.display = "block";
-
-}
-
-
-function goBackToMain() {
-
-  /*
-   * The GitHub admin page is standalone.
-   * Change this URL if you have a separate main landing page.
-   */
-  window.location.href =
-    "https://biswajitpalin.github.io/icemd-2026-scanner/";
-
-}
-
-
-/* =====================================================
-   ADMIN LOGIN
-===================================================== */
-
-async function sha256Hex(value) {
-
-  const bytes =
-    new TextEncoder().encode(value);
-
-  const digest =
-    await crypto.subtle.digest("SHA-256", bytes);
-
-  return Array.from(
-    new Uint8Array(digest)
-  )
-    .map(function(byte) {
-      return byte.toString(16).padStart(2, "0");
-    })
-    .join("");
-
-}
-
-
-async function loginAdmin() {
-
-  const email =
-    document
-      .getElementById("adminEmail")
-      .value
-      .trim()
-      .toLowerCase();
-
-  const password =
-    document
-      .getElementById("adminPassword")
-      .value;
-
-  const button =
-    document.getElementById(
-      "adminLoginButton"
-    );
-
-
-  if (!email || !password) {
-
-    showMessage(
-      "adminMessage",
-      "Please enter email and password.",
-      "error"
-    );
-
-    return;
-  }
-
-
-  button.disabled = true;
-  button.innerText = "Checking...";
-
-  showMessage(
-    "adminMessage",
-    "Checking login...",
-    "success"
-  );
-
-
-  let passwordHash;
-
-  try {
-    passwordHash = await sha256Hex(password);
-  }
-  catch (error) {
-
-    button.disabled = false;
-    button.innerText = "Login";
-
-    showMessage(
-      "adminMessage",
-      "Your browser could not perform secure login. Please use a modern browser.",
-      "error"
-    );
-
-    return;
-  }
-
-
-  apiCall(
-    "checkAdmin",
-    {
-      email: email,
-      passwordHash: passwordHash
-    },
-
-    function(result) {
-
-      button.disabled = false;
-      button.innerText = "Login";
-
-
-      if (
-        result &&
-        result.success
-      ) {
-
-        if (result.sessionToken) {
-          sessionStorage.setItem(
-            "ICEMD_ADMIN_SESSION",
-            result.sessionToken
-          );
-        }
-
+      const email =
         document
-          .getElementById("adminWelcome")
-          .innerText =
-          "Welcome, " +
-          (result.name || "Admin");
+          .getElementById("email")
+          .value
+          .trim()
+          .toLowerCase();
 
-
+      const password =
         document
-          .getElementById("adminEmail")
-          .value = "";
+          .getElementById("password")
+          .value;
 
-        document
-          .getElementById("adminPassword")
-          .value = "";
+      clearMessage();
 
 
-        hideAllPages();
+      /*
+       * Check empty fields.
+       */
 
-        document
-          .getElementById("adminDashboardPage")
-          .style.display = "block";
-
-      }
-
-      else {
+      if (!email || !password) {
 
         showMessage(
-          "adminMessage",
-          result &&
-          result.message
-            ? result.message
-            : "Invalid Admin email or password.",
+          "Please enter email and password.",
           "error"
         );
 
+        return;
       }
 
-    },
 
-    function(error) {
+      /*
+       * Check fixed credentials.
+       */
 
-      button.disabled = false;
-      button.innerText = "Login";
+      if (
+        email === ADMIN_EMAIL.toLowerCase() &&
+        password === ADMIN_PASSWORD
+      ) {
+
+        document
+          .getElementById("loginPage")
+          .classList.add("hidden");
+
+        document
+          .getElementById("successPage")
+          .classList.remove("hidden");
+
+        return;
+      }
+
+
+      /*
+       * Invalid credentials.
+       */
 
       showMessage(
-        "adminMessage",
-        error.message ||
-        "Unable to connect to the registration server.",
+        "Invalid email or password.",
         "error"
       );
-
     }
-  );
-
-}
 
 
-/* =====================================================
-   ADMIN LOGOUT
-===================================================== */
+    /*
+     * =====================================================
+     * LOGOUT
+     * =====================================================
+     */
 
-function logoutAdmin() {
-
-  sessionStorage.removeItem("ICEMD_ADMIN_SESSION");
-
-  document
-    .getElementById("adminEmail")
-    .value = "";
-
-  document
-    .getElementById("adminPassword")
-    .value = "";
-
-  clearMessage("adminMessage");
-  clearMessage("manageMessage");
-  clearMessage("uploadMessage");
-  clearMessage("qrMessage");
-
-  guestData = [];
-
-  showLoginPage();
-
-}
-
-
-/* =====================================================
-   MANAGE ASSISTANTS
-===================================================== */
-
-function showManageAssistants() {
-
-  hideAllPages();
-
-  document
-    .getElementById("manageAssistantsPage")
-    .style.display = "block";
-
-  clearMessage("manageMessage");
-
-  loadAssistants();
-
-}
-
-
-function loadAssistants() {
-
-  apiCall(
-    "getAssistants",
-    {},
-
-    function(result) {
-
-      const assistants =
-        result &&
-        result.assistants
-          ? result.assistants
-          : [];
-
-      const limit =
-        result &&
-        result.limit
-          ? result.limit
-          : 30;
-
-      const activeCount =
-        assistants.filter(function(a) {
-
-          const status =
-            String(a.status || "")
-              .toUpperCase();
-
-          return (
-            status === "ACTIVE" ||
-            status === "ENABLED"
-          );
-
-        }).length;
-
+    function logout() {
 
       document
-        .getElementById("assistantLimitBox")
-        .innerText =
-        "Active Assistants: " +
-        activeCount +
-        " / " +
-        limit;
+        .getElementById("password")
+        .value = "";
+
+      clearMessage();
+
+      document
+        .getElementById("successPage")
+        .classList.add("hidden");
+
+      document
+        .getElementById("loginPage")
+        .classList.remove("hidden");
+    }
 
 
-      const tbody =
-        document.getElementById(
-          "assistantTableBody"
-        );
+    /*
+     * =====================================================
+     * BACK
+     *
+     * Change this later to your desired page.
+     * For now, simply go back in browser history.
+     * =====================================================
+     */
 
-      tbody.innerHTML = "";
+    function goBack() {
 
-
-      if (
-        assistants.length === 0
-      ) {
-
-        tbody.innerHTML =
-          "<tr>" +
-          "<td colspan='5' style='text-align:center;'>" +
-          "No assistants added yet." +
-          "</td>" +
-          "</tr>";
-
-        return;
+      if (window.history.length > 1) {
+        window.history.back();
       }
+    }
 
 
-      assistants.forEach(function(a) {
+    /*
+     * =====================================================
+     * ENTER KEY LOGIN
+     * =====================================================
+     */
 
-        const row =
-          document.createElement("tr");
+    document
+      .getElementById("password")
+      .addEventListener("keydown", function(event) {
 
-        const statusUpper =
-          String(a.status || "")
-            .toUpperCase();
-
-        const statusClass =
-          (
-            statusUpper === "ACTIVE" ||
-            statusUpper === "ENABLED"
-          )
-          ? "status-active"
-          : "status-inactive";
-
-
-        const action =
-          (
-            statusUpper === "ACTIVE" ||
-            statusUpper === "ENABLED"
-          )
-
-          ? "<button class='action-button' " +
-            "onclick=\"changeStatus(" +
-            Number(a.row) +
-            ",'INACTIVE')\">" +
-            "Deactivate</button>"
-
-          : "<button class='action-button' " +
-            "onclick=\"changeStatus(" +
-            Number(a.row) +
-            ",'ACTIVE')\">" +
-            "Activate</button>";
-
-
-        row.innerHTML =
-
-          "<td>" +
-          escapeHtml(a.firstName) +
-          " " +
-          escapeHtml(a.lastName) +
-          "</td>" +
-
-          "<td>" +
-          escapeHtml(a.email) +
-          "</td>" +
-
-          "<td class='" +
-          statusClass +
-          "'>" +
-          escapeHtml(a.status) +
-          "</td>" +
-
-          "<td>" +
-          escapeHtml(a.createdAt) +
-          "</td>" +
-
-          "<td>" +
-          action +
-
-          "<button class='action-button danger' " +
-          "onclick=\"deleteAssistantRecord(" +
-          Number(a.row) +
-          ")\">" +
-          "Delete</button>" +
-
-          "</td>";
-
-        tbody.appendChild(row);
+        if (event.key === "Enter") {
+          login();
+        }
 
       });
 
-    },
-
-    function(error) {
-
-      showMessage(
-        "manageMessage",
-        error.message,
-        "error"
-      );
-
-    }
-  );
-
-}
-
-
-function addNewAssistant() {
-
-  const firstName =
-    document
-      .getElementById("newAssistantFirstName")
-      .value
-      .trim();
-
-  const lastName =
-    document
-      .getElementById("newAssistantLastName")
-      .value
-      .trim();
-
-  const email =
-    document
-      .getElementById("newAssistantEmail")
-      .value
-      .trim()
-      .toLowerCase();
-
-
-  if (
-    !firstName ||
-    !lastName ||
-    !email
-  ) {
-
-    showMessage(
-      "manageMessage",
-      "Please enter First Name, Last Name and Email.",
-      "error"
-    );
-
-    return;
-  }
-
-
-  showMessage(
-    "manageMessage",
-    "Adding assistant...",
-    "success"
-  );
-
-
-  apiCall(
-    "addAssistant",
-    {
-      firstName: firstName,
-      lastName: lastName,
-      email: email
-    },
-
-    function(result) {
-
-      if (
-        result &&
-        result.success
-      ) {
-
-        showMessage(
-          "manageMessage",
-          result.message,
-          "success"
-        );
-
-        document
-          .getElementById("newAssistantFirstName")
-          .value = "";
-
-        document
-          .getElementById("newAssistantLastName")
-          .value = "";
-
-        document
-          .getElementById("newAssistantEmail")
-          .value = "";
-
-        loadAssistants();
-
-      }
-
-      else {
-
-        showMessage(
-          "manageMessage",
-          result &&
-          result.message
-            ? result.message
-            : "Unable to add assistant.",
-          "error"
-        );
-
-      }
-
-    },
-
-    function(error) {
-
-      showMessage(
-        "manageMessage",
-        error.message,
-        "error"
-      );
-
-    }
-  );
-
-}
-
-
-function changeStatus(
-  row,
-  status
-) {
-
-  apiCall(
-    "changeAssistantStatus",
-    {
-      row: row,
-      status: status
-    },
-
-    function(result) {
-
-      if (
-        result &&
-        result.success
-      ) {
-
-        showMessage(
-          "manageMessage",
-          result.message,
-          "success"
-        );
-
-        loadAssistants();
-
-      }
-
-      else {
-
-        showMessage(
-          "manageMessage",
-          result &&
-          result.message
-            ? result.message
-            : "Unable to change assistant status.",
-          "error"
-        );
-
-      }
-
-    },
-
-    function(error) {
-
-      showMessage(
-        "manageMessage",
-        error.message,
-        "error"
-      );
-
-    }
-  );
-
-}
-
-
-function deleteAssistantRecord(
-  row
-) {
-
-  if (
-    !confirm(
-      "Are you sure you want to delete this assistant?"
-    )
-  ) {
-
-    return;
-  }
-
-
-  apiCall(
-    "deleteAssistant",
-    {
-      row: row
-    },
-
-    function(result) {
-
-      if (
-        result &&
-        result.success
-      ) {
-
-        showMessage(
-          "manageMessage",
-          result.message,
-          "success"
-        );
-
-        loadAssistants();
-
-      }
-
-      else {
-
-        showMessage(
-          "manageMessage",
-          result &&
-          result.message
-            ? result.message
-            : "Unable to delete assistant.",
-          "error"
-        );
-
-      }
-
-    },
-
-    function(error) {
-
-      showMessage(
-        "manageMessage",
-        error.message,
-        "error"
-      );
-
-    }
-  );
-
-}
-
-
-/* =====================================================
-   UPLOAD GUEST EXCEL
-===================================================== */
-
-function showUploadGuests() {
-
-  hideAllPages();
-
-  document
-    .getElementById("uploadGuestsPage")
-    .style.display = "block";
-
-  clearMessage("uploadMessage");
-
-  document
-    .getElementById("uploadSummary")
-    .style.display = "none";
-
-}
-
-
-function handleGuestFile(input) {
-
-  const file =
-    input.files[0];
-
-  if (!file) {
-    return;
-  }
-
-
-  document
-    .getElementById("guestFileName")
-    .innerText =
-    "Selected file: " +
-    file.name;
-
-
-  const reader =
-    new FileReader();
-
-
-  reader.onload =
-    function(event) {
-
-      try {
-
-        const data =
-          new Uint8Array(
-            event.target.result
-          );
-
-        const workbook =
-          XLSX.read(
-            data,
-            {
-              type:"array"
-            }
-          );
-
-        const firstSheetName =
-          workbook.SheetNames[0];
-
-        const worksheet =
-          workbook.Sheets[
-            firstSheetName
-          ];
-
-        const rows =
-          XLSX.utils.sheet_to_json(
-            worksheet,
-            {
-              defval:""
-            }
-          );
-
-
-        if (
-          rows.length === 0
-        ) {
-
-          showMessage(
-            "uploadMessage",
-            "No data was found in the Excel file.",
-            "error"
-          );
-
-          return;
-        }
-
-
-        guestData = [];
-
-
-        rows.forEach(function(row) {
-
-          const name =
-            getColumnValue(
-              row,
-              [
-                "Name",
-                "name",
-                "NAME",
-                "Guest Name",
-                "guest name"
-              ]
-            );
-
-          const email =
-            getColumnValue(
-              row,
-              [
-                "Email",
-                "email",
-                "EMAIL",
-                "Email ID",
-                "email id"
-              ]
-            );
-
-          const institute =
-            getColumnValue(
-              row,
-              [
-                "Institute",
-                "institute",
-                "INSTITUTE",
-                "Institution",
-                "Institution Name"
-              ]
-            );
-
-
-          guestData.push({
-            name:name,
-            email:email,
-            institute:institute
-          });
-
-        });
-
-
-        showGuestPreview();
-
-      }
-
-      catch(error) {
-
-        showMessage(
-          "uploadMessage",
-          "Could not read the Excel file. Please check that it is a valid .xlsx or .xls file.",
-          "error"
-        );
-
-      }
-
-    };
-
-
-  reader.readAsArrayBuffer(file);
-
-}
-
-
-function getColumnValue(
-  row,
-  possibleNames
-) {
-
-  for (
-    let i = 0;
-    i < possibleNames.length;
-    i++
-  ) {
-
-    const name =
-      possibleNames[i];
-
-    if (
-      Object.prototype.hasOwnProperty.call(
-        row,
-        name
-      )
-    ) {
-
-      return row[name];
-
-    }
-
-  }
-
-
-  const rowKeys =
-    Object.keys(row);
-
-
-  for (
-    let i = 0;
-    i < rowKeys.length;
-    i++
-  ) {
-
-    const key =
-      rowKeys[i]
-        .trim()
-        .toLowerCase();
-
-
-    for (
-      let j = 0;
-      j < possibleNames.length;
-      j++
-    ) {
-
-      if (
-        key ===
-        possibleNames[j]
-          .trim()
-          .toLowerCase()
-      ) {
-
-        return row[
-          rowKeys[i]
-        ];
-
-      }
-
-    }
-
-  }
-
-
-  return "";
-
-}
-
-
-function showGuestPreview() {
-
-  const tbody =
-    document.getElementById(
-      "guestPreviewBody"
-    );
-
-  tbody.innerHTML = "";
-
-
-  const previewCount =
-    Math.min(
-      guestData.length,
-      10
-    );
-
-
-  for (
-    let i = 0;
-    i < previewCount;
-    i++
-  ) {
-
-    const guest =
-      guestData[i];
-
-    const row =
-      document.createElement("tr");
-
-
-    row.innerHTML =
-
-      "<td>" +
-      escapeHtml(guest.name) +
-      "</td>" +
-
-      "<td>" +
-      escapeHtml(guest.email) +
-      "</td>" +
-
-      "<td>" +
-      escapeHtml(guest.institute) +
-      "</td>";
-
-
-    tbody.appendChild(row);
-
-  }
-
-
-  document
-    .getElementById("guestPreview")
-    .style.display = "block";
-
-
-  if (
-    guestData.length > 10
-  ) {
-
-    showMessage(
-      "uploadMessage",
-      "Showing first 10 guests as preview. Total guests found: " +
-      guestData.length,
-      "success"
-    );
-
-  }
-
-  else {
-
-    showMessage(
-      "uploadMessage",
-      guestData.length +
-      " guest(s) found in the Excel file.",
-      "success"
-    );
-
-  }
-
-}
-
-
-function uploadGuestData() {
-
-  if (
-    guestData.length === 0
-  ) {
-
-    showMessage(
-      "uploadMessage",
-      "No guest data available.",
-      "error"
-    );
-
-    return;
-  }
-
-
-  const button =
-    document.getElementById(
-      "uploadGuestButton"
-    );
-
-  button.disabled = true;
-  button.innerText = "Uploading...";
-
-
-  showMessage(
-    "uploadMessage",
-    "Uploading guests to the database...",
-    "success"
-  );
-
-
-  /*
-   * Guest data is sent as JSON through the same JSONP
-   * endpoint used by the GitHub Assistant page.
-   */
-  apiCall(
-    "uploadGuests",
-    {
-      guestData:
-        JSON.stringify(guestData)
-    },
-
-    function(result) {
-
-      button.disabled = false;
-      button.innerText = "Upload Guests";
-
-
-      if (
-        result &&
-        result.success
-      ) {
-
-        showMessage(
-          "uploadMessage",
-          result.message,
-          "success"
-        );
-
-
-        document
-          .getElementById("uploadSummary")
-          .style.display = "block";
-
-
-        document
-          .getElementById("summaryText")
-          .innerHTML =
-
-          "<strong>Upload completed</strong><br><br>" +
-
-          "Guests added: " +
-          Number(result.added || 0) +
-          "<br>" +
-
-          "Duplicates skipped: " +
-          Number(result.skipped || 0) +
-          "<br>" +
-
-          "Rows with errors: " +
-          (
-            result.errors
-              ? result.errors.length
-              : 0
-          );
-
-
-        const errorList =
-          document.getElementById(
-            "errorList"
-          );
-
-
-        if (
-          result.errors &&
-          result.errors.length > 0
-        ) {
-
-          errorList.innerHTML =
-            "<strong>Errors:</strong><br>" +
-
-            result.errors
-              .map(function(error) {
-                return escapeHtml(error);
-              })
-              .join("<br>");
-
-        }
-
-        else {
-
-          errorList.innerHTML =
-            "No errors found.";
-
-        }
-
-
-        guestData = [];
-
-        document
-          .getElementById("guestExcelFile")
-          .value = "";
-
-        document
-          .getElementById("guestFileName")
-          .innerText = "";
-
-        document
-          .getElementById("guestPreview")
-          .style.display = "none";
-
-      }
-
-      else {
-
-        showMessage(
-          "uploadMessage",
-          result &&
-          result.message
-            ? result.message
-            : "Unable to upload guests.",
-          "error"
-        );
-
-      }
-
-    },
-
-    function(error) {
-
-      button.disabled = false;
-      button.innerText = "Upload Guests";
-
-      showMessage(
-        "uploadMessage",
-        error.message,
-        "error"
-      );
-
-    }
-  );
-
-}
-
-
-/* =====================================================
-   GENERATE QR
-===================================================== */
-
-function showGenerateQR() {
-
-  hideAllPages();
-
-  document
-    .getElementById("generateQRPage")
-    .style.display = "block";
-
-  clearMessage("qrMessage");
-
-  document
-    .getElementById("qrContainer")
-    .innerHTML = "";
-
-  document
-    .getElementById("qrLoading")
-    .style.display = "none";
-
-}
-
-
-function loadGuestsForQR() {
-
-  const button =
-    document.getElementById(
-      "generateQRButton"
-    );
-
-  const loading =
-    document.getElementById(
-      "qrLoading"
-    );
-
-  const container =
-    document.getElementById(
-      "qrContainer"
-    );
-
-
-  button.disabled = true;
-  button.innerText = "Generating...";
-
-  loading.style.display = "block";
-  container.innerHTML = "";
-
-  clearMessage("qrMessage");
-
-
-  apiCall(
-    "getGuestsForQR",
-    {},
-
-    function(guests) {
-
-      button.disabled = false;
-      button.innerText = "Generate QR Codes";
-
-      loading.style.display = "none";
-
-
-      if (
-        !guests ||
-        !Array.isArray(guests) ||
-        guests.length === 0
-      ) {
-
-        showMessage(
-          "qrMessage",
-          "No registered guests were found.",
-          "error"
-        );
-
-        return;
-      }
-
-
-      guests.forEach(function(guest) {
-
-        const card =
-          document.createElement("div");
-
-        card.className = "qr-card";
-
-
-        const qrImage =
-          document.createElement("img");
-
-        const qrData =
-          encodeURIComponent(
-            guest.registrationID
-          );
-
-
-        qrImage.src =
-          "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
-          qrData;
-
-        qrImage.alt =
-          "QR Code " +
-          guest.registrationID;
-
-        card.appendChild(qrImage);
-
-
-        const name =
-          document.createElement("div");
-
-        name.className = "qr-name";
-        name.textContent = guest.name;
-
-        card.appendChild(name);
-
-
-        const institute =
-          document.createElement("div");
-
-        institute.className = "qr-institute";
-        institute.textContent = guest.institute;
-
-        card.appendChild(institute);
-
-
-        const registrationID =
-          document.createElement("div");
-
-        registrationID.className = "qr-id";
-        registrationID.textContent =
-          guest.registrationID;
-
-        card.appendChild(registrationID);
-
-
-        container.appendChild(card);
-
-      });
-
-
-      const count =
-        document.createElement("div");
-
-      count.className = "qr-count";
-
-      count.innerText =
-        guests.length +
-        " QR code(s) generated successfully.";
-
-
-      container.insertBefore(
-        count,
-        container.firstChild
-      );
-
-
-      showMessage(
-        "qrMessage",
-        "QR codes generated successfully.",
-        "success"
-      );
-
-    },
-
-    function(error) {
-
-      button.disabled = false;
-      button.innerText = "Generate QR Codes";
-
-      loading.style.display = "none";
-
-      showMessage(
-        "qrMessage",
-        error.message ||
-        "Unable to generate QR codes.",
-        "error"
-      );
-
-    }
-  );
-
-}
-
-
-/* =====================================================
-   DOWNLOAD QR PDF
-===================================================== */
-
-function downloadQRPDF() {
-
-  const printWindow =
-    window.open("", "_blank");
-
-
-  if (!printWindow) {
-
-    alert(
-      "Please allow pop-ups for this website and try again."
-    );
-
-    return;
-  }
-
-
-  printWindow.document.write(`
-
-<!DOCTYPE html>
-<html>
-<head>
-<title>ICEMD-2026 QR Codes</title>
-
-<style>
-
-@page{
-  size:A4;
-  margin:10mm;
-}
-
-*{
-  box-sizing:border-box;
-}
-
-body{
-  margin:0;
-  padding:0;
-  font-family:Arial,sans-serif;
-  background:white;
-  color:#222;
-}
-
-.page-title{
-  text-align:center;
-  font-size:18px;
-  font-weight:bold;
-  margin-bottom:3mm;
-}
-
-.page-subtitle{
-  text-align:center;
-  font-size:10px;
-  margin-bottom:7mm;
-}
-
-.qr-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:5mm;
-  width:100%;
-}
-
-.qr-card{
-  border:1px solid #333;
-  border-radius:3px;
-  padding:4mm 2mm;
-  text-align:center;
-  height:82mm;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  break-inside:avoid;
-  page-break-inside:avoid;
-}
-
-.qr-image{
-  width:48mm;
-  height:48mm;
-  object-fit:contain;
-  display:block;
-  margin-bottom:3mm;
-}
-
-.guest-name{
-  font-size:11px;
-  font-weight:bold;
-  line-height:1.2;
-  margin-bottom:1.5mm;
-  word-break:break-word;
-}
-
-.guest-institute{
-  font-size:8.5px;
-  line-height:1.2;
-  margin-bottom:2mm;
-  max-width:55mm;
-  word-break:break-word;
-}
-
-.guest-id{
-  font-size:9px;
-  font-weight:bold;
-  letter-spacing:.4px;
-}
-
-.loading{
-  text-align:center;
-  margin-top:30px;
-  font-size:14px;
-}
-
-@media print{
-  body{
-    -webkit-print-color-adjust:exact;
-    print-color-adjust:exact;
-  }
-  .qr-card{
-    border:1px solid #333;
-  }
-}
-
-</style>
-</head>
-
-<body>
-
-<div class="page-title">
-ICEMD-2026 IITJ Registration Desk
-</div>
-
-<div class="page-subtitle">
-Guest QR Codes
-</div>
-
-<div id="qrPrintGrid" class="qr-grid">
-
-<div class="loading">
-Preparing QR codes...
-</div>
-
-</div>
-
-</body>
-</html>
-
-`);
-
-  printWindow.document.close();
-
-
-  apiCall(
-    "getGuestsForQR",
-    {},
-
-    function(guests) {
-
-      if (
-        !guests ||
-        !Array.isArray(guests) ||
-        guests.length === 0
-      ) {
-
-        printWindow.close();
-
-        alert(
-          "No registered guests were found."
-        );
-
-        return;
-      }
-
-
-      const grid =
-        printWindow.document.getElementById(
-          "qrPrintGrid"
-        );
-
-      grid.innerHTML = "";
-
-
-      let loadedImages = 0;
-
-      const totalImages =
-        guests.length;
-
-
-      function checkPrintReady() {
-
-        loadedImages++;
-
-        if (
-          loadedImages >= totalImages
-        ) {
-
-          setTimeout(function() {
-
-            printWindow.focus();
-            printWindow.print();
-
-          },500);
-
-        }
-
-      }
-
-
-      guests.forEach(function(guest) {
-
-        const card =
-          printWindow.document.createElement(
-            "div"
-          );
-
-        card.className = "qr-card";
-
-
-        const qrImage =
-          printWindow.document.createElement(
-            "img"
-          );
-
-        qrImage.className = "qr-image";
-
-
-        const qrData =
-          encodeURIComponent(
-            guest.registrationID
-          );
-
-
-        qrImage.src =
-          "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
-          qrData;
-
-        qrImage.alt =
-          "QR Code " +
-          guest.registrationID;
-
-
-        const name =
-          printWindow.document.createElement(
-            "div"
-          );
-
-        name.className = "guest-name";
-        name.textContent = guest.name;
-
-
-        const institute =
-          printWindow.document.createElement(
-            "div"
-          );
-
-        institute.className =
-          "guest-institute";
-
-        institute.textContent =
-          guest.institute;
-
-
-        const registrationID =
-          printWindow.document.createElement(
-            "div"
-          );
-
-        registrationID.className = "guest-id";
-        registrationID.textContent =
-          guest.registrationID;
-
-
-        card.appendChild(qrImage);
-        card.appendChild(name);
-        card.appendChild(institute);
-        card.appendChild(registrationID);
-
-        grid.appendChild(card);
-
-
-        qrImage.onload =
-          checkPrintReady;
-
-        qrImage.onerror =
-          checkPrintReady;
-
-      });
-
-    },
-
-    function(error) {
-
-      printWindow.close();
-
-      alert(
-        "Unable to prepare QR PDF: " +
-        (
-          error.message ||
-          "Unknown error"
-        )
-      );
-
-    }
-  );
-
-}
-
-
-/* =====================================================
-   NAVIGATION
-===================================================== */
-
-function backToDashboard() {
-
-  hideAllPages();
-
-  document
-    .getElementById("adminDashboardPage")
-    .style.display = "block";
-
-}
-
-
-/* =====================================================
-   MESSAGE HELPERS
-===================================================== */
-
-function showMessage(
-  elementId,
-  message,
-  type
-) {
-
-  const element =
-    document.getElementById(
-      elementId
-    );
-
-  if (!element) {
-    return;
-  }
-
-  element.innerText =
-    message || "";
-
-  element.className =
-    "message " +
-    (
-      type === "success"
-        ? "success"
-        : "error"
-    );
-
-  element.style.display =
-    "block";
-
-}
-
-
-function clearMessage(
-  elementId
-) {
-
-  const element =
-    document.getElementById(
-      elementId
-    );
-
-  if (!element) {
-    return;
-  }
-
-  element.innerText = "";
-  element.className = "message";
-  element.style.display = "none";
-
-}
-
-
-function escapeHtml(
-  value
-) {
-
-  return String(
-    value ?? ""
-  )
-
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-
-}
-
-
-/* =====================================================
-   INITIAL STATE
-===================================================== */
-
-showLoginPage();
-
-</script>
+  </script>
 
 </body>
 </html>
