@@ -149,95 +149,79 @@
             }
           },
 
-          function(decodedText) {
+function(decodedText) {
 
-            console.log(
-              "QR detected:",
-              decodedText
-            );
+  console.log("QR detected:", decodedText);
 
+  if (processing) {
+    return;
+  }
 
-            /*
-             * Ignore repeated detections
-             * while this QR is being processed.
-             */
-            if (processing) {
-              return;
-            }
+  processing = true;
 
-            processing = true;
+  const registrationID =
+    String(decodedText || "").trim();
 
+  if (!registrationID) {
+    processing = false;
+    return;
+  }
 
-            /*
-             * Get the Registration ID
-             * from the QR code.
-             */
-            const registrationID =
-              String(decodedText || "").trim();
+  status.innerText =
+    "QR detected: " + registrationID;
 
 
-            if (!registrationID) {
+  /*
+   * Check whether this scanner was opened
+   * by the Conference Registration Desk.
+   */
+  if (window.opener && !window.opener.closed) {
 
-              processing = false;
+    console.log(
+      "Registration Desk window found."
+    );
 
-              return;
-            }
+    window.opener.postMessage(
+      {
+        type: "ICEMD_QR_SCAN",
+        registrationID: registrationID
+      },
+      "*"
+    );
 
+    status.innerText =
+      "QR detected: " +
+      registrationID +
+      "\n\nSent to Registration Desk.";
 
-            status.innerText =
-              "QR detected: " +
-              registrationID;
+  } else {
 
+    console.error(
+      "No Registration Desk opener window found."
+    );
 
-            /*
-             * Send the Registration ID
-             * back to the IIT Jodhpur
-             * Registration Desk window.
-             */
-            if (
-              window.opener &&
-              !window.opener.closed
-            ) {
+    status.innerText =
+      "QR detected: " +
+      registrationID +
+      "\n\nWARNING: Registration Desk window not connected.";
 
-              window.opener.postMessage(
-
-                {
-                  type: "ICEMD_QR_SCAN",
-                  registrationID:
-                    registrationID
-                },
-
-                "*"
-
-              );
-
-            }
+  }
 
 
-            /*
-             * Allow the next scan after
-             * a short delay.
-             */
-            setTimeout(
+  setTimeout(function() {
 
-              function() {
+    processing = false;
 
-                processing = false;
+    if (running) {
 
-                if (running) {
+      status.innerText =
+        "Camera active — point at the QR code.";
 
-                  status.innerText =
-                    "Camera active — point at the QR code.";
+    }
 
-                }
+  }, 2500);
 
-              },
-
-              2500
-
-            );
-
-          },
+}
 
           function(errorMessage) {
 
