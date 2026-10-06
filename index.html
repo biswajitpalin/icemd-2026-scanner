@@ -105,14 +105,6 @@
     let scanner = null;
     let running = false;
 
-    /*
-     * Prevent the same QR code from being
-     * sent repeatedly while it remains
-     * in front of the camera.
-     */
-    let processing = false;
-
-
     async function startScanner() {
 
       if (running) {
@@ -149,88 +141,23 @@
             }
           },
 
-function(decodedText) {
+          function(decodedText) {
 
-  console.log("QR detected:", decodedText);
+            console.log(
+              "QR detected:",
+              decodedText
+            );
 
-  if (processing) {
-    return;
-  }
+            status.innerText =
+              "QR detected: " + decodedText;
 
-  processing = true;
-
-  const registrationID =
-    String(decodedText || "").trim();
-
-  if (!registrationID) {
-    processing = false;
-    return;
-  }
-
-  status.innerText =
-    "QR detected: " + registrationID;
-
-
-  /*
-   * Check whether this scanner was opened
-   * by the Conference Registration Desk.
-   */
-  if (window.opener && !window.opener.closed) {
-
-    console.log(
-      "Registration Desk window found."
-    );
-
-    window.opener.postMessage(
-      {
-        type: "ICEMD_QR_SCAN",
-        registrationID: registrationID
-      },
-      "*"
-    );
-
-    status.innerText =
-      "QR detected: " +
-      registrationID +
-      "\n\nSent to Registration Desk.";
-
-  } else {
-
-    console.error(
-      "No Registration Desk opener window found."
-    );
-
-    status.innerText =
-      "QR detected: " +
-      registrationID +
-      "\n\nWARNING: Registration Desk window not connected.";
-
-  }
-
-
-  setTimeout(function() {
-
-    processing = false;
-
-    if (running) {
-
-      status.innerText =
-        "Camera active — point at the QR code.";
-
-    }
-
-  }, 2500);
-
-}
+          },
 
           function(errorMessage) {
-
             // Ignore scan errors
-
           }
 
         );
-
 
         running = true;
 
@@ -250,8 +177,6 @@ function(decodedText) {
 
         running = false;
 
-        processing = false;
-
         startButton.disabled = false;
 
         status.innerText =
@@ -270,34 +195,22 @@ function(decodedText) {
       }
 
       try {
-
         await scanner.stop();
-
       }
-
       catch (e) {}
-
 
       try {
-
         await scanner.clear();
-
       }
-
       catch (e) {}
-
 
       scanner = null;
 
       running = false;
 
-      processing = false;
-
-
       document.getElementById(
         "qr-reader"
       ).innerHTML = "";
-
 
       document.getElementById(
         "status"
