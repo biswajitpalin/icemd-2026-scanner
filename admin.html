@@ -719,6 +719,17 @@ function apiCall(action, params, successHandler, failureHandler) {
   query.append("action", action);
   query.append("callback", callbackName);
 
+  if (action !== "checkAdmin") {
+
+    const sessionToken =
+      sessionStorage.getItem("ICEMD_ADMIN_SESSION") || "";
+
+    if (sessionToken) {
+      query.append("sessionToken", sessionToken);
+    }
+
+  }
+
   Object.keys(params || {}).forEach(function(key) {
 
     const value = params[key];
@@ -765,6 +776,14 @@ function apiCall(action, params, successHandler, failureHandler) {
     function(data) {
 
       cleanup();
+
+      if (
+        data &&
+        data.success === false &&
+        data.message === "Admin session expired. Please login again."
+      ) {
+        sessionStorage.removeItem("ICEMD_ADMIN_SESSION");
+      }
 
       if (typeof successHandler === "function") {
         successHandler(data);
@@ -847,7 +866,26 @@ function goBackToMain() {
    ADMIN LOGIN
 ===================================================== */
 
-function loginAdmin() {
+async function sha256Hex(value) {
+
+  const bytes =
+    new TextEncoder().encode(value);
+
+  const digest =
+    await crypto.subtle.digest("SHA-256", bytes);
+
+  return Array.from(
+    new Uint8Array(digest)
+  )
+    .map(function(byte) {
+      return byte.toString(16).padStart(2, "0");
+    })
+    .join("");
+
+}
+
+
+async function loginAdmin() {
 
   const email =
     document
@@ -889,11 +927,31 @@ function loginAdmin() {
   );
 
 
+  let passwordHash;
+
+  try {
+    passwordHash = await sha256Hex(password);
+  }
+  catch (error) {
+
+    button.disabled = false;
+    button.innerText = "Login";
+
+    showMessage(
+      "adminMessage",
+      "Your browser could not perform secure login. Please use a modern browser.",
+      "error"
+    );
+
+    return;
+  }
+
+
   apiCall(
     "checkAdmin",
     {
       email: email,
-      password: password
+      passwordHash: passwordHash
     },
 
     function(result) {
@@ -906,6 +964,13 @@ function loginAdmin() {
         result &&
         result.success
       ) {
+
+        if (result.sessionToken) {
+          sessionStorage.setItem(
+            "ICEMD_ADMIN_SESSION",
+            result.sessionToken
+          );
+        }
 
         document
           .getElementById("adminWelcome")
@@ -969,6 +1034,8 @@ function loginAdmin() {
 ===================================================== */
 
 function logoutAdmin() {
+
+  sessionStorage.removeItem("ICEMD_ADMIN_SESSION");
 
   document
     .getElementById("adminEmail")
