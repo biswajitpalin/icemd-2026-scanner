@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    ICEMD-2026 Registration Desk
+  </title>
+
+
+  <!-- QR SCANNER -->
+
+  <script
+    src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js">
+  </script>
+
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+
+    body {
+
+      margin: 0;
+
+      padding: 20px;
+
+      font-family:
+        Arial,
+        sans-serif;
+
+      background:
+        #f5f5f5;
+
+    }
+
+
+    .container {
+
+      max-width: 550px;
+
+      margin:
+        0 auto;
+
+    }
+
+
+    .card {
+
+      background: white;
+
+      padding: 22px;
+
+      border-radius: 14px;
+
+      box-shadow:
+        0 3px 15px
+        rgba(0,0,0,0.08);
+
+    }
+
+
+    h1 {
+
+      text-align: center;
+
+      font-size: 24px;
+
+      margin-top: 0;
+
+    }
+
+
+    h2 {
+
+      text-align: center;
+
+      font-size: 20px;
+
+    }
+
+
+    .welcome {
+
+      text-align: center;
+
+      font-weight: bold;
+
+      margin-bottom: 20px;
+
+    }
+
+
+    .info {
+
+      background: #f1f3f5;
+
+      padding: 14px;
+
+      border-radius: 10px;
+
+      line-height: 1.5;
+
+      margin-bottom: 18px;
+
+    }
+
+
+    #qr-reader {
+
+      width: 100%;
+
+      margin-top: 15px;
+
+    }
+
+
+    #qr-reader video {
+
+      width: 100% !important;
+
+      height: auto !important;
+
+      border-radius: 10px;
+
+    }
+
+
+    button {
+
+      width: 100%;
+
+      padding: 14px;
+
+      margin-top: 12px;
+
+      border: none;
+
+      border-radius: 9px;
+
+      font-size: 16px;
+
+      cursor: pointer;
+
+    }
+
+
+    .start {
+
+      background: #198754;
+
+      color: white;
+
+    }
+
+
+    .stop {
+
+      background: #6c757d;
+
+      color: white;
+
+    }
+
+
+    button:disabled {
+
+      background: #aaa;
+
+      cursor: not-allowed;
+
+    }
+
+
+    #status {
+
+      margin-top: 15px;
+
+      padding: 13px;
+
+      text-align: center;
+
+      border-radius: 9px;
+
+      background: #eee;
+
+      line-height: 1.5;
+
+      word-break: break-word;
+
+    }
+
+
+    #result {
+
+      margin-top: 15px;
+
+      padding: 15px;
+
+      border-radius: 10px;
+
+      text-align: center;
+
+      font-size: 17px;
+
+      font-weight: bold;
+
+      line-height: 1.5;
+
+    }
+
+
+    .hidden {
+
+      display: none;
+
+    }
+
+
+    .assistant-box {
+
+      margin-bottom: 18px;
+
+    }
+
+
+    input {
+
+      width: 100%;
+
+      padding: 13px;
+
+      margin-top: 8px;
+
+      border: 1px solid #ccc;
+
+      border-radius: 8px;
+
+      font-size: 16px;
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+  <div class="card">
+
+
+    <h1>
+      ICEMD-2026
+    </h1>
+
+
+    <h2>
+      Registration Desk
+    </h2>
+
+
+    <!-- ASSISTANT DETAILS -->
+
+    <div class="assistant-box">
+
+      <label>
+        Assistant Name
+      </label>
+
+      <input
+        id="assistantName"
+        type="text"
+        placeholder="Enter assistant name"
+      >
+
+
+      <label>
+        Assistant Email
+      </label>
+
+      <input
+        id="assistantEmail"
+        type="email"
+        placeholder="Enter assistant email"
+      >
+
+    </div>
+
+
+    <div class="info">
+
+      You are using the
+      <strong>
+        ICEMD-2026 QR Attendance Scanner
+      </strong>.
+
+      <br><br>
+
+      Scan the guest's QR code.
+
+      <br>
+
+      The QR code contains only the
+      Registration ID.
+
+    </div>
+
+
+    <!-- CAMERA -->
+
+    <div id="qr-reader"></div>
+
+
+    <!-- STATUS -->
+
+    <div id="status">
+
+      Click
+      <strong>Start Scanner</strong>
+      to activate the camera.
+
+    </div>
+
+
+    <!-- RESULT -->
+
+    <div
+      id="result"
+      class="hidden">
+    </div>
+
+
+    <!-- BUTTONS -->
+
+    <button
+      id="startButton"
+      class="start"
+      onclick="startScanner()">
+
+      Start Scanner
+
+    </button>
+
+
+    <button
+      id="stopButton"
+      class="stop"
+      onclick="stopScanner()">
+
+      Stop Scanner
+
+    </button>
+
+
+  </div>
+
+
+</div>
+
+
+
+<script>
+
+
+/* =====================================================
+   APPS SCRIPT BACKEND
+   ===================================================== */
+
+const APPS_SCRIPT_URL =
+  "https://script.google.com/a/macros/iitj.ac.in/s/AKfycbwRp-RAfstklkMP7Xmg0f5O46AxMMiODytXNXyJPK0sYHcdOZpNOgZQmYxRQAd66pTv/exec";
+
+
+/* =====================================================
+   SCANNER VARIABLES
+   ===================================================== */
+
+let scanner = null;
+
+let running = false;
+
+let processing = false;
+
+
+/* =====================================================
+   START SCANNER
+   ===================================================== */
+
+async function startScanner() {
+
+
+  if (running || processing) {
+    return;
+  }
+
+
+  const name =
+    document
+      .getElementById("assistantName")
+      .value
+      .trim();
+
+
+  const email =
+    document
+      .getElementById("assistantEmail")
+      .value
+      .trim();
+
+
+  if (!name || !email) {
+
+    document
+      .getElementById("status")
+      .innerHTML =
+        "<strong>Please enter assistant name and email first.</strong>";
+
+    return;
+
+  }
+
+
+  const status =
+    document
+      .getElementById("status");
+
+
+  const startButton =
+    document
+      .getElementById("startButton");
+
+
+  status.innerText =
+    "Starting camera...";
+
+
+  startButton.disabled =
+    true;
+
+
+  try {
+
+
+    scanner =
+      new Html5Qrcode(
+        "qr-reader"
+      );
+
+
+    await scanner.start(
+
+      {
+        facingMode: {
+          ideal: "environment"
+        }
+      },
+
+      {
+
+        fps: 10,
+
+        qrbox:
+          function(
+            width,
+            height
+          ) {
+
+            const minEdge =
+              Math.min(
+                width,
+                height
+              );
+
+
+            let size =
+              Math.floor(
+                minEdge * 0.70
+              );
+
+
+            if (size > 320) {
+              size = 320;
+            }
+
+
+            if (size < 180) {
+              size = 180;
+            }
+
+
+            return {
+              width: size,
+              height: size
+            };
+
+          },
+
+        aspectRatio: 1.0,
+
+        disableFlip: false
+
+      },
+
+
+      function(decodedText) {
+
+
+        if (processing) {
+          return;
+        }
+
+
+        processing = true;
+
+
+        const registrationID =
+          String(
+            decodedText || ""
+          ).trim();
+
+
+        if (!registrationID) {
+
+          processing = false;
+
+          return;
+
+        }
+
+
+        processScan(
+          registrationID
+        );
+
+      },
+
+
+      function(errorMessage) {
+
+        // Normal QR scanning errors are ignored.
+
+      }
+
+    );
+
+
+    running = true;
+
+
+    status.innerHTML =
+      "<strong>Camera active.</strong><br>" +
+      "Point the camera at the guest QR code.";
+
+
+  }
+
+  catch(error) {
+
+
+    console.error(
+      "Camera error:",
+      error
+    );
+
+
+    running = false;
+
+    processing = false;
+
+
+    startButton.disabled =
+      false;
+
+
+    status.innerHTML =
+      "<strong>Camera could not start.</strong><br>" +
+      "Please allow camera access and try again.";
+
+  }
+
+}
+
+
+/* =====================================================
+   PROCESS QR SCAN
+   ===================================================== */
+
+async function processScan(
+  registrationID
+) {
+
+
+  const status =
+    document
+      .getElementById("status");
+
+
+  status.innerHTML =
+    "<strong>QR detected:</strong><br>" +
+    registrationID +
+    "<br><br>" +
+    "Processing attendance...";
+
+
+  /*
+   * Stop camera while processing.
+   */
+
+  await stopCameraOnly();
+
+
+  /*
+   * Send scan to Apps Script.
+   */
+
+  sendScanToAppsScript(
+    registrationID
+  );
+
+}
+
+
+/* =====================================================
+   SEND SCAN TO APPS SCRIPT
+   ===================================================== */
+
+function sendScanToAppsScript(
+  registrationID
+) {
+
+
+  const assistantName =
+    document
+      .getElementById("assistantName")
+      .value
+      .trim();
+
+
+  const assistantEmail =
+    document
+      .getElementById("assistantEmail")
+      .value
+      .trim();
+
+
+  const callbackName =
+    "icemdScanCallback_" +
+    Date.now();
+
+
+  /*
+   * Create callback function.
+   */
+
+  window[callbackName] =
+    function(data) {
+
+
+      console.log(
+        "Apps Script response:",
+        data
+      );
+
+
+      /*
+       * Remove callback.
+       */
+
+      try {
+        delete window[callbackName];
+      }
+      catch(e) {}
+
+
+      /*
+       * Remove script element.
+       */
+
+      if (script.parentNode) {
+
+        script.parentNode
+          .removeChild(script);
+
+      }
+
+
+      /*
+       * Show result.
+       */
+
+      showResult(data);
+
+
+      processing = false;
+
+    };
+
+
+  /*
+   * Build request URL.
+   */
+
+  const params =
+    new URLSearchParams({
+
+      action:
+        "scan",
+
+      registrationID:
+        registrationID,
+
+      assistantName:
+        assistantName,
+
+      assistantEmail:
+        assistantEmail,
+
+      callback:
+        callbackName
+
+    });
+
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  script.src =
+    APPS_SCRIPT_URL +
+    "?" +
+    params.toString();
+
+
+  script.onerror =
+    function() {
+
+
+      console.error(
+        "Apps Script request failed."
+      );
+
+
+      try {
+        delete window[callbackName];
+      }
+      catch(e) {}
+
+
+      if (script.parentNode) {
+
+        script.parentNode
+          .removeChild(script);
+
+      }
+
+
+      showResult({
+
+        result: "INVALID",
+
+        message:
+          "Unable to connect to attendance server."
+
+      });
+
+
+      processing = false;
+
+    };
+
+
+  document.body.appendChild(
+    script
+  );
+
+}
+
+
+/* =====================================================
+   SHOW RESULT
+   ===================================================== */
+
+function showResult(
+  data
+) {
+
+
+  const resultBox =
+    document
+      .getElementById("result");
+
+
+  const status =
+    document
+      .getElementById("status");
+
+
+  resultBox.classList
+    .remove("hidden");
+
+
+  if (!data) {
+
+    resultBox.innerHTML =
+      "Unable to verify registration.";
+
+    return;
+
+  }
+
+
+  const result =
+    String(
+      data.result || ""
+    ).toUpperCase();
+
+
+  const message =
+    String(
+      data.message ||
+      ""
+    );
+
+
+  if (result === "ACCEPTED") {
+
+
+    resultBox.innerHTML =
+      "✅ ATTENDANCE RECORDED<br><br>" +
+      message;
+
+
+    status.innerHTML =
+      "Ready for the next guest.";
+
+
+  }
+
+  else if (
+    result === "DUPLICATE"
+  ) {
+
+
+    resultBox.innerHTML =
+      "⚠️ ALREADY SCANNED<br><br>" +
+      message;
+
+
+    status.innerHTML =
+      "This registration was already marked present.";
+
+
+  }
+
+  else {
+
+
+    resultBox.innerHTML =
+      "❌ INVALID REGISTRATION<br><br>" +
+      message;
+
+
+    status.innerHTML =
+      "Registration could not be verified.";
+
+  }
+
+
+}
+
+
+/* =====================================================
+   STOP CAMERA
+   ===================================================== */
+
+async function stopCameraOnly() {
+
+
+  if (!scanner) {
+
+    running = false;
+
+    return;
+
+  }
+
+
+  try {
+
+    await scanner.stop();
+
+  }
+
+  catch(error) {
+
+    console.log(
+      "Scanner stop:",
+      error
+    );
+
+  }
+
+
+  try {
+
+    await scanner.clear();
+
+  }
+
+  catch(error) {
+
+    console.log(
+      "Scanner clear:",
+      error
+    );
+
+  }
+
+
+  scanner = null;
+
+  running = false;
+
+
+  document
+    .getElementById(
+      "qr-reader"
+    )
+    .innerHTML = "";
+
+}
+
+
+/* =====================================================
+   STOP SCANNER BUTTON
+   ===================================================== */
+
+async function stopScanner() {
+
+
+  processing = false;
+
+
+  await stopCameraOnly();
+
+
+  document
+    .getElementById("status")
+    .innerText =
+      "Scanner stopped. Click Start Scanner to activate the camera.";
+
+
+  document
+    .getElementById("startButton")
+    .disabled =
+      false;
+
+}
+
+</script>
+
+
+</body>
+
+</html>
