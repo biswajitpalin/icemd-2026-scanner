@@ -10,160 +10,480 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>ICEMD-2026 QR Attendance Scanner</title>
+  <title>
+    ICEMD-2026 Assistant Login
+  </title>
 
 
-  <!-- HTML5 QR SCANNER -->
+  <!-- QR SCANNER LIBRARY -->
+
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
 
   <style>
 
-    body {
-      margin: 0;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-    }
-
-
-    .container {
-      max-width: 500px;
-      margin: auto;
-    }
-
-
-    .card {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-    }
-
-
-    h1 {
-      text-align: center;
-      font-size: 24px;
-      margin-top: 0;
-    }
-
-
-    h2 {
-      text-align: center;
-      font-size: 20px;
-    }
-
-
-    .welcome {
-      text-align: center;
-      font-weight: bold;
-    }
-
-
-    .info {
-      background: #f0f0f0;
-      padding: 14px;
-      border-radius: 8px;
-      line-height: 1.5;
-      margin-top: 15px;
-    }
-
-
-    #qr-reader {
-      width: 100%;
-      margin-top: 20px;
-    }
-
-
-    #qr-reader video {
-      width: 100% !important;
-      height: auto !important;
-    }
-
-
-    button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 15px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-
-    #startButton {
-      background: #198754;
-      color: white;
-    }
-
-
-    #stopButton {
-      background: #666;
-      color: white;
-    }
-
-
-    button:disabled {
-      background: #999;
-      cursor: not-allowed;
-    }
-
-
-    #status {
-      margin-top: 15px;
-      padding: 12px;
-      text-align: center;
-      background: #eee;
-      border-radius: 8px;
-      word-break: break-word;
-      line-height: 1.5;
-    }
-
-
-    #result {
-      margin-top: 15px;
-      padding: 15px;
-      text-align: center;
-      border-radius: 8px;
-      font-weight: bold;
-      line-height: 1.5;
-      word-break: break-word;
-    }
-
-
-    .hidden {
-      display: none;
-    }
-
-
-    .input-group {
-      margin-top: 15px;
-    }
-
-
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: bold;
-    }
-
-
-    input {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 7px;
-      font-size: 16px;
+    * {
       box-sizing: border-box;
     }
 
 
-    .note {
+    body {
+
+      margin: 0;
+      padding: 20px;
+
+      font-family: Arial, sans-serif;
+
+      background: #f5f5f5;
+
+      color: #222;
+
+    }
+
+
+    .container {
+
+      max-width: 500px;
+
+      margin: 0 auto;
+
+    }
+
+
+    .card {
+
+      background: white;
+
+      padding: 22px;
+
+      border-radius: 12px;
+
+      box-shadow:
+        0 3px 12px rgba(0,0,0,0.08);
+
+    }
+
+
+    h1 {
+
       text-align: center;
-      font-size: 13px;
+
+      font-size: 24px;
+
+      margin-top: 0;
+
+      margin-bottom: 5px;
+
+    }
+
+
+    h2 {
+
+      text-align: center;
+
+      font-size: 20px;
+
+      margin-top: 10px;
+
+    }
+
+
+    h3 {
+
+      text-align: center;
+
+      color: #17365d;
+
+    }
+
+
+    .subtitle {
+
+      text-align: center;
+
       color: #666;
+
+      margin-bottom: 25px;
+
+    }
+
+
+    label {
+
+      display: block;
+
       margin-top: 15px;
+
+      margin-bottom: 6px;
+
+      font-weight: bold;
+
+    }
+
+
+    input {
+
+      width: 100%;
+
+      padding: 12px;
+
+      border: 1px solid #ccc;
+
+      border-radius: 7px;
+
+      font-size: 16px;
+
+    }
+
+
+    input:focus {
+
+      outline: none;
+
+      border-color: #17365d;
+
+    }
+
+
+    button {
+
+      width: 100%;
+
+      padding: 14px;
+
+      margin-top: 15px;
+
+      border: none;
+
+      border-radius: 8px;
+
+      font-size: 16px;
+
+      cursor: pointer;
+
+    }
+
+
+    button:disabled {
+
+      background: #999 !important;
+
+      cursor: not-allowed;
+
+    }
+
+
+    .button {
+
+      background: #17365d;
+
+      color: white;
+
+    }
+
+
+    .button:hover {
+
+      opacity: 0.92;
+
+    }
+
+
+    .success-button {
+
+      background: #198754;
+
+      color: white;
+
+    }
+
+
+    .secondary {
+
+      background: #666;
+
+      color: white;
+
+    }
+
+
+    .danger {
+
+      background: #b02a37;
+
+      color: white;
+
+    }
+
+
+    .message {
+
+      margin-top: 15px;
+
+      padding: 12px;
+
+      border-radius: 7px;
+
+      text-align: center;
+
+      line-height: 1.5;
+
+      display: none;
+
+    }
+
+
+    .message.success {
+
+      display: block;
+
+      background: #d4edda;
+
+      color: #155724;
+
+      border: 1px solid #b8dfc1;
+
+    }
+
+
+    .message.error {
+
+      display: block;
+
+      background: #f8d7da;
+
+      color: #721c24;
+
+      border: 1px solid #f1bfc4;
+
+    }
+
+
+    .otp-note {
+
+      text-align: center;
+
+      color: #555;
+
+      line-height: 1.5;
+
+      background: #eef3f8;
+
+      padding: 12px;
+
+      border-radius: 7px;
+
+    }
+
+
+    .welcome {
+
+      text-align: center;
+
+      font-weight: bold;
+
+      font-size: 18px;
+
+      color: #17365d;
+
+      margin-bottom: 15px;
+
+    }
+
+
+    .scanner-info {
+
+      background: #eef3f8;
+
+      border-radius: 8px;
+
+      padding: 15px;
+
+      margin-top: 15px;
+
+      font-size: 14px;
+
+      line-height: 1.5;
+
+      text-align: center;
+
+    }
+
+
+    .scanner-box {
+
+      width: 100%;
+
+      margin-top: 20px;
+
+    }
+
+
+    #qr-reader {
+
+      width: 100%;
+
+    }
+
+
+    #qr-reader video {
+
+      width: 100% !important;
+
+      height: auto !important;
+
+      border-radius: 8px;
+
+    }
+
+
+    .scanner-status {
+
+      margin-top: 15px;
+
+      padding: 12px;
+
+      border-radius: 7px;
+
+      background: #eef3f8;
+
+      color: #17365d;
+
+      text-align: center;
+
+      font-size: 14px;
+
+      line-height: 1.5;
+
+      white-space: pre-line;
+
+    }
+
+
+    .scan-result {
+
+      display: none;
+
+      margin-top: 20px;
+
+      padding: 20px;
+
+      border-radius: 10px;
+
+    }
+
+
+    .scan-accepted {
+
+      display: block;
+
+      background: #d4edda;
+
+      color: #155724;
+
+      border: 1px solid #b8dfc1;
+
+    }
+
+
+    .scan-duplicate {
+
+      display: block;
+
+      background: #f8d7da;
+
+      color: #721c24;
+
+      border: 1px solid #f1bfc4;
+
+    }
+
+
+    .scan-invalid {
+
+      display: block;
+
+      background: #f8d7da;
+
+      color: #721c24;
+
+      border: 1px solid #f1bfc4;
+
+    }
+
+
+    .scan-result h2 {
+
+      margin-top: 0;
+
+      text-align: center;
+
+    }
+
+
+    .scan-result p {
+
+      margin: 8px 0;
+
+      font-size: 14px;
+
+      line-height: 1.5;
+
+      word-break: break-word;
+
+    }
+
+
+    .manual-test {
+
+      margin-top: 25px;
+
+      padding-top: 20px;
+
+      border-top: 1px solid #ddd;
+
+    }
+
+
+    .manual-note {
+
+      font-size: 13px;
+
+      color: #666;
+
+      text-align: center;
+
+      line-height: 1.5;
+
+    }
+
+
+    .camera-note {
+
+      margin-top: 12px;
+
+      font-size: 12px;
+
+      color: #666;
+
+      text-align: center;
+
+      line-height: 1.5;
+
+    }
+
+
+    .hidden {
+
+      display: none !important;
+
+    }
+
+
+    .loading {
+
+      opacity: 0.7;
+
     }
 
   </style>
@@ -177,13 +497,164 @@
 <div class="container">
 
 
-  <div class="card">
+  <!-- =================================================
+       ASSISTANT LOGIN PAGE
+  ================================================== -->
 
+  <div
+    id="assistantLoginPage"
+    class="card"
+  >
 
     <h1>
       ICEMD-2026
     </h1>
 
+    <h2>
+      Assistant Login
+    </h2>
+
+    <p class="subtitle">
+      Registration Desk
+    </p>
+
+
+    <!-- ASSISTANT DETAILS -->
+
+    <div id="assistantDetails">
+
+
+      <label for="assistantFirstName">
+        First Name
+      </label>
+
+      <input
+        type="text"
+        id="assistantFirstName"
+        placeholder="Enter first name"
+        autocomplete="given-name"
+      >
+
+
+      <label for="assistantLastName">
+        Last Name
+      </label>
+
+      <input
+        type="text"
+        id="assistantLastName"
+        placeholder="Enter last name"
+        autocomplete="family-name"
+      >
+
+
+      <label for="assistantEmail">
+        Email
+      </label>
+
+      <input
+        type="email"
+        id="assistantEmail"
+        placeholder="Enter email address"
+        autocomplete="email"
+      >
+
+
+      <button
+        id="continueButton"
+        class="button"
+        onclick="requestOTP()"
+      >
+        Continue
+      </button>
+
+    </div>
+
+
+    <!-- OTP -->
+
+    <div
+      id="assistantOTP"
+      class="hidden"
+    >
+
+      <p class="otp-note">
+
+        An OTP has been sent to your
+        registered email address.
+
+        <br><br>
+
+        The OTP is valid for
+        <strong>5 minutes.</strong>
+
+      </p>
+
+
+      <label for="assistantOTPInput">
+        Enter OTP
+      </label>
+
+      <input
+        type="text"
+        id="assistantOTPInput"
+        maxlength="6"
+        inputmode="numeric"
+        autocomplete="one-time-code"
+        placeholder="6-digit OTP"
+      >
+
+
+      <button
+        id="verifyButton"
+        class="button"
+        onclick="verifyOTP()"
+      >
+        Verify OTP
+      </button>
+
+
+      <button
+        id="backDetailsButton"
+        class="button secondary"
+        onclick="backToAssistantDetails()"
+      >
+        Back
+      </button>
+
+    </div>
+
+
+    <button
+      id="assistantBackButton"
+      class="button secondary"
+      onclick="goHome()"
+    >
+      Back
+    </button>
+
+
+    <div
+      id="assistantMessage"
+      class="message"
+    ></div>
+
+  </div>
+
+
+
+  <!-- =================================================
+       ASSISTANT SCANNER PAGE
+  ================================================== -->
+
+  <div
+    id="assistantScannerPage"
+    class="card hidden"
+  >
+
+    <h1>
+      ICEMD-2026
+    </h1>
 
     <h2>
       QR Attendance Scanner
@@ -191,54 +662,20 @@
 
 
     <p
-      id="welcome"
-      class="welcome">
-      Registration Desk
-    </p>
+      id="assistantWelcome"
+      class="welcome"
+    ></p>
 
 
-    <!-- ASSISTANT INFORMATION -->
+    <div class="scanner-info">
 
-    <div class="input-group">
-
-      <label for="assistantName">
-        Assistant Name
-      </label>
-
-      <input
-        id="assistantName"
-        type="text"
-        placeholder="Assistant Name"
-      >
-
-    </div>
-
-
-    <div class="input-group">
-
-      <label for="assistantEmail">
-        Assistant Email
-      </label>
-
-      <input
-        id="assistantEmail"
-        type="email"
-        placeholder="Assistant Email"
-      >
-
-    </div>
-
-
-    <!-- INFORMATION -->
-
-    <div class="info">
-
-      You are using the
-      <strong>ICEMD-2026 QR Attendance Scanner.</strong>
+      You are logged in as an authorized
+      registration assistant.
 
       <br><br>
 
-      Scan the guest's QR code using the camera.
+      Scan the guest's QR code using
+      the camera.
 
       <br>
 
@@ -250,54 +687,106 @@
 
     <!-- CAMERA -->
 
-    <div id="qr-reader"></div>
+    <div class="scanner-box">
+
+      <div id="qr-reader"></div>
+
+    </div>
 
 
     <!-- STATUS -->
 
-    <div id="status">
-
-      Click
-      <strong>Start Scanner</strong>
+    <div
+      id="scannerStatus"
+      class="scanner-status"
+    >
+      Click <strong>Start Scanner</strong>
       to activate the camera.
-
     </div>
 
 
     <!-- RESULT -->
 
     <div
-      id="result"
-      class="hidden">
-    </div>
+      id="scanResult"
+      class="scan-result"
+    ></div>
 
 
-    <!-- BUTTONS -->
+    <!-- START -->
 
     <button
-      id="startButton"
-      onclick="startScanner()">
-
+      id="startScannerButton"
+      class="button success-button"
+      onclick="startScanner()"
+    >
       Start Scanner
-
     </button>
 
+
+    <!-- STOP -->
 
     <button
-      id="stopButton"
-      onclick="stopScanner()">
-
+      id="stopScannerButton"
+      class="button secondary"
+      onclick="stopQRScanner()"
+    >
       Stop Scanner
-
     </button>
 
 
-    <div class="note">
+    <p class="camera-note">
 
-      Camera runs directly on this page.
+      The camera scanner runs directly
+      on this page.
+
+    </p>
+
+
+    <!-- =================================================
+         MANUAL TEST
+    ================================================== -->
+
+    <div class="manual-test">
+
+      <h3>
+        Manual Registration ID Test
+      </h3>
+
+
+      <p class="manual-note">
+
+        Use this only for testing the
+        attendance system without the camera.
+
+      </p>
+
+
+      <input
+        type="text"
+        id="manualRegistrationID"
+        placeholder="Example: ICEMD26-0001"
+      >
+
+
+      <button
+        class="button"
+        onclick="manualScan()"
+      >
+        Test Registration ID
+      </button>
 
     </div>
 
+
+    <!-- LOGOUT -->
+
+    <button
+      class="button danger"
+      onclick="logoutAssistant()"
+    >
+      Logout
+    </button>
 
   </div>
 
@@ -310,42 +799,961 @@
 
 
 /* =====================================================
-   APPS SCRIPT WEB APP
-   ===================================================== */
+   APPS SCRIPT URL
+===================================================== */
 
 const APPS_SCRIPT_URL =
   "https://script.google.com/a/macros/iitj.ac.in/s/AKfycbwRp-RAfstklkMP7Xmg0f5O46AxMMiODytXNXyJPK0sYHcdOZpNOgZQmYxRQAd66pTv/exec";
 
 
-/* =====================================================
-   SCANNER VARIABLES
-   ===================================================== */
-
-let scanner = null;
-
-let running = false;
-
-let processing = false;
-
 
 /* =====================================================
-   START SCANNER
-   ===================================================== */
+   GLOBAL VARIABLES
+===================================================== */
+
+let currentAssistantName =
+  "";
+
+let currentAssistantEmail =
+  "";
+
+let scanner =
+  null;
+
+let scannerRunning =
+  false;
+
+let processingScan =
+  false;
+
+
+
+/* =====================================================
+   HELPER: SHOW MESSAGE
+===================================================== */
+
+function showMessage(
+  message,
+  type
+) {
+
+  const box =
+    document.getElementById(
+      "assistantMessage"
+    );
+
+
+  box.innerText =
+    message;
+
+
+  box.className =
+    "message " +
+    (
+      type === "success"
+        ? "success"
+        : "error"
+    );
+
+}
+
+
+
+/* =====================================================
+   HELPER: CLEAR MESSAGE
+===================================================== */
+
+function clearMessage() {
+
+  const box =
+    document.getElementById(
+      "assistantMessage"
+    );
+
+
+  box.innerText =
+    "";
+
+  box.className =
+    "message";
+
+}
+
+
+
+/* =====================================================
+   HELPER: ESCAPE HTML
+===================================================== */
+
+function escapeHtml(
+  value
+) {
+
+  return String(
+    value ?? ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+
+/* =====================================================
+   ASSISTANT REQUEST OTP
+===================================================== */
+
+function requestOTP() {
+
+
+  const firstName =
+    document
+      .getElementById(
+        "assistantFirstName"
+      )
+      .value
+      .trim();
+
+
+  const lastName =
+    document
+      .getElementById(
+        "assistantLastName"
+      )
+      .value
+      .trim();
+
+
+  const email =
+    document
+      .getElementById(
+        "assistantEmail"
+      )
+      .value
+      .trim()
+      .toLowerCase();
+
+
+  /*
+   * Validate fields.
+   */
+
+  if (
+    !firstName ||
+    !lastName ||
+    !email
+  ) {
+
+    showMessage(
+
+      "Please enter First Name, Last Name and Email.",
+
+      "error"
+
+    );
+
+    return;
+
+  }
+
+
+  /*
+   * Disable button.
+   */
+
+  const button =
+    document.getElementById(
+      "continueButton"
+    );
+
+
+  button.disabled =
+    true;
+
+
+  button.innerText =
+    "Checking...";
+
+
+  showMessage(
+
+    "Checking assistant details...",
+
+    "success"
+
+  );
+
+
+  /*
+   * Create JSONP callback.
+   */
+
+  const callbackName =
+    "icemdAssistantOTP_" +
+    Date.now();
+
+
+  let script =
+    document.createElement(
+      "script"
+    );
+
+
+  /*
+   * JSONP callback.
+   */
+
+  window[callbackName] =
+    function(data) {
+
+      console.log(
+        "Assistant OTP response:",
+        data
+      );
+
+
+      try {
+
+        delete window[
+          callbackName
+        ];
+
+      }
+
+      catch(error) {}
+
+
+      if (
+        script &&
+        script.parentNode
+      ) {
+
+        script.parentNode
+          .removeChild(
+            script
+          );
+
+      }
+
+
+      button.disabled =
+        false;
+
+
+      button.innerText =
+        "Continue";
+
+
+      if (
+        data &&
+        data.success
+      ) {
+
+        /*
+         * Hide details.
+         */
+
+        document
+          .getElementById(
+            "assistantDetails"
+          )
+          .classList
+          .add(
+            "hidden"
+          );
+
+
+        /*
+         * Show OTP.
+         */
+
+        document
+          .getElementById(
+            "assistantOTP"
+          )
+          .classList
+          .remove(
+            "hidden"
+          );
+
+
+        /*
+         * Hide page Back button.
+         */
+
+        document
+          .getElementById(
+            "assistantBackButton"
+          )
+          .classList
+          .add(
+            "hidden"
+          );
+
+
+        /*
+         * Clear OTP field.
+         */
+
+        document
+          .getElementById(
+            "assistantOTPInput"
+          )
+          .value =
+          "";
+
+
+        showMessage(
+
+          data.message ||
+          "OTP has been sent to your email address.",
+
+          "success"
+
+        );
+
+
+        /*
+         * Put cursor in OTP field.
+         */
+
+        setTimeout(
+          function() {
+
+            document
+              .getElementById(
+                "assistantOTPInput"
+              )
+              .focus();
+
+          },
+          100
+        );
+
+      }
+
+      else {
+
+        showMessage(
+
+          data &&
+          data.message
+
+            ? data.message
+
+            : "Unable to send OTP.",
+
+          "error"
+
+        );
+
+      }
+
+    };
+
+
+  /*
+   * Build request.
+   */
+
+  const params =
+    new URLSearchParams();
+
+
+  params.append(
+    "action",
+    "requestAssistantOTP"
+  );
+
+
+  params.append(
+    "firstName",
+    firstName
+  );
+
+
+  params.append(
+    "lastName",
+    lastName
+  );
+
+
+  params.append(
+    "email",
+    email
+  );
+
+
+  params.append(
+    "callback",
+    callbackName
+  );
+
+
+  /*
+   * Send request to Apps Script.
+   */
+
+  script.src =
+    APPS_SCRIPT_URL +
+    "?" +
+    params.toString();
+
+
+  /*
+   * Connection error.
+   */
+
+  script.onerror =
+    function() {
+
+      console.error(
+        "Assistant OTP connection failed."
+      );
+
+
+      try {
+
+        delete window[
+          callbackName
+        ];
+
+      }
+
+      catch(error) {}
+
+
+      if (
+        script &&
+        script.parentNode
+      ) {
+
+        script.parentNode
+          .removeChild(
+            script
+          );
+
+      }
+
+
+      button.disabled =
+        false;
+
+
+      button.innerText =
+        "Continue";
+
+
+      showMessage(
+
+        "Unable to connect to the attendance server.",
+
+        "error"
+
+      );
+
+    };
+
+
+  document.body.appendChild(
+    script
+  );
+
+}
+
+
+
+/* =====================================================
+   VERIFY OTP
+===================================================== */
+
+function verifyOTP() {
+
+
+  const email =
+    document
+      .getElementById(
+        "assistantEmail"
+      )
+      .value
+      .trim()
+      .toLowerCase();
+
+
+  const otp =
+    document
+      .getElementById(
+        "assistantOTPInput"
+      )
+      .value
+      .trim();
+
+
+  /*
+   * Validate OTP.
+   */
+
+  if (!otp) {
+
+    showMessage(
+
+      "Please enter the OTP.",
+
+      "error"
+
+    );
+
+    return;
+
+  }
+
+
+  /*
+   * Disable button.
+   */
+
+  const button =
+    document.getElementById(
+      "verifyButton"
+    );
+
+
+  button.disabled =
+    true;
+
+
+  button.innerText =
+    "Verifying...";
+
+
+  showMessage(
+
+    "Verifying OTP...",
+
+    "success"
+
+  );
+
+
+  /*
+   * Create JSONP callback.
+   */
+
+  const callbackName =
+    "icemdVerifyOTP_" +
+    Date.now();
+
+
+  let script =
+    document.createElement(
+      "script"
+    );
+
+
+  /*
+   * JSONP callback.
+   */
+
+  window[callbackName] =
+    function(data) {
+
+      console.log(
+        "OTP verification response:",
+        data
+      );
+
+
+      try {
+
+        delete window[
+          callbackName
+        ];
+
+      }
+
+      catch(error) {}
+
+
+      if (
+        script &&
+        script.parentNode
+      ) {
+
+        script.parentNode
+          .removeChild(
+            script
+          );
+
+      }
+
+
+      button.disabled =
+        false;
+
+
+      button.innerText =
+        "Verify OTP";
+
+
+      if (
+        data &&
+        data.success
+      ) {
+
+        /*
+         * Save assistant identity.
+         */
+
+        currentAssistantName =
+          data.name ||
+          "Assistant";
+
+
+        currentAssistantEmail =
+          data.email ||
+          email;
+
+
+        /*
+         * Welcome message.
+         */
+
+        document
+          .getElementById(
+            "assistantWelcome"
+          )
+          .innerText =
+          "Welcome, " +
+          currentAssistantName;
+
+
+        /*
+         * Hide login.
+         */
+
+        document
+          .getElementById(
+            "assistantLoginPage"
+          )
+          .classList
+          .add(
+            "hidden"
+          );
+
+
+        /*
+         * Show scanner.
+         */
+
+        document
+          .getElementById(
+            "assistantScannerPage"
+          )
+          .classList
+          .remove(
+            "hidden"
+          );
+
+
+        /*
+         * Reset scanner state.
+         */
+
+        document
+          .getElementById(
+            "scannerStatus"
+          )
+          .innerHTML =
+          'Click <strong>Start Scanner</strong> to activate the camera.';
+
+
+        document
+          .getElementById(
+            "scanResult"
+          )
+          .style
+          .display =
+          "none";
+
+
+        document
+          .getElementById(
+            "scanResult"
+          )
+          .innerHTML =
+          "";
+
+
+        processingScan =
+          false;
+
+
+        scannerRunning =
+          false;
+
+
+        scanner =
+          null;
+
+      }
+
+      else {
+
+        showMessage(
+
+          data &&
+          data.message
+
+            ? data.message
+
+            : "Incorrect OTP.",
+
+          "error"
+
+        );
+
+      }
+
+    };
+
+
+  /*
+   * Build request.
+   */
+
+  const params =
+    new URLSearchParams();
+
+
+  params.append(
+    "action",
+    "verifyAssistantOTP"
+  );
+
+
+  params.append(
+    "email",
+    email
+  );
+
+
+  params.append(
+    "otp",
+    otp
+  );
+
+
+  params.append(
+    "callback",
+    callbackName
+  );
+
+
+  /*
+   * Send request.
+   */
+
+  script.src =
+    APPS_SCRIPT_URL +
+    "?" +
+    params.toString();
+
+
+  /*
+   * Connection error.
+   */
+
+  script.onerror =
+    function() {
+
+      console.error(
+        "OTP verification connection failed."
+      );
+
+
+      try {
+
+        delete window[
+          callbackName
+        ];
+
+      }
+
+      catch(error) {}
+
+
+      if (
+        script &&
+        script.parentNode
+      ) {
+
+        script.parentNode
+          .removeChild(
+            script
+          );
+
+      }
+
+
+      button.disabled =
+        false;
+
+
+      button.innerText =
+        "Verify OTP";
+
+
+      showMessage(
+
+        "Unable to connect to the attendance server.",
+
+        "error"
+
+      );
+
+    };
+
+
+  document.body.appendChild(
+    script
+  );
+
+}
+
+
+
+/* =====================================================
+   BACK TO ASSISTANT DETAILS
+===================================================== */
+
+function backToAssistantDetails() {
+
+
+  document
+    .getElementById(
+      "assistantOTP"
+    )
+    .classList
+    .add(
+      "hidden"
+    );
+
+
+  document
+    .getElementById(
+      "assistantDetails"
+    )
+    .classList
+    .remove(
+      "hidden"
+    );
+
+
+  document
+    .getElementById(
+      "assistantBackButton"
+    )
+    .classList
+    .remove(
+      "hidden"
+    );
+
+
+  document
+    .getElementById(
+      "assistantOTPInput"
+    )
+    .value =
+    "";
+
+
+  clearMessage();
+
+}
+
+
+
+/* =====================================================
+   GO HOME
+===================================================== */
+
+function goHome() {
+
+  /*
+   * Since this GitHub page is the
+   * Assistant application itself,
+   * "Back" simply resets the login.
+   */
+
+  logoutAssistant();
+
+}
+
+
+
+/* =====================================================
+   START QR SCANNER
+===================================================== */
 
 async function startScanner() {
 
 
-  if (running || processing) {
+  if (
+    scannerRunning ||
+    processingScan
+  ) {
+
     return;
+
   }
 
 
   const status =
-    document.getElementById("status");
+    document.getElementById(
+      "scannerStatus"
+    );
 
 
   const startButton =
-    document.getElementById("startButton");
+    document.getElementById(
+      "startScannerButton"
+    );
+
+
+  const resultBox =
+    document.getElementById(
+      "scanResult"
+    );
+
+
+  /*
+   * Hide previous result.
+   */
+
+  resultBox.style.display =
+    "none";
+
+
+  resultBox.innerHTML =
+    "";
 
 
   status.innerText =
@@ -360,7 +1768,12 @@ async function startScanner() {
 
 
     /*
-     * Create QR scanner.
+     * IMPORTANT:
+     *
+     * Keep this camera configuration.
+     *
+     * This is the configuration that
+     * was already working.
      */
 
     scanner =
@@ -369,20 +1782,12 @@ async function startScanner() {
       );
 
 
-    /*
-     * THIS IS THE CAMERA
-     * INITIALIZATION FROM
-     * YOUR PREVIOUSLY WORKING
-     * GITHUB SCANNER.
-     */
-
     await scanner.start(
 
       { facingMode: "environment" },
 
       {
         fps: 10,
-
         qrbox: {
           width: 250,
           height: 250
@@ -390,15 +1795,27 @@ async function startScanner() {
       },
 
 
-      async function(decodedText) {
+      async function(
+        decodedText
+      ) {
 
 
-        if (processing) {
+        /*
+         * Prevent multiple scans
+         * at the same time.
+         */
+
+        if (
+          processingScan
+        ) {
+
           return;
+
         }
 
 
-        processing = true;
+        processingScan =
+          true;
 
 
         const registrationID =
@@ -407,9 +1824,12 @@ async function startScanner() {
           ).trim();
 
 
-        if (!registrationID) {
+        if (
+          !registrationID
+        ) {
 
-          processing = false;
+          processingScan =
+            false;
 
           return;
 
@@ -429,13 +1849,18 @@ async function startScanner() {
 
 
         /*
-         * Stop camera.
+         * Stop camera after QR detection.
+         *
+         * This keeps one scan from
+         * being submitted multiple times.
          */
 
         try {
 
           if (scanner) {
+
             await scanner.stop();
+
           }
 
         }
@@ -453,7 +1878,9 @@ async function startScanner() {
         try {
 
           if (scanner) {
+
             await scanner.clear();
+
           }
 
         }
@@ -468,14 +1895,17 @@ async function startScanner() {
         }
 
 
-        scanner = null;
+        scanner =
+          null;
 
-        running = false;
+
+        scannerRunning =
+          false;
 
 
-        /*
-         * Process attendance.
-         */
+        startButton.disabled =
+          false;
+
 
         processScan(
           registrationID
@@ -487,8 +1917,8 @@ async function startScanner() {
       function(errorMessage) {
 
         /*
-         * Continuous QR scanning errors
-         * are normal and ignored.
+         * Ignore normal QR scanning
+         * errors.
          */
 
       }
@@ -496,7 +1926,8 @@ async function startScanner() {
     );
 
 
-    running = true;
+    scannerRunning =
+      true;
 
 
     status.innerHTML =
@@ -511,6 +1942,7 @@ async function startScanner() {
 
   }
 
+
   catch(error) {
 
 
@@ -520,11 +1952,16 @@ async function startScanner() {
     );
 
 
-    scanner = null;
+    scanner =
+      null;
 
-    running = false;
 
-    processing = false;
+    scannerRunning =
+      false;
+
+
+    processingScan =
+      false;
 
 
     startButton.disabled =
@@ -533,7 +1970,7 @@ async function startScanner() {
 
     status.innerHTML =
       "<strong>Camera failed to start.</strong><br><br>" +
-      (
+      escapeHtml(
         error.message ||
         String(error)
       );
@@ -543,9 +1980,10 @@ async function startScanner() {
 }
 
 
+
 /* =====================================================
-   PROCESS QR
-   ===================================================== */
+   PROCESS SCAN
+===================================================== */
 
 function processScan(
   registrationID
@@ -553,7 +1991,9 @@ function processScan(
 
 
   const status =
-    document.getElementById("status");
+    document.getElementById(
+      "scannerStatus"
+    );
 
 
   status.innerText =
@@ -569,9 +2009,10 @@ function processScan(
 }
 
 
+
 /* =====================================================
    SEND SCAN TO APPS SCRIPT
-   ===================================================== */
+===================================================== */
 
 function sendScanToAppsScript(
   registrationID
@@ -579,57 +2020,17 @@ function sendScanToAppsScript(
 
 
   const assistantName =
-    document
-      .getElementById("assistantName")
-      .value
-      .trim();
+    currentAssistantName ||
+    "Assistant";
 
 
   const assistantEmail =
-    document
-      .getElementById("assistantEmail")
-      .value
-      .trim();
-
-
-  if (!assistantName) {
-
-    showResult({
-
-      result: "INVALID",
-
-      message:
-        "Assistant name is missing."
-
-    });
-
-    processing = false;
-
-    return;
-
-  }
-
-
-  if (!assistantEmail) {
-
-    showResult({
-
-      result: "INVALID",
-
-      message:
-        "Assistant email is missing."
-
-    });
-
-    processing = false;
-
-    return;
-
-  }
+    currentAssistantEmail ||
+    "";
 
 
   /*
-   * Unique JSONP callback.
+   * Create JSONP callback.
    */
 
   const callbackName =
@@ -637,8 +2038,14 @@ function sendScanToAppsScript(
     Date.now();
 
 
+  let script =
+    document.createElement(
+      "script"
+    );
+
+
   /*
-   * Create callback.
+   * Callback.
    */
 
   window[callbackName] =
@@ -651,10 +2058,6 @@ function sendScanToAppsScript(
       );
 
 
-      /*
-       * Remove callback.
-       */
-
       try {
 
         delete window[
@@ -666,35 +2069,32 @@ function sendScanToAppsScript(
       catch(error) {}
 
 
-      /*
-       * Remove script.
-       */
-
       if (
         script &&
         script.parentNode
       ) {
 
         script.parentNode
-          .removeChild(script);
+          .removeChild(
+            script
+          );
 
       }
 
 
-      /*
-       * Show result.
-       */
-
-      showResult(data);
+      showScanResult(
+        data
+      );
 
 
-      processing = false;
+      processingScan =
+        false;
 
     };
 
 
   /*
-   * Build URL.
+   * Parameters.
    */
 
   const params =
@@ -732,14 +2132,8 @@ function sendScanToAppsScript(
 
 
   /*
-   * Create script tag.
+   * Build URL.
    */
-
-  const script =
-    document.createElement(
-      "script"
-    );
-
 
   script.src =
     APPS_SCRIPT_URL +
@@ -748,7 +2142,7 @@ function sendScanToAppsScript(
 
 
   /*
-   * Connection failure.
+   * Connection error.
    */
 
   script.onerror =
@@ -777,12 +2171,16 @@ function sendScanToAppsScript(
       ) {
 
         script.parentNode
-          .removeChild(script);
+          .removeChild(
+            script
+          );
 
       }
 
 
-      showResult({
+      showScanResult({
+
+        success: false,
 
         result: "INVALID",
 
@@ -792,14 +2190,11 @@ function sendScanToAppsScript(
       });
 
 
-      processing = false;
+      processingScan =
+        false;
 
     };
 
-
-  /*
-   * Send request.
-   */
 
   document.body.appendChild(
     script
@@ -808,79 +2203,205 @@ function sendScanToAppsScript(
 }
 
 
-/* =====================================================
-   SHOW RESULT
-   ===================================================== */
 
-function showResult(
-  data
+/* =====================================================
+   SHOW SCAN RESULT
+===================================================== */
+
+function showScanResult(
+  result
 ) {
 
 
-  const resultBox =
+  const box =
     document.getElementById(
-      "result"
+      "scanResult"
     );
 
 
   const status =
     document.getElementById(
-      "status"
+      "scannerStatus"
     );
 
 
-  resultBox.classList
-    .remove("hidden");
+  box.style.display =
+    "block";
 
 
-  if (!data) {
+  box.className =
+    "scan-result";
 
-    resultBox.innerHTML =
-      "❌ Unable to verify registration.";
+
+  /*
+   * ---------------------------------------------------
+   * NO RESPONSE
+   * ---------------------------------------------------
+   */
+
+  if (!result) {
+
+    box.classList.add(
+      "scan-invalid"
+    );
+
+
+    box.innerHTML =
+
+      "<h2>✕ Scan Error</h2>" +
+
+      "<p>" +
+      "Unable to process this QR code." +
+      "</p>";
+
+
+    status.innerHTML =
+      "Scan could not be processed.<br>" +
+      "You may scan the next guest.";
+
 
     return;
 
   }
 
 
-  const result =
-    String(
-      data.result || ""
-    ).toUpperCase();
-
-
-  const message =
-    String(
-      data.message || ""
-    );
-
+  /*
+   * ---------------------------------------------------
+   * ACCEPTED
+   * ---------------------------------------------------
+   */
 
   if (
-    result === "ACCEPTED"
+    result.result ===
+    "ACCEPTED"
   ) {
 
 
-    resultBox.innerHTML =
-      "✅ ATTENDANCE RECORDED<br><br>" +
-      message;
+    box.classList.add(
+      "scan-accepted"
+    );
+
+
+    box.innerHTML =
+
+      "<h2>✓ Attendance Accepted</h2>" +
+
+      "<p><b>Name:</b> " +
+      escapeHtml(
+        result.name
+      ) +
+      "</p>" +
+
+      "<p><b>Email:</b> " +
+      escapeHtml(
+        result.email
+      ) +
+      "</p>" +
+
+      "<p><b>Institute:</b> " +
+      escapeHtml(
+        result.institute
+      ) +
+      "</p>" +
+
+      "<p><b>Registration ID:</b> " +
+      escapeHtml(
+        result.registrationID
+      ) +
+      "</p>" +
+
+      "<p><b>Date:</b> " +
+      escapeHtml(
+        result.date
+      ) +
+      "</p>" +
+
+      "<p><b>Time:</b> " +
+      escapeHtml(
+        result.time
+      ) +
+      "</p>" +
+
+      "<p><b>Scanned By:</b> " +
+      escapeHtml(
+        result.scannedBy
+      ) +
+      "</p>";
 
 
     status.innerHTML =
       "Attendance recorded successfully.<br>" +
-      "Click <strong>Start Scanner</strong> for the next guest.";
+      "Click <strong>Start Scanner</strong> " +
+      "for the next guest.";
 
+
+    return;
 
   }
 
 
-  else if (
-    result === "DUPLICATE"
+  /*
+   * ---------------------------------------------------
+   * DUPLICATE
+   * ---------------------------------------------------
+   */
+
+  if (
+    result.result ===
+    "DUPLICATE"
   ) {
 
 
-    resultBox.innerHTML =
-      "⚠️ ALREADY SCANNED<br><br>" +
-      message;
+    box.classList.add(
+      "scan-duplicate"
+    );
+
+
+    box.innerHTML =
+
+      "<h2>✕ Already Scanned</h2>" +
+
+      "<p><b>Name:</b> " +
+      escapeHtml(
+        result.name
+      ) +
+      "</p>" +
+
+      "<p><b>Email:</b> " +
+      escapeHtml(
+        result.email
+      ) +
+      "</p>" +
+
+      "<p><b>Institute:</b> " +
+      escapeHtml(
+        result.institute
+      ) +
+      "</p>" +
+
+      "<p><b>Registration ID:</b> " +
+      escapeHtml(
+        result.registrationID
+      ) +
+      "</p>" +
+
+      "<p><b>First Scan Date:</b> " +
+      escapeHtml(
+        result.firstScanDate
+      ) +
+      "</p>" +
+
+      "<p><b>First Scan Time:</b> " +
+      escapeHtml(
+        result.firstScanTime
+      ) +
+      "</p>" +
+
+      "<p><b>Scanned By:</b> " +
+      escapeHtml(
+        result.scannedBy
+      ) +
+      "</p>";
 
 
     status.innerHTML =
@@ -888,113 +2409,468 @@ function showResult(
       "You may scan the next guest.";
 
 
+    return;
+
   }
 
 
-else {
+  /*
+   * ---------------------------------------------------
+   * INVALID
+   * ---------------------------------------------------
+   */
 
-  resultBox.innerHTML =
-    "❌ INVALID REGISTRATION<br><br>" +
-    message +
-    "<br><br>" +
-    "<small>Registration ID scanned: " +
-    (
-      data.registrationID ||
-      "not returned by server"
+  if (
+    result.result ===
+    "INVALID"
+  ) {
+
+
+    box.classList.add(
+      "scan-invalid"
+    );
+
+
+    box.innerHTML =
+
+      "<h2>✕ Invalid QR Code</h2>" +
+
+      "<p>" +
+
+      escapeHtml(
+
+        result.message ||
+        "Registration ID not found."
+
+      ) +
+
+      "</p>";
+
+
+    status.innerHTML =
+      "Registration could not be verified.<br>" +
+      "You may scan the next guest.";
+
+
+    return;
+
+  }
+
+
+  /*
+   * ---------------------------------------------------
+   * UNEXPECTED RESPONSE
+   * ---------------------------------------------------
+   */
+
+  box.classList.add(
+    "scan-invalid"
+  );
+
+
+  box.innerHTML =
+
+    "<h2>✕ Scan Error</h2>" +
+
+    "<p>" +
+
+    escapeHtml(
+
+      result.message ||
+      "Unexpected server response."
+
     ) +
-    "</small>";
+
+    "</p>";
+
 
   status.innerHTML =
-    "Registration could not be verified.<br>" +
-    "Please check the registration ID.";
+    "An unexpected response was received.<br>" +
+    "You may scan the next guest.";
 
-  console.log(
-    "FULL APPS SCRIPT RESPONSE:",
-    data
+}
+
+
+
+/* =====================================================
+   MANUAL REGISTRATION ID TEST
+===================================================== */
+
+function manualScan() {
+
+
+  if (
+    processingScan
+  ) {
+
+    return;
+
+  }
+
+
+  const input =
+    document.getElementById(
+      "manualRegistrationID"
+    );
+
+
+  const registrationID =
+    input.value.trim();
+
+
+  if (!registrationID) {
+
+    alert(
+      "Please enter a Registration ID."
+    );
+
+    return;
+
+  }
+
+
+  /*
+   * Hide old result.
+   */
+
+  document
+    .getElementById(
+      "scanResult"
+    )
+    .style
+    .display =
+    "none";
+
+
+  processingScan =
+    true;
+
+
+  document
+    .getElementById(
+      "scannerStatus"
+    )
+    .innerText =
+    "Testing Registration ID:\n" +
+    registrationID +
+    "\n\nVerifying registration...";
+
+
+  sendScanToAppsScript(
+    registrationID
   );
 
 }
 
-}
 
 
 /* =====================================================
-   STOP SCANNER
-   ===================================================== */
+   STOP QR SCANNER
+===================================================== */
 
-async function stopScanner() {
-
-
-  processing = false;
+async function stopQRScanner() {
 
 
-  if (scanner) {
+  processingScan =
+    false;
 
 
-    try {
+  if (!scanner) {
 
-      await scanner.stop();
+    document
+      .getElementById(
+        "scannerStatus"
+      )
+      .innerText =
+      "Scanner stopped.";
 
-    }
+    document
+      .getElementById(
+        "startScannerButton"
+      )
+      .disabled =
+      false;
 
-    catch(error) {
-
-      console.log(
-        "Scanner stop:",
-        error
-      );
-
-    }
-
-
-    try {
-
-      await scanner.clear();
-
-    }
-
-    catch(error) {
-
-      console.log(
-        "Scanner clear:",
-        error
-      );
-
-    }
+    return;
 
   }
 
 
-  scanner = null;
+  try {
 
-  running = false;
+    await scanner.stop();
+
+  }
+
+  catch(error) {
+
+    console.error(
+      "Scanner stop error:",
+      error
+    );
+
+  }
+
+
+  try {
+
+    await scanner.clear();
+
+  }
+
+  catch(error) {
+
+    console.error(
+      "Scanner clear error:",
+      error
+    );
+
+  }
+
+
+  scanner =
+    null;
+
+
+  scannerRunning =
+    false;
 
 
   document
     .getElementById(
       "qr-reader"
     )
-    .innerHTML = "";
+    .innerHTML =
+    "";
 
 
   document
     .getElementById(
-      "startButton"
+      "startScannerButton"
     )
-    .disabled = false;
+    .disabled =
+    false;
 
 
   document
     .getElementById(
-      "status"
+      "scannerStatus"
     )
     .innerText =
-      "Scanner stopped. Click Start Scanner to activate the camera.";
+    "Scanner stopped.";
 
 }
 
-</script>
 
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+async function logoutAssistant() {
+
+
+  /*
+   * Stop camera first.
+   */
+
+  try {
+
+    await stopQRScanner();
+
+  }
+
+  catch(error) {}
+
+
+  /*
+   * Clear assistant information.
+   */
+
+  currentAssistantName =
+    "";
+
+  currentAssistantEmail =
+    "";
+
+
+  /*
+   * Reset login fields.
+   */
+
+  document
+    .getElementById(
+      "assistantFirstName"
+    )
+    .value =
+    "";
+
+
+  document
+    .getElementById(
+      "assistantLastName"
+    )
+    .value =
+    "";
+
+
+  document
+    .getElementById(
+      "assistantEmail"
+    )
+    .value =
+    "";
+
+
+  document
+    .getElementById(
+      "assistantOTPInput"
+    )
+    .value =
+    "";
+
+
+  /*
+   * Show details.
+   */
+
+  document
+    .getElementById(
+      "assistantDetails"
+    )
+    .classList
+    .remove(
+      "hidden"
+    );
+
+
+  /*
+   * Hide OTP.
+   */
+
+  document
+    .getElementById(
+      "assistantOTP"
+    )
+    .classList
+    .add(
+      "hidden"
+    );
+
+
+  /*
+   * Show Back button.
+   */
+
+  document
+    .getElementById(
+      "assistantBackButton"
+    )
+    .classList
+    .remove(
+      "hidden"
+    );
+
+
+  /*
+   * Hide scanner.
+   */
+
+  document
+    .getElementById(
+      "assistantScannerPage"
+    )
+    .classList
+    .add(
+      "hidden"
+    );
+
+
+  /*
+   * Show login.
+   */
+
+  document
+    .getElementById(
+      "assistantLoginPage"
+    )
+    .classList
+    .remove(
+      "hidden"
+    );
+
+
+  /*
+   * Clear messages.
+   */
+
+  clearMessage();
+
+
+  /*
+   * Reset scanner result.
+   */
+
+  document
+    .getElementById(
+      "scanResult"
+    )
+    .style
+    .display =
+    "none";
+
+
+  document
+    .getElementById(
+      "scanResult"
+    )
+    .innerHTML =
+    "";
+
+
+  /*
+   * Reset status.
+   */
+
+  document
+    .getElementById(
+      "scannerStatus"
+    )
+    .innerHTML =
+    'Click <strong>Start Scanner</strong> to activate the camera.';
+
+}
+
+
+
+/* =====================================================
+   OTP INPUT
+   ===================================================== */
+
+document
+  .getElementById(
+    "assistantOTPInput"
+  )
+  .addEventListener(
+    "input",
+    function() {
+
+      this.value =
+        this.value
+          .replace(
+            /[^0-9]/g,
+            ""
+          )
+          .slice(
+            0,
+            6
+          );
+
+    }
+  );
+
+
+</script>
 
 </body>
 
