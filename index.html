@@ -58,7 +58,6 @@
 
     #startButton:disabled {
       background: #999;
-      cursor: not-allowed;
     }
 
     #stopButton {
@@ -73,7 +72,6 @@
       background: #eee;
       border-radius: 8px;
       word-break: break-word;
-      white-space: pre-line;
     }
   </style>
 </head>
@@ -81,7 +79,6 @@
 <body>
 
   <div class="container">
-
     <div class="card">
 
       <h2>ICEMD-2026 QR Scanner</h2>
@@ -92,22 +89,16 @@
         Press Start Scanner.
       </div>
 
-      <button
-        id="startButton"
-        onclick="startScanner()">
+      <button id="startButton" onclick="startScanner()">
         Start Scanner
       </button>
 
-      <button
-        id="stopButton"
-        onclick="stopScanner()">
+      <button id="stopButton" onclick="stopScanner()">
         Stop Scanner
       </button>
 
     </div>
-
   </div>
-
 
   <script>
 
@@ -116,15 +107,11 @@
     let processing = false;
 
 
-    /*
-     * START SCANNER
-     */
     async function startScanner() {
 
       if (running || processing) {
         return;
       }
-
 
       const status =
         document.getElementById("status");
@@ -132,12 +119,10 @@
       const startButton =
         document.getElementById("startButton");
 
-
       status.innerText =
         "Starting camera...";
 
       startButton.disabled = true;
-
 
       try {
 
@@ -157,31 +142,23 @@
 
           {
             fps: 10,
-
             qrbox: {
               width: 250,
               height: 250
             }
-
           },
 
 
           /*
-           * QR CODE FOUND
+           * ONE QR CODE FOUND
            */
           async function(decodedText) {
 
-            /*
-             * Prevent multiple detections
-             * of the same QR code.
-             */
             if (processing) {
               return;
             }
 
-
             processing = true;
-
 
             const registrationID =
               String(decodedText || "").trim();
@@ -208,18 +185,16 @@
 
 
             /*
-             * STOP CAMERA FIRST.
+             * STOP CAMERA IMMEDIATELY
+             * AFTER FINDING THE QR.
              */
             try {
 
               if (scanner) {
-
                 await scanner.stop();
-
               }
 
             }
-
             catch (e) {
 
               console.error(
@@ -231,18 +206,15 @@
 
 
             /*
-             * CLEAR CAMERA VIEW.
+             * CLEAR THE CAMERA VIEW.
              */
             try {
 
               if (scanner) {
-
                 await scanner.clear();
-
               }
 
             }
-
             catch (e) {
 
               console.error(
@@ -254,31 +226,22 @@
 
 
             scanner = null;
-
             running = false;
 
 
             /*
-             * SEND QR RESULT TO THE
-             * CONFERENCE APP.
+             * SEND THE REGISTRATION ID
+             * BACK TO THE CONFERENCE WEB APP.
              *
              * IMPORTANT:
-             *
-             * The scanner is now inside
-             * an iframe.
-             *
-             * Therefore we use:
-             *
-             * window.parent
-             *
-             * instead of:
-             *
-             * window.opener
+             * The scanner is now inside an iframe,
+             * so we use window.parent instead of
+             * window.opener.
              */
-            try {
+            if (window.parent) {
 
               console.log(
-                "Sending QR to Conference App:",
+                "Sending QR to Conference web app:",
                 registrationID
               );
 
@@ -286,13 +249,10 @@
               window.parent.postMessage(
 
                 {
-
-                  type:
-                    "ICEMD_QR_SCAN",
+                  type: "ICEMD_QR_SCAN",
 
                   registrationID:
                     registrationID
-
                 },
 
                 "*"
@@ -305,27 +265,25 @@
                 registrationID +
                 "\n\nSent to Registration Desk.";
 
-
             }
 
-            catch (e) {
+            else {
 
               console.error(
-                "Unable to send QR to Conference App:",
-                e
+                "Conference web app not found."
               );
 
 
               status.innerText =
                 "QR detected:\n" +
                 registrationID +
-                "\n\nUnable to contact Registration Desk.";
+                "\n\nConference window not connected.";
 
             }
 
 
             /*
-             * QR PROCESSING COMPLETE.
+             * QR processing is complete.
              */
             processing = false;
 
@@ -334,16 +292,11 @@
           },
 
 
-          /*
-           * NORMAL QR SCANNING ERRORS
-           *
-           * These are ignored because the
-           * scanner continuously searches
-           * for a QR code.
-           */
           function(errorMessage) {
 
-            // Ignore normal scanning errors.
+            /*
+             * Ignore normal QR scanning errors.
+             */
 
           }
 
@@ -353,7 +306,6 @@
         running = true;
 
         startButton.disabled = false;
-
 
         status.innerText =
           "Camera active — point at the QR code.";
@@ -368,14 +320,10 @@
           error
         );
 
-
         running = false;
         processing = false;
 
-        scanner = null;
-
         startButton.disabled = false;
-
 
         status.innerText =
           "Camera failed: " +
@@ -386,57 +334,33 @@
     }
 
 
-    /*
-     * STOP SCANNER
-     */
     async function stopScanner() {
 
-      /*
-       * Prevent another scan while stopping.
-       */
-      processing = true;
+      if (!scanner) {
+        return;
+      }
 
+      try {
 
-      if (scanner) {
-
-        try {
-
-          await scanner.stop();
-
-        }
-
-        catch (e) {
-
-          console.error(
-            "Scanner stop error:",
-            e
-          );
-
-        }
-
-
-        try {
-
-          await scanner.clear();
-
-        }
-
-        catch (e) {
-
-          console.error(
-            "Scanner clear error:",
-            e
-          );
-
-        }
+        await scanner.stop();
 
       }
+
+      catch (e) {}
+
+
+      try {
+
+        await scanner.clear();
+
+      }
+
+      catch (e) {}
 
 
       scanner = null;
 
       running = false;
-
       processing = false;
 
 
@@ -449,11 +373,6 @@
         "status"
       ).innerText =
         "Scanner stopped.";
-
-
-      document.getElementById(
-        "startButton"
-      ).disabled = false;
 
     }
 
