@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>ICEMD-2026 Registration Desk</title>
+
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      text-align: center;
+      margin-top: 0;
+    }
+
+    #qr-reader {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    #qr-reader video {
+      width: 100% !important;
+      height: auto !important;
+      border-radius: 8px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #startButton {
+      background: #198754;
+      color: white;
+    }
+
+    #startButton:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+
+    #stopButton {
+      background: #666;
+      color: white;
+    }
+
+    #status {
+      margin-top: 15px;
+      padding: 12px;
+      text-align: center;
+      background: #eee;
+      border-radius: 8px;
+      word-break: break-word;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="card">
+
+      <h2>ICEMD-2026 Registration Desk</h2>
+
+      <div id="qr-reader"></div>
+
+      <div id="status">
+        Press Start Scanner.
+      </div>
+
+      <button
+        id="startButton"
+        onclick="startScanner()">
+        Start Scanner
+      </button>
+
+      <button
+        id="stopButton"
+        onclick="stopScanner()">
+        Stop Scanner
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <script>
+
+    let scanner = null;
+    let running = false;
+    let processing = false;
+
+
+    async function startScanner() {
+
+      if (running || processing) {
+        return;
+      }
+
+
+      const status =
+        document.getElementById("status");
+
+      const startButton =
+        document.getElementById("startButton");
+
+
+      status.innerText =
+        "Starting camera...";
+
+      startButton.disabled = true;
+
+
+      try {
+
+        scanner =
+          new Html5Qrcode("qr-reader");
+
+
+        await scanner.start(
+
+          {
+            facingMode: "environment"
+          },
+
+          {
+            fps: 10,
+
+            qrbox: {
+              width: 250,
+              height: 250
+            }
+          },
+
+
+          async function(decodedText) {
+
+            if (processing) {
+              return;
+            }
+
+
+            processing = true;
+
+
+            const registrationID =
+              String(decodedText || "").trim();
+
+
+            if (!registrationID) {
+
+              processing = false;
+
+              return;
+            }
+
+
+            console.log(
+              "QR detected:",
+              registrationID
+            );
+
+
+            status.innerText =
+              "QR detected:\n" +
+              registrationID +
+              "\n\nStopping camera...";
+
+
+            /*
+             * STOP CAMERA
+             */
+            try {
+
+              if (scanner) {
+                await scanner.stop();
+              }
+
+            }
+            catch (e) {
+
+              console.error(
+                "Scanner stop error:",
+                e
+              );
+
+            }
+
+
+            /*
+             * CLEAR CAMERA
+             */
+            try {
+
+              if (scanner) {
+                await scanner.clear();
+              }
+
+            }
+            catch (e) {
+
+              console.error(
+                "Scanner clear error:",
+                e
+              );
+
+            }
+
+
+            scanner = null;
+
+            running = false;
+
+
+            /*
+             * FOR THIS FIRST TEST:
+             *
+             * We only display the QR result.
+             *
+             * We are NOT connecting Google
+             * Apps Script yet.
+             */
+            status.innerText =
+              "QR SCANNED SUCCESSFULLY\n\n" +
+              "Registration ID:\n" +
+              registrationID +
+              "\n\nCamera stopped.";
+
+
+            startButton.disabled = false;
+
+            processing = false;
+
+          },
+
+
+          function(errorMessage) {
+
+            /*
+             * Ignore normal scanning errors.
+             */
+
+          }
+
+        );
+
+
+        running = true;
+
+        startButton.disabled = false;
+
+
+        status.innerText =
+          "Camera active — point at the QR code.";
+
+      }
+
+
+      catch (error) {
+
+        console.error(
+          "Camera error:",
+          error
+        );
+
+
+        running = false;
+        processing = false;
+
+        scanner = null;
+
+        startButton.disabled = false;
+
+
+        status.innerText =
+          "Camera failed:\n\n" +
+          (error.message || error);
+
+      }
+
+    }
+
+
+    async function stopScanner() {
+
+      if (!scanner) {
+        return;
+      }
+
+
+      try {
+
+        await scanner.stop();
+
+      }
+
+      catch (e) {
+
+        console.error(
+          "Scanner stop error:",
+          e
+        );
+
+      }
+
+
+      try {
+
+        await scanner.clear();
+
+      }
+
+      catch (e) {}
+
+
+      scanner = null;
+
+      running = false;
+
+      processing = false;
+
+
+      document.getElementById(
+        "qr-reader"
+      ).innerHTML = "";
+
+
+      document.getElementById(
+        "status"
+      ).innerText =
+        "Scanner stopped.";
+
+
+      document.getElementById(
+        "startButton"
+      ).disabled = false;
+
+    }
+
+  </script>
+
+</body>
+</html>
