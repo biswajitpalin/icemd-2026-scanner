@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>ICEMD-2026 QR Scanner</title>
 
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
@@ -47,11 +48,16 @@
       border: none;
       border-radius: 8px;
       font-size: 16px;
+      cursor: pointer;
     }
 
     #startButton {
       background: #198754;
       color: white;
+    }
+
+    #startButton:disabled {
+      background: #999;
     }
 
     #stopButton {
@@ -65,144 +71,155 @@
       text-align: center;
       background: #eee;
       border-radius: 8px;
+      word-break: break-word;
     }
   </style>
 </head>
 
 <body>
 
-<div class="container">
-  <div class="card">
+  <div class="container">
+    <div class="card">
 
-    <h2>ICEMD-2026 QR Scanner</h2>
+      <h2>ICEMD-2026 QR Scanner</h2>
 
-    <div id="qr-reader"></div>
+      <div id="qr-reader"></div>
 
-    <div id="status">
-      Press Start Scanner.
+      <div id="status">
+        Press Start Scanner.
+      </div>
+
+      <button id="startButton" onclick="startScanner()">
+        Start Scanner
+      </button>
+
+      <button id="stopButton" onclick="stopScanner()">
+        Stop Scanner
+      </button>
+
     </div>
-
-    <button id="startButton" onclick="startScanner()">
-      Start Scanner
-    </button>
-
-    <button id="stopButton" onclick="stopScanner()">
-      Stop Scanner
-    </button>
-
   </div>
-</div>
 
-<script>
+  <script>
 
-let scanner = null;
-let running = false;
+    let scanner = null;
+    let running = false;
 
-async function startScanner() {
+    async function startScanner() {
 
-  if (running) return;
-
-  const status =
-    document.getElementById("status");
-
-  const button =
-    document.getElementById("startButton");
-
-  status.innerText =
-    "Starting camera...";
-
-  button.disabled = true;
-
-  try {
-
-    scanner =
-      new Html5Qrcode("qr-reader");
-
-    await scanner.start(
-
-      { facingMode: "environment" },
-
-      {
-        fps: 10,
-        qrbox: {
-          width: 250,
-          height: 250
-        }
-      },
-
-      function(decodedText) {
-
-        console.log("QR:", decodedText);
-
-        status.innerText =
-          "QR detected: " + decodedText;
-
-      },
-
-      function(errorMessage) {
-        // Ignore continuous scan errors
+      if (running) {
+        return;
       }
 
-    );
+      const status =
+        document.getElementById("status");
 
-    running = true;
+      const startButton =
+        document.getElementById("startButton");
 
-    button.disabled = false;
+      status.innerText =
+        "Starting camera...";
 
-    status.innerText =
-      "Camera active — point at the QR code.";
+      startButton.disabled = true;
 
-  }
+      try {
 
-  catch (error) {
+        scanner =
+          new Html5Qrcode("qr-reader");
 
-    console.error(
-      "Camera error:",
-      error
-    );
+        await scanner.start(
 
-    running = false;
+          {
+            facingMode: "environment"
+          },
 
-    button.disabled = false;
+          {
+            fps: 10,
+            qrbox: {
+              width: 250,
+              height: 250
+            }
+          },
 
-    status.innerText =
-      "Camera failed: " +
-      (error.message || error);
+          function(decodedText) {
 
-  }
-}
+            console.log(
+              "QR detected:",
+              decodedText
+            );
+
+            status.innerText =
+              "QR detected: " + decodedText;
+
+          },
+
+          function(errorMessage) {
+            // Ignore scan errors
+          }
+
+        );
+
+        running = true;
+
+        startButton.disabled = false;
+
+        status.innerText =
+          "Camera active — point at the QR code.";
+
+      }
+
+      catch (error) {
+
+        console.error(
+          "Camera error:",
+          error
+        );
+
+        running = false;
+
+        startButton.disabled = false;
+
+        status.innerText =
+          "Camera failed: " +
+          (error.message || error);
+
+      }
+
+    }
 
 
-async function stopScanner() {
+    async function stopScanner() {
 
-  if (!scanner) return;
+      if (!scanner) {
+        return;
+      }
 
-  try {
-    await scanner.stop();
-  }
-  catch (e) {}
+      try {
+        await scanner.stop();
+      }
+      catch (e) {}
 
-  try {
-    await scanner.clear();
-  }
-  catch (e) {}
+      try {
+        await scanner.clear();
+      }
+      catch (e) {}
 
-  scanner = null;
+      scanner = null;
 
-  running = false;
+      running = false;
 
-  document.getElementById(
-    "qr-reader"
-  ).innerHTML = "";
+      document.getElementById(
+        "qr-reader"
+      ).innerHTML = "";
 
-  document.getElementById(
-    "status"
-  ).innerText =
-    "Scanner stopped.";
+      document.getElementById(
+        "status"
+      ).innerText =
+        "Scanner stopped.";
 
-}
+    }
 
-</script>
+  </script>
 
 </body>
 </html>
