@@ -166,53 +166,65 @@
     </p>
 
 
-    <label for="adminEmail">
-      Email
-    </label>
+    <!-- =================================================
+         LOGIN FORM
+    ================================================== -->
 
-    <input
-      type="text"
-      id="adminEmail"
-      value="pal.17@iitj.ac.in"
-      readonly
+    <form
+      id="adminLoginForm"
+      onsubmit="adminLogin(event)"
+      autocomplete="on"
     >
 
+      <label for="adminEmail">
+        Email
+      </label>
 
-    <label for="adminPassword">
-      Password
-    </label>
-
-    <input
-      type="password"
-      id="adminPassword"
-      value="icemd@20260317"
-      readonly
-    >
-
-
-    <button
-      id="loginButton"
-      class="button"
-      type="button"
-      onclick="adminLogin()"
-    >
-      Login
-    </button>
+      <input
+        type="text"
+        id="adminEmail"
+        value="pal.17@iitj.ac.in"
+        readonly
+        autocomplete="username"
+      >
 
 
-    <button
-      class="button secondary"
-      type="button"
-      onclick="goBack()"
-    >
-      Back
-    </button>
+      <label for="adminPassword">
+        Password
+      </label>
+
+      <input
+        type="password"
+        id="adminPassword"
+        placeholder="Enter password"
+        autocomplete="current-password"
+      >
 
 
-    <div
-      id="adminMessage"
-      class="message"
-    ></div>
+      <button
+        id="loginButton"
+        class="button"
+        type="submit"
+      >
+        Login
+      </button>
+
+
+      <button
+        class="button secondary"
+        type="button"
+        onclick="goBack()"
+      >
+        Back
+      </button>
+
+
+      <div
+        id="adminMessage"
+        class="message"
+      ></div>
+
+    </form>
 
 
     <p
@@ -299,7 +311,15 @@ const FIXED_PASSWORD = "icemd@20260317";
    ADMIN LOGIN
 ===================================================== */
 
-function adminLogin() {
+function adminLogin(event) {
+
+  /*
+   * Prevent the form from reloading
+   * the page after clicking Login.
+   */
+
+  event.preventDefault();
+
 
   const email =
     document.getElementById("adminEmail").value;
@@ -307,6 +327,10 @@ function adminLogin() {
   const password =
     document.getElementById("adminPassword").value;
 
+
+  /* ===================================================
+     CHECK FIXED CREDENTIALS
+  =================================================== */
 
   if (
     email === FIXED_EMAIL &&
@@ -324,6 +348,10 @@ function adminLogin() {
     return;
   }
 
+
+  /* ===================================================
+     INVALID LOGIN
+  =================================================== */
 
   const message =
     document.getElementById("adminMessage");
@@ -350,6 +378,28 @@ function adminLogout() {
     .getElementById("adminLoginPage")
     .classList.remove("hidden");
 
+
+  /*
+   * Clear the password after logout.
+   * The fixed password is never inserted
+   * automatically by our JavaScript.
+   */
+
+  document
+    .getElementById("adminPassword")
+    .value = "";
+
+
+  /*
+   * Clear any previous error message.
+   */
+
+  const message =
+    document.getElementById("adminMessage");
+
+  message.textContent = "";
+
+  message.className = "message";
 }
 
 
