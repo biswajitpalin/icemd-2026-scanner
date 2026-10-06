@@ -145,17 +145,36 @@ async function startScanner() {
 
       },
 
-      function(decodedText) {
-
-        console.log(
-          "QR:",
-          decodedText
+    function(decodedText) {
+    
+      console.log(
+        "QR:",
+        decodedText
+      );
+    
+      const registrationID =
+        String(decodedText || "").trim();
+    
+      if (!registrationID) {
+        return;
+      }
+    
+      status.innerText =
+        "QR detected: " + registrationID;
+    
+      if (window.opener) {
+    
+        window.opener.postMessage(
+          {
+            type: "ICEMD_QR_SCAN",
+            registrationID: registrationID
+          },
+          "*"
         );
-
-        status.innerText =
-          "QR detected: " + decodedText;
-
-      },
+    
+      }
+    
+    }
 
       function(errorMessage) {
 
