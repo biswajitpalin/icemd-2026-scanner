@@ -78,6 +78,34 @@
       word-break: break-word;
       white-space: pre-line;
     }
+
+    #result {
+      display: none;
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    #result.accepted {
+      display: block;
+      background: #d1e7dd;
+      color: #0f5132;
+    }
+
+    #result.duplicate {
+      display: block;
+      background: #fff3cd;
+      color: #664d03;
+    }
+
+    #result.invalid {
+      display: block;
+      background: #f8d7da;
+      color: #842029;
+    }
   </style>
 </head>
 
@@ -94,6 +122,8 @@
       <div id="status">
         Press Start Scanner.
       </div>
+
+      <div id="result"></div>
 
       <button
         id="startButton"
@@ -114,11 +144,39 @@
 
   <script>
 
+    /*
+     * YOUR EXISTING APPS SCRIPT WEB APP
+     */
+    const APPS_SCRIPT_URL =
+      "https://script.google.com/a/macros/iitj.ac.in/s/AKfycbwRp-RAfstklkMP7Xmg0f5O46AxMMiODytXNXyJPK0sYHcdOZpNOgZQmYxRQAd66pTv/exec";
+
+
+    /*
+     * TEMPORARY TEST ASSISTANT
+     *
+     * We will connect your real Assistant Login
+     * later.
+     */
+    let currentAssistantName =
+      "Test Assistant";
+
+    let currentAssistantEmail =
+      "";
+
+
+    /*
+     * CAMERA VARIABLES
+     *
+     * DO NOT CHANGE THE CAMERA CONFIGURATION.
+     */
     let scanner = null;
     let running = false;
     let processing = false;
 
 
+    /*
+     * START SCANNER
+     */
     async function startScanner() {
 
       if (running || processing) {
@@ -131,6 +189,14 @@
 
       const startButton =
         document.getElementById("startButton");
+
+      const resultBox =
+        document.getElementById("result");
+
+
+      resultBox.style.display = "none";
+      resultBox.className = "";
+      resultBox.innerHTML = "";
 
 
       status.innerText =
@@ -145,6 +211,10 @@
           new Html5Qrcode("qr-reader");
 
 
+        /*
+         * KEEPING THE WORKING CAMERA
+         * CONFIGURATION EXACTLY THE SAME.
+         */
         await scanner.start(
 
           {
@@ -161,6 +231,9 @@
           },
 
 
+          /*
+           * QR CODE FOUND
+           */
           async function(decodedText) {
 
             if (processing) {
@@ -196,7 +269,7 @@
 
 
             /*
-             * STOP CAMERA
+             * STOP CAMERA IMMEDIATELY
              */
             try {
 
@@ -216,7 +289,7 @@
 
 
             /*
-             * CLEAR CAMERA
+             * CLEAR CAMERA VIEW
              */
             try {
 
@@ -241,32 +314,22 @@
 
 
             /*
-             * FOR THIS FIRST TEST:
-             *
-             * We only display the QR result.
-             *
-             * We are NOT connecting Google
-             * Apps Script yet.
+             * NOW SEND THE QR ID
+             * TO GOOGLE APPS SCRIPT.
              */
-            status.innerText =
-              "QR SCANNED SUCCESSFULLY\n\n" +
-              "Registration ID:\n" +
-              registrationID +
-              "\n\nCamera stopped.";
-
-
-            startButton.disabled = false;
-
-            processing = false;
+            await verifyRegistration(
+              registrationID
+            );
 
           },
 
 
+          /*
+           * NORMAL QR SCANNING ERRORS
+           */
           function(errorMessage) {
 
-            /*
-             * Ignore normal scanning errors.
-             */
+            // Ignore normal scanning errors.
 
           }
 
@@ -309,36 +372,213 @@
     }
 
 
-    async function stopScanner() {
+    /*
+     * SEND REGISTRATION ID TO APPS SCRIPT
+     */
+    async function verifyRegistration(
+      registrationID
+    ) {
 
-      if (!scanner) {
-        return;
-      }
+      const status =
+        document.getElementById("status");
+
+
+      status.innerText =
+        "Checking registration " +
+        registrationID +
+        "...";
 
 
       try {
 
-        await scanner.stop();
+        const response =
+          await fetch(
+            APPS_SCRIPT_URL,
+            {
 
-      }
+              method: "POST",
 
-      catch (e) {
+              headers: {
+                "Content-Type":
+                  "text/plain;charset=utf-8"
+              },
 
-        console.error(
-          "Scanner stop error:",
-          e
+              body: JSON.stringify({
+
+                registrationID:
+                  registrationID,
+
+                assistantName:
+                  currentAssistantName,
+
+                assistantEmail:
+                  currentAssistantEmail
+
+              })
+
+            }
+          );
+
+
+        const result =
+          await response.json();
+
+
+        console.log(
+          "Apps Script response:",
+          result
         );
 
+
+        showResult(result);
+
+
       }
 
 
-      try {
+      catch (error) {
 
-        await scanner.clear();
+        console.error(
+          "Verification error:",
+          error
+        );
+
+
+        status.innerText =
+          "Unable to contact Registration Desk server.";
+
+
+        showResult({
+
+          result: "INVALID",
+
+          message:
+            "Unable to verify the registration. Please try again."
+
+        });
 
       }
 
-      catch (e) {}
+
+      processing = false;
+
+    }
+
+
+    /*
+     * DISPLAY RESULT
+     */
+    function showResult(result) {
+
+      const resultBox =
+        document.getElementById("result");
+
+      const status =
+        document.getElementById("status");
+
+
+      resultBox.style.display =
+        "block";
+
+
+      resultBox.className = "";
+
+
+      if (
+        result &&
+        result.result === "ACCEPTED"
+      ) {
+
+        resultBox.className =
+          "accepted";
+
+
+        resultBox.innerHTML =
+          "✓ REGISTRATION ACCEPTED<br><br>" +
+          (result.message || "");
+
+        status.innerText =
+          "Attendance recorded successfully.";
+
+      }
+
+
+      else if (
+        result &&
+        result.result === "DUPLICATE"
+      ) {
+
+        resultBox.className =
+          "duplicate";
+
+
+        resultBox.innerHTML =
+          "⚠ ALREADY REGISTERED<br><br>" +
+          (result.message || "");
+
+        status.innerText =
+          "This guest has already been scanned.";
+
+      }
+
+
+      else {
+
+        resultBox.className =
+          "invalid";
+
+
+        resultBox.innerHTML =
+          "✕ INVALID REGISTRATION<br><br>" +
+          (
+            result && result.message
+              ? result.message
+              : "Registration not found."
+          );
+
+        status.innerText =
+          "Registration could not be verified.";
+
+      }
+
+    }
+
+
+    /*
+     * STOP SCANNER
+     */
+    async function stopScanner() {
+
+      processing = true;
+
+
+      if (scanner) {
+
+        try {
+
+          await scanner.stop();
+
+        }
+
+        catch (e) {
+
+          console.error(
+            "Scanner stop error:",
+            e
+          );
+
+        }
+
+
+        try {
+
+          await scanner.clear();
+
+        }
+
+        catch (e) {}
+
+      }
 
 
       scanner = null;
