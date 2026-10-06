@@ -10,244 +10,160 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>
-    ICEMD-2026 Registration Desk
-  </title>
+  <title>ICEMD-2026 QR Attendance Scanner</title>
 
 
-  <!-- QR SCANNER -->
-
-  <script
-    src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js">
-  </script>
+  <!-- HTML5 QR SCANNER -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
 
   <style>
 
-    * {
-      box-sizing: border-box;
-    }
-
-
     body {
-
       margin: 0;
-
       padding: 20px;
-
-      font-family:
-        Arial,
-        sans-serif;
-
-      background:
-        #f5f5f5;
-
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
     }
 
 
     .container {
-
-      max-width: 550px;
-
-      margin:
-        0 auto;
-
+      max-width: 500px;
+      margin: auto;
     }
 
 
     .card {
-
       background: white;
-
-      padding: 22px;
-
-      border-radius: 14px;
-
-      box-shadow:
-        0 3px 15px
-        rgba(0,0,0,0.08);
-
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
     }
 
 
     h1 {
-
       text-align: center;
-
       font-size: 24px;
-
       margin-top: 0;
-
     }
 
 
     h2 {
-
       text-align: center;
-
       font-size: 20px;
-
     }
 
 
     .welcome {
-
       text-align: center;
-
       font-weight: bold;
-
-      margin-bottom: 20px;
-
     }
 
 
     .info {
-
-      background: #f1f3f5;
-
+      background: #f0f0f0;
       padding: 14px;
-
-      border-radius: 10px;
-
+      border-radius: 8px;
       line-height: 1.5;
-
-      margin-bottom: 18px;
-
+      margin-top: 15px;
     }
 
 
     #qr-reader {
-
       width: 100%;
-
-      margin-top: 15px;
-
+      margin-top: 20px;
     }
 
 
     #qr-reader video {
-
       width: 100% !important;
-
       height: auto !important;
-
-      border-radius: 10px;
-
     }
 
 
     button {
-
       width: 100%;
-
       padding: 14px;
-
-      margin-top: 12px;
-
+      margin-top: 15px;
       border: none;
-
-      border-radius: 9px;
-
+      border-radius: 8px;
       font-size: 16px;
-
       cursor: pointer;
-
     }
 
 
-    .start {
-
+    #startButton {
       background: #198754;
-
       color: white;
-
     }
 
 
-    .stop {
-
-      background: #6c757d;
-
+    #stopButton {
+      background: #666;
       color: white;
-
     }
 
 
     button:disabled {
-
-      background: #aaa;
-
+      background: #999;
       cursor: not-allowed;
-
     }
 
 
     #status {
-
       margin-top: 15px;
-
-      padding: 13px;
-
+      padding: 12px;
       text-align: center;
-
-      border-radius: 9px;
-
       background: #eee;
-
-      line-height: 1.5;
-
+      border-radius: 8px;
       word-break: break-word;
-
+      line-height: 1.5;
     }
 
 
     #result {
-
       margin-top: 15px;
-
       padding: 15px;
-
-      border-radius: 10px;
-
       text-align: center;
-
-      font-size: 17px;
-
+      border-radius: 8px;
       font-weight: bold;
-
       line-height: 1.5;
-
+      word-break: break-word;
     }
 
 
     .hidden {
-
       display: none;
-
     }
 
 
-    .assistant-box {
+    .input-group {
+      margin-top: 15px;
+    }
 
-      margin-bottom: 18px;
 
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
     }
 
 
     input {
-
       width: 100%;
-
-      padding: 13px;
-
-      margin-top: 8px;
-
+      padding: 12px;
       border: 1px solid #ccc;
-
-      border-radius: 8px;
-
+      border-radius: 7px;
       font-size: 16px;
+      box-sizing: border-box;
+    }
 
+
+    .note {
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+      margin-top: 15px;
     }
 
   </style>
@@ -270,53 +186,64 @@
 
 
     <h2>
-      Registration Desk
+      QR Attendance Scanner
     </h2>
 
 
-    <!-- ASSISTANT DETAILS -->
+    <p
+      id="welcome"
+      class="welcome">
+      Registration Desk
+    </p>
 
-    <div class="assistant-box">
 
-      <label>
+    <!-- ASSISTANT INFORMATION -->
+
+    <div class="input-group">
+
+      <label for="assistantName">
         Assistant Name
       </label>
 
       <input
         id="assistantName"
         type="text"
-        placeholder="Enter assistant name"
+        placeholder="Assistant Name"
       >
 
+    </div>
 
-      <label>
+
+    <div class="input-group">
+
+      <label for="assistantEmail">
         Assistant Email
       </label>
 
       <input
         id="assistantEmail"
         type="email"
-        placeholder="Enter assistant email"
+        placeholder="Assistant Email"
       >
 
     </div>
 
 
+    <!-- INFORMATION -->
+
     <div class="info">
 
       You are using the
-      <strong>
-        ICEMD-2026 QR Attendance Scanner
-      </strong>.
+      <strong>ICEMD-2026 QR Attendance Scanner.</strong>
 
       <br><br>
 
-      Scan the guest's QR code.
+      Scan the guest's QR code using the camera.
 
       <br>
 
       The QR code contains only the
-      Registration ID.
+      <strong>Registration ID.</strong>
 
     </div>
 
@@ -349,7 +276,6 @@
 
     <button
       id="startButton"
-      class="start"
       onclick="startScanner()">
 
       Start Scanner
@@ -359,12 +285,18 @@
 
     <button
       id="stopButton"
-      class="stop"
       onclick="stopScanner()">
 
       Stop Scanner
 
     </button>
+
+
+    <div class="note">
+
+      Camera runs directly on this page.
+
+    </div>
 
 
   </div>
@@ -378,7 +310,7 @@
 
 
 /* =====================================================
-   APPS SCRIPT BACKEND
+   APPS SCRIPT WEB APP
    ===================================================== */
 
 const APPS_SCRIPT_URL =
@@ -408,40 +340,12 @@ async function startScanner() {
   }
 
 
-  const name =
-    document
-      .getElementById("assistantName")
-      .value
-      .trim();
-
-
-  const email =
-    document
-      .getElementById("assistantEmail")
-      .value
-      .trim();
-
-
-  if (!name || !email) {
-
-    document
-      .getElementById("status")
-      .innerHTML =
-        "<strong>Please enter assistant name and email first.</strong>";
-
-    return;
-
-  }
-
-
   const status =
-    document
-      .getElementById("status");
+    document.getElementById("status");
 
 
   const startButton =
-    document
-      .getElementById("startButton");
+    document.getElementById("startButton");
 
 
   status.innerText =
@@ -455,68 +359,38 @@ async function startScanner() {
   try {
 
 
+    /*
+     * Create QR scanner.
+     */
+
     scanner =
       new Html5Qrcode(
         "qr-reader"
       );
 
 
+    /*
+     * THIS IS THE CAMERA
+     * INITIALIZATION FROM
+     * YOUR PREVIOUSLY WORKING
+     * GITHUB SCANNER.
+     */
+
     await scanner.start(
 
+      { facingMode: "environment" },
+
       {
-        facingMode: {
-          ideal: "environment"
+        fps: 10,
+
+        qrbox: {
+          width: 250,
+          height: 250
         }
       },
 
-      {
 
-        fps: 10,
-
-        qrbox:
-          function(
-            width,
-            height
-          ) {
-
-            const minEdge =
-              Math.min(
-                width,
-                height
-              );
-
-
-            let size =
-              Math.floor(
-                minEdge * 0.70
-              );
-
-
-            if (size > 320) {
-              size = 320;
-            }
-
-
-            if (size < 180) {
-              size = 180;
-            }
-
-
-            return {
-              width: size,
-              height: size
-            };
-
-          },
-
-        aspectRatio: 1.0,
-
-        disableFlip: false
-
-      },
-
-
-      function(decodedText) {
+      async function(decodedText) {
 
 
         if (processing) {
@@ -542,6 +416,67 @@ async function startScanner() {
         }
 
 
+        console.log(
+          "QR detected:",
+          registrationID
+        );
+
+
+        status.innerText =
+          "QR detected: " +
+          registrationID +
+          "\nProcessing attendance...";
+
+
+        /*
+         * Stop camera.
+         */
+
+        try {
+
+          if (scanner) {
+            await scanner.stop();
+          }
+
+        }
+
+        catch(error) {
+
+          console.error(
+            "Scanner stop error:",
+            error
+          );
+
+        }
+
+
+        try {
+
+          if (scanner) {
+            await scanner.clear();
+          }
+
+        }
+
+        catch(error) {
+
+          console.error(
+            "Scanner clear error:",
+            error
+          );
+
+        }
+
+
+        scanner = null;
+
+        running = false;
+
+
+        /*
+         * Process attendance.
+         */
+
         processScan(
           registrationID
         );
@@ -551,7 +486,10 @@ async function startScanner() {
 
       function(errorMessage) {
 
-        // Normal QR scanning errors are ignored.
+        /*
+         * Continuous QR scanning errors
+         * are normal and ignored.
+         */
 
       }
 
@@ -566,16 +504,23 @@ async function startScanner() {
       "Point the camera at the guest QR code.";
 
 
+    console.log(
+      "Camera started successfully."
+    );
+
+
   }
 
   catch(error) {
 
 
     console.error(
-      "Camera error:",
+      "Camera start error:",
       error
     );
 
+
+    scanner = null;
 
     running = false;
 
@@ -587,8 +532,11 @@ async function startScanner() {
 
 
     status.innerHTML =
-      "<strong>Camera could not start.</strong><br>" +
-      "Please allow camera access and try again.";
+      "<strong>Camera failed to start.</strong><br><br>" +
+      (
+        error.message ||
+        String(error)
+      );
 
   }
 
@@ -596,36 +544,23 @@ async function startScanner() {
 
 
 /* =====================================================
-   PROCESS QR SCAN
+   PROCESS QR
    ===================================================== */
 
-async function processScan(
+function processScan(
   registrationID
 ) {
 
 
   const status =
-    document
-      .getElementById("status");
+    document.getElementById("status");
 
 
-  status.innerHTML =
-    "<strong>QR detected:</strong><br>" +
+  status.innerText =
+    "QR detected: " +
     registrationID +
-    "<br><br>" +
-    "Processing attendance...";
+    "\n\nVerifying registration...";
 
-
-  /*
-   * Stop camera while processing.
-   */
-
-  await stopCameraOnly();
-
-
-  /*
-   * Send scan to Apps Script.
-   */
 
   sendScanToAppsScript(
     registrationID
@@ -657,13 +592,53 @@ function sendScanToAppsScript(
       .trim();
 
 
+  if (!assistantName) {
+
+    showResult({
+
+      result: "INVALID",
+
+      message:
+        "Assistant name is missing."
+
+    });
+
+    processing = false;
+
+    return;
+
+  }
+
+
+  if (!assistantEmail) {
+
+    showResult({
+
+      result: "INVALID",
+
+      message:
+        "Assistant email is missing."
+
+    });
+
+    processing = false;
+
+    return;
+
+  }
+
+
+  /*
+   * Unique JSONP callback.
+   */
+
   const callbackName =
     "icemdScanCallback_" +
     Date.now();
 
 
   /*
-   * Create callback function.
+   * Create callback.
    */
 
   window[callbackName] =
@@ -681,16 +656,24 @@ function sendScanToAppsScript(
        */
 
       try {
-        delete window[callbackName];
+
+        delete window[
+          callbackName
+        ];
+
       }
-      catch(e) {}
+
+      catch(error) {}
 
 
       /*
-       * Remove script element.
+       * Remove script.
        */
 
-      if (script.parentNode) {
+      if (
+        script &&
+        script.parentNode
+      ) {
 
         script.parentNode
           .removeChild(script);
@@ -711,29 +694,46 @@ function sendScanToAppsScript(
 
 
   /*
-   * Build request URL.
+   * Build URL.
    */
 
   const params =
-    new URLSearchParams({
+    new URLSearchParams();
 
-      action:
-        "scan",
 
-      registrationID:
-        registrationID,
+  params.append(
+    "action",
+    "scan"
+  );
 
-      assistantName:
-        assistantName,
 
-      assistantEmail:
-        assistantEmail,
+  params.append(
+    "registrationID",
+    registrationID
+  );
 
-      callback:
-        callbackName
 
-    });
+  params.append(
+    "assistantName",
+    assistantName
+  );
 
+
+  params.append(
+    "assistantEmail",
+    assistantEmail
+  );
+
+
+  params.append(
+    "callback",
+    callbackName
+  );
+
+
+  /*
+   * Create script tag.
+   */
 
   const script =
     document.createElement(
@@ -747,22 +747,34 @@ function sendScanToAppsScript(
     params.toString();
 
 
+  /*
+   * Connection failure.
+   */
+
   script.onerror =
     function() {
 
 
       console.error(
-        "Apps Script request failed."
+        "Apps Script connection failed."
       );
 
 
       try {
-        delete window[callbackName];
+
+        delete window[
+          callbackName
+        ];
+
       }
-      catch(e) {}
+
+      catch(error) {}
 
 
-      if (script.parentNode) {
+      if (
+        script &&
+        script.parentNode
+      ) {
 
         script.parentNode
           .removeChild(script);
@@ -785,6 +797,10 @@ function sendScanToAppsScript(
     };
 
 
+  /*
+   * Send request.
+   */
+
   document.body.appendChild(
     script
   );
@@ -802,13 +818,15 @@ function showResult(
 
 
   const resultBox =
-    document
-      .getElementById("result");
+    document.getElementById(
+      "result"
+    );
 
 
   const status =
-    document
-      .getElementById("status");
+    document.getElementById(
+      "status"
+    );
 
 
   resultBox.classList
@@ -818,7 +836,7 @@ function showResult(
   if (!data) {
 
     resultBox.innerHTML =
-      "Unable to verify registration.";
+      "❌ Unable to verify registration.";
 
     return;
 
@@ -833,12 +851,13 @@ function showResult(
 
   const message =
     String(
-      data.message ||
-      ""
+      data.message || ""
     );
 
 
-  if (result === "ACCEPTED") {
+  if (
+    result === "ACCEPTED"
+  ) {
 
 
     resultBox.innerHTML =
@@ -847,10 +866,12 @@ function showResult(
 
 
     status.innerHTML =
-      "Ready for the next guest.";
+      "Attendance recorded successfully.<br>" +
+      "Click <strong>Start Scanner</strong> for the next guest.";
 
 
   }
+
 
   else if (
     result === "DUPLICATE"
@@ -863,10 +884,12 @@ function showResult(
 
 
     status.innerHTML =
-      "This registration was already marked present.";
+      "This guest has already been marked present.<br>" +
+      "You may scan the next guest.";
 
 
   }
+
 
   else {
 
@@ -877,58 +900,57 @@ function showResult(
 
 
     status.innerHTML =
-      "Registration could not be verified.";
+      "Registration could not be verified.<br>" +
+      "You may scan the next guest.";
 
   }
-
 
 }
 
 
 /* =====================================================
-   STOP CAMERA
+   STOP SCANNER
    ===================================================== */
 
-async function stopCameraOnly() {
+async function stopScanner() {
 
 
-  if (!scanner) {
-
-    running = false;
-
-    return;
-
-  }
+  processing = false;
 
 
-  try {
-
-    await scanner.stop();
-
-  }
-
-  catch(error) {
-
-    console.log(
-      "Scanner stop:",
-      error
-    );
-
-  }
+  if (scanner) {
 
 
-  try {
+    try {
 
-    await scanner.clear();
+      await scanner.stop();
 
-  }
+    }
 
-  catch(error) {
+    catch(error) {
 
-    console.log(
-      "Scanner clear:",
-      error
-    );
+      console.log(
+        "Scanner stop:",
+        error
+      );
+
+    }
+
+
+    try {
+
+      await scanner.clear();
+
+    }
+
+    catch(error) {
+
+      console.log(
+        "Scanner clear:",
+        error
+      );
+
+    }
 
   }
 
@@ -944,32 +966,20 @@ async function stopCameraOnly() {
     )
     .innerHTML = "";
 
-}
 
-
-/* =====================================================
-   STOP SCANNER BUTTON
-   ===================================================== */
-
-async function stopScanner() {
-
-
-  processing = false;
-
-
-  await stopCameraOnly();
+  document
+    .getElementById(
+      "startButton"
+    )
+    .disabled = false;
 
 
   document
-    .getElementById("status")
+    .getElementById(
+      "status"
+    )
     .innerText =
       "Scanner stopped. Click Start Scanner to activate the camera.";
-
-
-  document
-    .getElementById("startButton")
-    .disabled =
-      false;
 
 }
 
