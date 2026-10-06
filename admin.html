@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
   <meta charset="UTF-8">
@@ -9,7 +10,7 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>ICEMD-2026 Admin</title>
+  <title>ICEMD-2026 IIT Jodhpur - Admin</title>
 
   <style>
 
@@ -19,894 +20,748 @@
 
     body {
       margin: 0;
-      padding: 0;
+      padding: 20px;
       font-family: Arial, sans-serif;
       background: #f5f5f5;
       color: #222;
     }
 
-    /* =====================================================
-       TOP HEADER
-    ===================================================== */
-
-    .top-header {
-      width: 100%;
-      background: #17365d;
-      color: white;
-      text-align: center;
-      padding: 25px 20px 35px 20px;
-    }
-
-    .top-header h1 {
-      margin: 0;
-      font-size: 42px;
-      font-weight: bold;
-    }
-
-    .top-header p {
-      margin: 10px 0 0 0;
-      font-size: 24px;
-    }
-
-
-    /* =====================================================
-       MAIN CONTAINER
-    ===================================================== */
-
     .container {
-      width: calc(100% - 40px);
-      max-width: 1400px;
-      margin: 100px auto 40px auto;
+      max-width: 500px;
+      margin: 0 auto;
     }
-
-
-    /* =====================================================
-       CARD
-    ===================================================== */
 
     .card {
       background: white;
-      padding: 35px 50px 50px 50px;
-      border-radius: 20px;
-      box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+      padding: 22px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
     }
-
-
-    /* =====================================================
-       HEADINGS
-    ===================================================== */
 
     h1 {
       text-align: center;
-      font-size: 42px;
+      font-size: 24px;
       margin-top: 0;
-      margin-bottom: 10px;
-      color: #17365d;
+      margin-bottom: 5px;
     }
 
     h2 {
       text-align: center;
-      font-size: 28px;
+      font-size: 20px;
       color: #17365d;
       margin-top: 10px;
       margin-bottom: 10px;
     }
 
-    .welcome {
+    .subtitle {
       text-align: center;
-      font-size: 24px;
-      color: #444;
-      margin-bottom: 45px;
+      color: #666;
+      margin-bottom: 25px;
+      font-size: 18px;
     }
 
-
-    /* =====================================================
-       BUTTONS
-    ===================================================== */
-
-    button {
+    .option {
+      display: block;
       width: 100%;
-      padding: 18px;
-      margin-top: 18px;
-      border: none;
-      border-radius: 10px;
-      font-size: 22px;
-      cursor: pointer;
-      font-family: Arial, sans-serif;
-    }
+      padding: 16px;
+      margin-top: 15px;
 
-    .button {
       background: #17365d;
       color: white;
+
+      border: none;
+      text-decoration: none;
+      text-align: center;
+
+      border-radius: 8px;
+
+      font-family: Arial, sans-serif;
+      font-size: 17px;
+      font-weight: normal;
+
+      cursor: pointer;
+
+      transition:
+        background 0.15s ease,
+        transform 0.1s ease;
     }
 
-    .button:hover {
+    .option:hover {
       background: #214a7a;
     }
 
-    .secondary {
-      background: #777;
-      color: white;
+    .option:active {
+      transform: scale(0.99);
     }
 
-    .secondary:hover {
+    .option-title {
+      font-size: 18px;
+    }
+
+    .back-button {
       background: #666;
     }
 
-    .danger {
-      background: #b02a37;
-      color: white;
+    .back-button:hover {
+      background: #555;
     }
 
-    .danger:hover {
-      background: #8f202b;
+    .logout-button {
+      background: #8b0000;
     }
 
+    .logout-button:hover {
+      background: #a00000;
+    }
 
-    /* =====================================================
-       LOGIN
-    ===================================================== */
+    .input-group {
+      margin-top: 15px;
+    }
 
-    label {
+    .input-group label {
       display: block;
-      margin-top: 18px;
-      margin-bottom: 7px;
-      font-size: 18px;
-      font-weight: bold;
+      font-size: 14px;
+      color: #444;
+      margin-bottom: 6px;
     }
 
     input,
     select {
       width: 100%;
-      padding: 14px;
+      padding: 13px;
+
       border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 17px;
+      border-radius: 7px;
+
       font-family: Arial, sans-serif;
+      font-size: 16px;
+
+      background: white;
     }
 
-    input[readonly] {
-      background: #f7f7f7;
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #17365d;
     }
-
-
-    /* =====================================================
-       MESSAGE
-    ===================================================== */
 
     .message {
       display: none;
-      margin-top: 18px;
-      padding: 13px;
-      border-radius: 8px;
+
+      margin-top: 15px;
+      padding: 11px;
+
+      border-radius: 7px;
+
       text-align: center;
-      font-size: 16px;
-      line-height: 1.5;
+      font-size: 14px;
     }
 
-    .message.success {
+    .success {
       display: block;
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #b8dfc1;
+      background: #e8f5e9;
+      color: #2e7d32;
     }
 
-    .message.error {
+    .error {
       display: block;
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f1bfc4;
+      background: #ffebee;
+      color: #c62828;
     }
 
-
-    /* =====================================================
-       HIDDEN
-    ===================================================== */
-
-    .hidden {
-      display: none !important;
-    }
-
-
-    /* =====================================================
-       USER MANAGEMENT
-    ===================================================== */
-
-    .section-title {
+    .info {
+      display: block;
+      background: #eaf2f8;
       color: #17365d;
-      font-size: 25px;
-      margin-top: 30px;
-      margin-bottom: 15px;
     }
 
-    .user-summary {
+    .summary {
       display: flex;
-      justify-content: center;
-      gap: 15px;
-      flex-wrap: wrap;
-      margin: 20px 0 25px 0;
+      gap: 10px;
+      margin-top: 18px;
+      margin-bottom: 20px;
     }
 
     .summary-box {
-      background: #f1f4f8;
-      border: 1px solid #d9e0e8;
-      border-radius: 10px;
-      padding: 15px 25px;
+      flex: 1;
+      background: #f5f5f5;
+      border-radius: 8px;
+      padding: 12px 5px;
       text-align: center;
-      min-width: 180px;
     }
 
     .summary-number {
-      font-size: 27px;
+      font-size: 22px;
       font-weight: bold;
       color: #17365d;
     }
 
     .summary-label {
-      margin-top: 5px;
+      font-size: 12px;
       color: #666;
-      font-size: 15px;
+      margin-top: 3px;
     }
 
-
-    /* =====================================================
-       ADD USER FORM
-    ===================================================== */
-
-    .user-form {
-      background: #f8f9fa;
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      padding: 22px;
+    .user-list {
       margin-top: 20px;
     }
 
-    .user-form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-    }
-
-    .form-group {
-      min-width: 0;
-    }
-
-    .form-group.full {
-      grid-column: 1 / -1;
-    }
-
-    .small-button {
-      width: auto;
-      min-width: 140px;
-      padding: 11px 18px;
-      margin-top: 8px;
-      font-size: 16px;
-    }
-
-
-    /* =====================================================
-       SEARCH
-    ===================================================== */
-
-    .search-box {
-      margin-top: 25px;
-      margin-bottom: 15px;
-    }
-
-
-    /* =====================================================
-       TABLE
-    ===================================================== */
-
-    .table-wrapper {
-      width: 100%;
-      overflow-x: auto;
+    .user-item {
       border: 1px solid #ddd;
-      border-radius: 10px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 750px;
-    }
-
-    th {
-      background: #17365d;
-      color: white;
+      border-radius: 8px;
       padding: 13px;
-      text-align: left;
-      font-size: 15px;
-      white-space: nowrap;
+      margin-top: 10px;
+      background: #fff;
     }
 
-    td {
-      padding: 12px;
-      border-bottom: 1px solid #ddd;
-      font-size: 15px;
-      vertical-align: middle;
-    }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    tr:hover td {
-      background: #f8f9fa;
-    }
-
-
-    /* =====================================================
-       STATUS
-    ===================================================== */
-
-    .status {
-      display: inline-block;
-      padding: 5px 11px;
-      border-radius: 20px;
-      font-size: 13px;
+    .user-name {
+      font-size: 16px;
       font-weight: bold;
+      color: #17365d;
+    }
+
+    .user-email {
+      font-size: 14px;
+      color: #666;
+      margin-top: 4px;
+      word-break: break-word;
+    }
+
+    .user-status {
+      font-size: 13px;
+      margin-top: 7px;
     }
 
     .status-active {
-      background: #d4edda;
-      color: #155724;
+      color: #2e7d32;
+      font-weight: bold;
     }
 
     .status-inactive {
-      background: #e2e3e5;
-      color: #555;
+      color: #c62828;
+      font-weight: bold;
     }
 
+    .user-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
 
-    /* =====================================================
-       TABLE ACTION BUTTONS
-    ===================================================== */
+    .small-button {
+      flex: 1;
 
-    .table-button {
-      width: auto;
-      padding: 7px 12px;
-      margin: 2px;
-      font-size: 13px;
+      padding: 9px 5px;
+
+      border: none;
       border-radius: 6px;
-    }
 
-    .activate-button {
-      background: #198754;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+
+      cursor: pointer;
+
       color: white;
+      background: #17365d;
     }
 
-    .deactivate-button {
-      background: #6c757d;
-      color: white;
+    .small-button:hover {
+      background: #214a7a;
     }
 
-    .delete-button {
-      background: #b02a37;
-      color: white;
+    .small-button.delete {
+      background: #8b0000;
     }
 
+    .small-button.delete:hover {
+      background: #a00000;
+    }
 
-    /* =====================================================
-       LOADING / EMPTY
-    ===================================================== */
+    .section-title {
+      text-align: center;
+      color: #17365d;
+      font-size: 20px;
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
 
     .loading {
       text-align: center;
-      padding: 25px;
       color: #666;
-      font-size: 17px;
+      padding: 20px 5px;
+      font-size: 14px;
     }
 
     .empty {
       text-align: center;
-      padding: 30px;
-      color: #777;
-      font-size: 16px;
+      color: #666;
+      padding: 20px 5px;
+      font-size: 14px;
     }
-
-
-    /* =====================================================
-       FOOTER
-    ===================================================== */
 
     .footer {
       text-align: center;
       color: #666;
-      margin-top: 30px;
+      margin-top: 25px;
       font-size: 14px;
       line-height: 1.5;
     }
 
-
-    /* =====================================================
-       MOBILE
-    ===================================================== */
-
-    @media (max-width: 700px) {
-
-      body {
-        padding: 0;
-      }
-
-      .top-header {
-        padding: 22px 15px 28px 15px;
-      }
-
-      .top-header h1 {
-        font-size: 27px;
-      }
-
-      .top-header p {
-        font-size: 18px;
-      }
-
-      .container {
-        width: calc(100% - 20px);
-        margin: 35px auto 25px auto;
-      }
-
-      .card {
-        padding: 25px 18px 30px 18px;
-        border-radius: 14px;
-      }
-
-      h1 {
-        font-size: 28px;
-      }
-
-      h2 {
-        font-size: 23px;
-      }
-
-      .welcome {
-        font-size: 19px;
-        margin-bottom: 30px;
-      }
-
-      button {
-        font-size: 18px;
-        padding: 15px;
-      }
-
-      .user-form-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .form-group.full {
-        grid-column: auto;
-      }
-
-      .summary-box {
-        min-width: 140px;
-        flex: 1;
-      }
-
+    .hidden {
+      display: none !important;
     }
 
   </style>
 
 </head>
 
+
 <body>
-
-
-<!-- ======================================================
-     TOP HEADER
-======================================================= -->
-
-<div class="top-header">
-
-  <h1>
-    ICEMD-2026 IITJ Registration Desk
-  </h1>
-
-  <p>
-    Built by Mr. Biswajit Pal
-  </p>
-
-</div>
 
 
 <div class="container">
 
-
-<!-- ======================================================
-     ADMIN LOGIN PAGE
-======================================================= -->
-
-<div
-  id="adminLoginPage"
-  class="card"
->
-
-  <h1>
-    ICEMD-2026
-  </h1>
-
-  <h2>
-    Admin Login
-  </h2>
-
-  <p
-    style="
-      text-align:center;
-      color:#666;
-      font-size:20px;
-      margin-bottom:25px;
-    "
-  >
-    Registration Desk
-  </p>
+  <div class="card">
 
 
-  <form
-    id="adminLoginForm"
-    onsubmit="adminLogin(event)"
-    autocomplete="on"
-  >
+    <!-- =================================================
+         LOGIN PAGE
+    ================================================== -->
 
-    <label for="adminEmail">
-      Email
-    </label>
+    <div id="loginSection">
 
-    <input
-      type="text"
-      id="adminEmail"
-      value="pal.17@iitj.ac.in"
-      readonly
-      autocomplete="username"
-    >
+      <h1>
+        ICEMD-2026
+      </h1>
 
+      <h2>
+        IIT Jodhpur, India
+      </h2>
 
-    <label for="adminPassword">
-      Password
-    </label>
-
-    <input
-      type="password"
-      id="adminPassword"
-      placeholder="Enter password"
-      autocomplete="current-password"
-    >
+      <p class="subtitle">
+        Admin Console
+      </p>
 
 
-    <button
-      class="button"
-      type="submit"
-    >
-      Login
-    </button>
-
-
-    <button
-      class="secondary"
-      type="button"
-      onclick="goBack()"
-    >
-      Back
-    </button>
-
-
-    <div
-      id="adminMessage"
-      class="message"
-    ></div>
-
-  </form>
-
-</div>
-
-
-<!-- ======================================================
-     ADMIN DASHBOARD
-======================================================= -->
-
-<div
-  id="adminHomePage"
-  class="card hidden"
->
-
-  <h1>
-    Admin Dashboard
-  </h1>
-
-  <p class="welcome">
-    Welcome, Biswajit Pal
-  </p>
-
-
-  <button
-    class="button"
-    type="button"
-    onclick="openUsers()"
-  >
-    Manage Users
-  </button>
-
-
-  <button
-    class="button"
-    type="button"
-    onclick="uploadGuestExcel()"
-  >
-    Upload Guest Excel
-  </button>
-
-
-  <button
-    class="button"
-    type="button"
-    onclick="generateQRCodes()"
-  >
-    Generate QR Codes
-  </button>
-
-
-  <button
-    class="button"
-    type="button"
-    onclick="downloadQRPDF()"
-  >
-    Download QR PDF
-  </button>
-
-
-  <button
-    class="secondary"
-    type="button"
-    onclick="adminLogout()"
-  >
-    Logout
-  </button>
-
-
-  <div class="footer">
-    ICEMD-2026 IIT Jodhpur Registration Desk
-  </div>
-
-</div>
-
-
-<!-- ======================================================
-     MANAGE USERS PAGE
-======================================================= -->
-
-<div
-  id="usersPage"
-  class="card hidden"
->
-
-  <h1>
-    Manage Users
-  </h1>
-
-  <p
-    style="
-      text-align:center;
-      color:#666;
-      font-size:18px;
-      margin-bottom:25px;
-    "
-  >
-    Assistant / Registration Desk Users
-  </p>
-
-
-  <!-- SUMMARY -->
-
-  <div class="user-summary">
-
-    <div class="summary-box">
-
-      <div
-        id="totalUsers"
-        class="summary-number"
+      <form
+        id="adminLoginForm"
+        onsubmit="adminLogin(event)"
+        autocomplete="on"
       >
-        0
-      </div>
 
-      <div class="summary-label">
-        Total Users
-      </div>
+        <div class="input-group">
 
-    </div>
+          <label for="adminEmail">
+            Email
+          </label>
 
+          <input
+            type="text"
+            id="adminEmail"
+            value="pal.17@iitj.ac.in"
+            readonly
+            autocomplete="username"
+          >
 
-    <div class="summary-box">
-
-      <div
-        id="activeUsers"
-        class="summary-number"
-      >
-        0
-      </div>
-
-      <div class="summary-label">
-        Active Users
-      </div>
-
-    </div>
+        </div>
 
 
-    <div class="summary-box">
+        <div class="input-group">
 
-      <div
-        id="userLimit"
-        class="summary-number"
-      >
-        30
-      </div>
+          <label for="adminPassword">
+            Password
+          </label>
 
-      <div class="summary-label">
-        Active User Limit
-      </div>
+          <input
+            type="password"
+            id="adminPassword"
+            placeholder="Enter password"
+            autocomplete="current-password"
+            required
+          >
 
-    </div>
+        </div>
 
-  </div>
-
-
-  <!-- ADD USER -->
-
-  <div class="user-form">
-
-    <h3 class="section-title">
-      Add New User
-    </h3>
-
-
-    <div class="user-form-grid">
-
-      <div class="form-group">
-
-        <label for="newUserName">
-          Name
-        </label>
-
-        <input
-          type="text"
-          id="newUserName"
-          placeholder="Enter user name"
-        >
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label for="newUserEmail">
-          Email ID
-        </label>
-
-        <input
-          type="email"
-          id="newUserEmail"
-          placeholder="Enter email address"
-          autocomplete="off"
-        >
-
-      </div>
-
-
-      <div class="form-group full">
 
         <button
-          class="button small-button"
-          type="button"
-          onclick="addNewUser()"
+          type="submit"
+          class="option"
         >
-          Add User
+          Login
         </button>
 
-      </div>
+      </form>
+
+
+      <button
+        type="button"
+        class="option back-button"
+        onclick="goHome()"
+      >
+        Back
+      </button>
+
+
+      <div
+        id="loginMessage"
+        class="message"
+      ></div>
 
     </div>
 
 
+    <!-- =================================================
+         ADMIN DASHBOARD
+    ================================================== -->
+
     <div
-      id="userMessage"
-      class="message"
-    ></div>
-
-  </div>
-
-
-  <!-- SEARCH -->
-
-  <div class="search-box">
-
-    <label for="userSearch">
-      Search Users
-    </label>
-
-    <input
-      type="search"
-      id="userSearch"
-      placeholder="Search by name, email or status"
-      oninput="filterUsers()"
+      id="dashboardSection"
+      class="hidden"
     >
 
-  </div>
+      <h1>
+        ICEMD-2026
+      </h1>
+
+      <h2>
+        IIT Jodhpur, India
+      </h2>
+
+      <p class="subtitle">
+        Admin Dashboard
+      </p>
 
 
-  <!-- USER TABLE -->
+      <div
+        style="
+          text-align:center;
+          color:#666;
+          font-size:15px;
+          margin-bottom:20px;
+        "
+      >
+        Welcome, Biswajit Pal
+      </div>
 
-  <div class="table-wrapper">
 
-    <table>
+      <!-- MANAGE USERS -->
 
-      <thead>
+      <button
+        type="button"
+        class="option"
+        onclick="openUsers()"
+      >
+        <div class="option-title">
+          Manage Users
+        </div>
+      </button>
 
-        <tr>
 
-          <th>
-            Name
-          </th>
+      <!-- UPLOAD GUEST EXCEL -->
 
-          <th>
-            Email ID
-          </th>
+      <button
+        type="button"
+        class="option"
+        onclick="uploadGuestExcel()"
+      >
+        <div class="option-title">
+          Upload Guest Excel
+        </div>
+      </button>
 
-          <th>
-            Status
-          </th>
 
-          <th>
-            Created At
-          </th>
+      <!-- GENERATE QR -->
 
-          <th>
-            Action
-          </th>
+      <button
+        type="button"
+        class="option"
+        onclick="generateQRCodes()"
+      >
+        <div class="option-title">
+          Generate QR Codes
+        </div>
+      </button>
 
-        </tr>
 
-      </thead>
+      <!-- DOWNLOAD QR PDF -->
 
-      <tbody id="usersTableBody">
+      <button
+        type="button"
+        class="option"
+        onclick="downloadQRPDF()"
+      >
+        <div class="option-title">
+          Download QR PDF
+        </div>
+      </button>
 
-        <tr>
 
-          <td
-            colspan="5"
-            class="loading"
+      <!-- LOGOUT -->
+
+      <button
+        type="button"
+        class="option logout-button"
+        onclick="adminLogout()"
+      >
+        <div class="option-title">
+          Logout
+        </div>
+      </button>
+
+
+      <button
+        type="button"
+        class="option back-button"
+        onclick="goHome()"
+      >
+        Back
+      </button>
+
+
+    </div>
+
+
+    <!-- =================================================
+         MANAGE USERS
+    ================================================== -->
+
+    <div
+      id="usersSection"
+      class="hidden"
+    >
+
+      <h1>
+        ICEMD-2026
+      </h1>
+
+      <h2>
+        IIT Jodhpur, India
+      </h2>
+
+      <div class="section-title">
+        Manage Users
+      </div>
+
+      <div class="section-subtitle">
+        Registration Desk Users
+      </div>
+
+
+      <!-- SUMMARY -->
+
+      <div class="summary">
+
+        <div class="summary-box">
+
+          <div
+            id="totalUsers"
+            class="summary-number"
           >
-            Loading users...
-          </td>
+            0
+          </div>
 
-        </tr>
+          <div class="summary-label">
+            Total
+          </div>
 
-      </tbody>
+        </div>
 
-    </table>
+
+        <div class="summary-box">
+
+          <div
+            id="activeUsers"
+            class="summary-number"
+          >
+            0
+          </div>
+
+          <div class="summary-label">
+            Active
+          </div>
+
+        </div>
+
+
+        <div class="summary-box">
+
+          <div
+            id="userLimit"
+            class="summary-number"
+          >
+            30
+          </div>
+
+          <div class="summary-label">
+            Limit
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ADD USER -->
+
+      <div
+        style="
+          border-top:1px solid #ddd;
+          padding-top:18px;
+        "
+      >
+
+        <div
+          style="
+            color:#17365d;
+            font-size:17px;
+            font-weight:bold;
+            margin-bottom:5px;
+          "
+        >
+          Add New User
+        </div>
+
+        <div
+          style="
+            color:#666;
+            font-size:13px;
+            margin-bottom:15px;
+          "
+        >
+          Any valid email address can be used.
+        </div>
+
+
+        <form
+          id="addUserForm"
+          onsubmit="addNewUser(event)"
+        >
+
+          <div class="input-group">
+
+            <label for="newUserName">
+              Name
+            </label>
+
+            <input
+              type="text"
+              id="newUserName"
+              placeholder="Enter name"
+              required
+            >
+
+          </div>
+
+
+          <div class="input-group">
+
+            <label for="newUserEmail">
+              Email
+            </label>
+
+            <input
+              type="email"
+              id="newUserEmail"
+              placeholder="Enter email address"
+              autocomplete="email"
+              required
+            >
+
+          </div>
+
+
+          <button
+            type="submit"
+            class="option"
+          >
+            Add User
+          </button>
+
+        </form>
+
+
+        <div
+          id="userMessage"
+          class="message"
+        ></div>
+
+      </div>
+
+
+      <!-- USER LIST -->
+
+      <div class="user-list">
+
+        <div
+          style="
+            color:#17365d;
+            font-size:17px;
+            font-weight:bold;
+            margin-bottom:8px;
+          "
+        >
+          Current Users
+        </div>
+
+
+        <div
+          id="usersList"
+          class="loading"
+        >
+          Loading users...
+        </div>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="option back-button"
+        onclick="closeUsers()"
+      >
+        Back
+      </button>
+
+    </div>
+
+
+    <!-- =================================================
+         FOOTER
+    ================================================== -->
+
+    <div class="footer">
+
+      <a
+        href="https://events.iitj.ac.in/icemd/index.html"
+        target="_blank"
+      >
+        ICEMD-2026
+      </a>
+
+      IITJ | December 21-23<br>
+
+      Designed and managed by Biswajit Pal
+
+    </div>
+
 
   </div>
-
-
-  <button
-    class="secondary"
-    type="button"
-    onclick="closeUsers()"
-  >
-    Back to Admin Dashboard
-  </button>
-
-
-  <div class="footer">
-    ICEMD-2026 IIT Jodhpur Registration Desk
-  </div>
-
-</div>
-
 
 </div>
 
 
 <script>
 
+
 /* =====================================================
-   APPS SCRIPT WEB APP URL
+   APPS SCRIPT BACKEND
 ===================================================== */
 
 const APPS_SCRIPT_URL =
@@ -914,7 +769,7 @@ const APPS_SCRIPT_URL =
 
 
 /* =====================================================
-   FIXED ADMIN CREDENTIALS
+   ADMIN CREDENTIALS
 ===================================================== */
 
 const FIXED_EMAIL =
@@ -925,34 +780,21 @@ const FIXED_PASSWORD =
 
 
 /* =====================================================
-   USER DATA
-===================================================== */
-
-let allUsers = [];
-
-let currentUserLimit = 30;
-
-
-/* =====================================================
-   ADMIN LOGIN
+   LOGIN
 ===================================================== */
 
 function adminLogin(event) {
 
   event.preventDefault();
 
-
   const email =
-    document
-      .getElementById("adminEmail")
-      .value
-      .trim();
-
+    document.getElementById("adminEmail").value.trim();
 
   const password =
-    document
-      .getElementById("adminPassword")
-      .value;
+    document.getElementById("adminPassword").value;
+
+  const message =
+    document.getElementById("loginMessage");
 
 
   if (
@@ -960,73 +802,70 @@ function adminLogin(event) {
     password === FIXED_PASSWORD
   ) {
 
+    sessionStorage.setItem(
+      "icemdAdminLoggedIn",
+      "true"
+    );
+
     document
-      .getElementById("adminLoginPage")
+      .getElementById("loginSection")
       .classList.add("hidden");
 
-
     document
-      .getElementById("adminHomePage")
+      .getElementById("dashboardSection")
       .classList.remove("hidden");
 
+    message.className = "message";
 
-    return;
+    message.textContent = "";
+
+  } else {
+
+    message.className =
+      "message error";
+
+    message.textContent =
+      "Invalid admin password.";
 
   }
-
-
-  showMessage(
-    "adminMessage",
-    "Invalid Admin email or password.",
-    "error"
-  );
 
 }
 
 
 /* =====================================================
-   ADMIN LOGOUT
+   LOGOUT
 ===================================================== */
 
 function adminLogout() {
 
+  sessionStorage.removeItem(
+    "icemdAdminLoggedIn"
+  );
+
+  document.getElementById(
+    "adminPassword"
+  ).value = "";
+
   document
-    .getElementById("adminHomePage")
+    .getElementById("dashboardSection")
     .classList.add("hidden");
 
-
   document
-    .getElementById("usersPage")
+    .getElementById("usersSection")
     .classList.add("hidden");
 
-
   document
-    .getElementById("adminLoginPage")
+    .getElementById("loginSection")
     .classList.remove("hidden");
-
-
-  document
-    .getElementById("adminPassword")
-    .value = "";
-
-
-  document
-    .getElementById("adminMessage")
-    .textContent = "";
-
-
-  document
-    .getElementById("adminMessage")
-    .className = "message";
 
 }
 
 
 /* =====================================================
-   BACK FROM LOGIN
+   HOME
 ===================================================== */
 
-function goBack() {
+function goHome() {
 
   window.location.href =
     "index.html";
@@ -1041,14 +880,12 @@ function goBack() {
 function openUsers() {
 
   document
-    .getElementById("adminHomePage")
+    .getElementById("dashboardSection")
     .classList.add("hidden");
 
-
   document
-    .getElementById("usersPage")
+    .getElementById("usersSection")
     .classList.remove("hidden");
-
 
   loadUsers();
 
@@ -1062,33 +899,27 @@ function openUsers() {
 function closeUsers() {
 
   document
-    .getElementById("usersPage")
+    .getElementById("usersSection")
     .classList.add("hidden");
 
-
   document
-    .getElementById("adminHomePage")
+    .getElementById("dashboardSection")
     .classList.remove("hidden");
 
 }
 
 
 /* =====================================================
-   APPS SCRIPT JSONP REQUEST
+   JSONP API REQUEST
 ===================================================== */
 
-function apiRequest(
-  params,
-  callback
-) {
+function apiRequest(params, callback) {
 
   const callbackName =
     "icemdCallback_" +
     Date.now() +
     "_" +
-    Math.floor(
-      Math.random() * 100000
-    );
+    Math.floor(Math.random() * 10000);
 
 
   params.callback =
@@ -1102,9 +933,7 @@ function apiRequest(
         return (
           encodeURIComponent(key) +
           "=" +
-          encodeURIComponent(
-            params[key]
-          )
+          encodeURIComponent(params[key])
         );
 
       })
@@ -1121,13 +950,17 @@ function apiRequest(
   const timeout =
     setTimeout(function() {
 
-      if (finished) {
-        return;
-      }
+      if (finished) return;
 
       finished = true;
 
-      cleanup();
+      try {
+        delete window[callbackName];
+      } catch(e) {}
+
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
 
       callback({
         status: "error",
@@ -1138,65 +971,24 @@ function apiRequest(
     }, 15000);
 
 
-  function cleanup() {
-
-    clearTimeout(timeout);
-
-    if (script.parentNode) {
-
-      script.parentNode.removeChild(
-        script
-      );
-
-    }
-
-    try {
-
-      delete window[callbackName];
-
-    }
-    catch (e) {
-
-      window[callbackName] =
-        undefined;
-
-    }
-
-  }
-
-
   window[callbackName] =
-    function(response) {
+    function(data) {
 
-      if (finished) {
-        return;
-      }
+      if (finished) return;
 
       finished = true;
 
-      cleanup();
+      clearTimeout(timeout);
 
-      callback(response);
+      try {
+        delete window[callbackName];
+      } catch(e) {}
 
-    };
-
-
-  script.onerror =
-    function() {
-
-      if (finished) {
-        return;
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
       }
 
-      finished = true;
-
-      cleanup();
-
-      callback({
-        status: "error",
-        message:
-          "Unable to connect to the server."
-      });
+      callback(data);
 
     };
 
@@ -1207,9 +999,33 @@ function apiRequest(
     query;
 
 
-  document
-    .head
-    .appendChild(script);
+  script.onerror =
+    function() {
+
+      if (finished) return;
+
+      finished = true;
+
+      clearTimeout(timeout);
+
+      try {
+        delete window[callbackName];
+      } catch(e) {}
+
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+
+      callback({
+        status: "error",
+        message:
+          "Unable to connect to the server."
+      });
+
+    };
+
+
+  document.body.appendChild(script);
 
 }
 
@@ -1220,165 +1036,130 @@ function apiRequest(
 
 function loadUsers() {
 
-  const tbody =
-    document
-      .getElementById(
-        "usersTableBody"
-      );
+  const list =
+    document.getElementById("usersList");
 
+  list.className =
+    "loading";
 
-  tbody.innerHTML =
-    '<tr>' +
-    '<td colspan="5" class="loading">' +
-    'Loading users...' +
-    '</td>' +
-    '</tr>';
+  list.innerHTML =
+    "Loading users...";
 
 
   apiRequest(
     {
       action: "users"
     },
-    function(response) {
+
+    function(result) {
 
       if (
-        !response ||
-        response.status !==
-          "success"
+        !result ||
+        result.status !== "success"
       ) {
 
-        tbody.innerHTML =
-          '<tr>' +
-          '<td colspan="5" class="empty">' +
-          escapeHtml(
-            response &&
-            response.message
-              ? response.message
-              : "Unable to load users."
-          ) +
-          '</td>' +
-          '</tr>';
+        list.className =
+          "message error";
+
+        list.textContent =
+          result && result.message
+            ? result.message
+            : "Unable to load users.";
 
         return;
 
       }
 
 
-      allUsers =
-        Array.isArray(
-          response.data
-        )
-          ? response.data
+      const users =
+        Array.isArray(result.users)
+          ? result.users
           : [];
+
+
+      renderUsers(users);
 
 
       apiRequest(
         {
           action: "settings"
         },
-        function(settingsResponse) {
+
+        function(settingsResult) {
+
+          let limit = 30;
+
 
           if (
-            settingsResponse &&
-            settingsResponse.status ===
-              "success"
+            settingsResult &&
+            settingsResult.status === "success"
           ) {
 
             const settings =
-              settingsResponse.settings ||
+              settingsResult.settings ||
               {};
 
-
-            const limit =
+            limit =
               Number(
-                settings[
-                  "Assistant Limit"
-                ]
+                settings["Assistant Limit"] || 30
               );
-
-
-            if (
-              !isNaN(limit) &&
-              limit > 0
-            ) {
-
-              currentUserLimit =
-                limit;
-
-            }
 
           }
 
 
-          document
-            .getElementById(
-              "userLimit"
-            )
-            .textContent =
-              currentUserLimit;
-
-
-          updateUserSummary();
-
-          renderUsers(
-            allUsers
+          updateUserSummary(
+            users,
+            limit
           );
 
         }
+
       );
 
     }
+
   );
 
 }
 
 
 /* =====================================================
-   UPDATE USER SUMMARY
+   USER SUMMARY
 ===================================================== */
 
-function updateUserSummary() {
+function updateUserSummary(
+  users,
+  limit
+) {
 
   const total =
-    allUsers.length;
+    users.length;
 
 
-  let active = 0;
+  const active =
+    users.filter(function(user) {
+
+      return (
+        String(user.status || "")
+          .toUpperCase() === "ACTIVE"
+      );
+
+    }).length;
 
 
-  allUsers.forEach(
-    function(user) {
-
-      if (
-        String(
-          user["Status"] || ""
-        )
-          .toUpperCase() ===
-        "ACTIVE"
-      ) {
-
-        active++;
-
-      }
-
-    }
-  );
+  document.getElementById(
+    "totalUsers"
+  ).textContent = total;
 
 
-  document
-    .getElementById(
-      "totalUsers"
-    )
-    .textContent =
-      total;
+  document.getElementById(
+    "activeUsers"
+  ).textContent = active;
 
 
-  document
-    .getElementById(
-      "activeUsers"
-    )
-    .textContent =
-      active;
+  document.getElementById(
+    "userLimit"
+  ).textContent = limit;
 
 }
 
@@ -1387,234 +1168,171 @@ function updateUserSummary() {
    RENDER USERS
 ===================================================== */
 
-function renderUsers(
-  users
-) {
+function renderUsers(users) {
 
-  const tbody =
-    document
-      .getElementById(
-        "usersTableBody"
+  const list =
+    document.getElementById("usersList");
+
+
+  if (!users.length) {
+
+    list.className =
+      "empty";
+
+    list.textContent =
+      "No users have been added yet.";
+
+    return;
+
+  }
+
+
+  list.className =
+    "user-list";
+
+
+  list.innerHTML = "";
+
+
+  users.forEach(function(user) {
+
+    const item =
+      document.createElement("div");
+
+    item.className =
+      "user-item";
+
+
+    const name =
+      document.createElement("div");
+
+    name.className =
+      "user-name";
+
+    name.textContent =
+      user.name || "";
+
+
+
+    const email =
+      document.createElement("div");
+
+    email.className =
+      "user-email";
+
+    email.textContent =
+      user.email || "";
+
+
+
+    const status =
+      document.createElement("div");
+
+    const isActive =
+      String(user.status || "")
+        .toUpperCase() === "ACTIVE";
+
+
+    status.className =
+      "user-status " +
+      (
+        isActive
+          ? "status-active"
+          : "status-inactive"
       );
 
 
-  if (
-    !users ||
-    users.length === 0
-  ) {
-
-    tbody.innerHTML =
-      '<tr>' +
-      '<td colspan="5" class="empty">' +
-      'No users found.' +
-      '</td>' +
-      '</tr>';
-
-    return;
-
-  }
+    status.textContent =
+      "Status: " +
+      (
+        isActive
+          ? "ACTIVE"
+          : "INACTIVE"
+      );
 
 
-  tbody.innerHTML =
-    users
-      .map(
-        function(user) {
 
-          const name =
-            user["Name"] || "";
+    const actions =
+      document.createElement("div");
 
-
-          const email =
-            user["Email ID"] || "";
+    actions.className =
+      "user-actions";
 
 
-          const status =
-            String(
-              user["Status"] || ""
-            ).toUpperCase();
+    const statusButton =
+      document.createElement("button");
+
+    statusButton.type =
+      "button";
+
+    statusButton.className =
+      "small-button";
+
+    statusButton.textContent =
+      isActive
+        ? "Deactivate"
+        : "Activate";
 
 
-          const createdAt =
-            formatDateTime(
-              user["Created At"]
-            );
+    statusButton.onclick =
+      function() {
 
-
-          let statusHTML;
-
-
-          if (
-            status === "ACTIVE"
-          ) {
-
-            statusHTML =
-              '<span class="status status-active">' +
-              'ACTIVE' +
-              '</span>';
-
-          }
-          else {
-
-            statusHTML =
-              '<span class="status status-inactive">' +
-              'INACTIVE' +
-              '</span>';
-
-          }
-
-
-          let actionHTML;
-
-
-          if (
-            status === "ACTIVE"
-          ) {
-
-            actionHTML =
-              '<button ' +
-              'class="table-button deactivate-button" ' +
-              'type="button" ' +
-              'onclick="changeUserStatus(' +
-              "'" +
-              jsString(email) +
-              "'" +
-              ', ' +
-              "'INACTIVE'" +
-              ')">' +
-              'Deactivate' +
-              '</button>';
-
-          }
-          else {
-
-            actionHTML =
-              '<button ' +
-              'class="table-button activate-button" ' +
-              'type="button" ' +
-              'onclick="changeUserStatus(' +
-              "'" +
-              jsString(email) +
-              "'" +
-              ', ' +
-              "'ACTIVE'" +
-              ')">' +
-              'Activate' +
-              '</button>';
-
-          }
-
-
-          actionHTML +=
-            '<button ' +
-            'class="table-button delete-button" ' +
-            'type="button" ' +
-            'onclick="deleteExistingUser(' +
-            "'" +
-            jsString(email) +
-            "'" +
-            ')">' +
-            'Delete' +
-            '</button>';
-
-
-          return (
-            '<tr>' +
-
-            '<td>' +
-            escapeHtml(name) +
-            '</td>' +
-
-            '<td>' +
-            escapeHtml(email) +
-            '</td>' +
-
-            '<td>' +
-            statusHTML +
-            '</td>' +
-
-            '<td>' +
-            escapeHtml(createdAt) +
-            '</td>' +
-
-            '<td>' +
-            actionHTML +
-            '</td>' +
-
-            '</tr>'
-          );
-
-        }
-      )
-      .join("");
-
-}
-
-
-/* =====================================================
-   FILTER USERS
-===================================================== */
-
-function filterUsers() {
-
-  const search =
-    document
-      .getElementById(
-        "userSearch"
-      )
-      .value
-      .trim()
-      .toLowerCase();
-
-
-  if (!search) {
-
-    renderUsers(
-      allUsers
-    );
-
-    return;
-
-  }
-
-
-  const filtered =
-    allUsers.filter(
-      function(user) {
-
-        const name =
-          String(
-            user["Name"] || ""
-          )
-            .toLowerCase();
-
-
-        const email =
-          String(
-            user["Email ID"] || ""
-          )
-            .toLowerCase();
-
-
-        const status =
-          String(
-            user["Status"] || ""
-          )
-            .toLowerCase();
-
-
-        return (
-          name.includes(search) ||
-          email.includes(search) ||
-          status.includes(search)
+        changeUserStatus(
+          user.email,
+          isActive
+            ? "INACTIVE"
+            : "ACTIVE"
         );
 
-      }
+      };
+
+
+
+    const deleteButton =
+      document.createElement("button");
+
+    deleteButton.type =
+      "button";
+
+    deleteButton.className =
+      "small-button delete";
+
+    deleteButton.textContent =
+      "Delete";
+
+
+    deleteButton.onclick =
+      function() {
+
+        deleteExistingUser(
+          user.email
+        );
+
+      };
+
+
+
+    actions.appendChild(
+      statusButton
+    );
+
+    actions.appendChild(
+      deleteButton
     );
 
 
-  renderUsers(
-    filtered
-  );
+    item.appendChild(name);
+
+    item.appendChild(email);
+
+    item.appendChild(status);
+
+    item.appendChild(actions);
+
+
+    list.appendChild(item);
+
+  });
 
 }
 
@@ -1623,30 +1341,42 @@ function filterUsers() {
    ADD NEW USER
 ===================================================== */
 
-function addNewUser() {
+function addNewUser(event) {
+
+  event.preventDefault();
+
 
   const name =
     document
-      .getElementById(
-        "newUserName"
-      )
+      .getElementById("newUserName")
       .value
       .trim();
 
 
   const email =
     document
-      .getElementById(
-        "newUserEmail"
-      )
+      .getElementById("newUserEmail")
       .value
-      .trim();
+      .trim()
+      .toLowerCase();
+
+
+  const message =
+    document.getElementById(
+      "userMessage"
+    );
+
+
+  message.className =
+    "message";
+
+  message.textContent =
+    "";
 
 
   if (!name) {
 
-    showMessage(
-      "userMessage",
+    showUserMessage(
       "Please enter the user's name.",
       "error"
     );
@@ -1656,26 +1386,6 @@ function addNewUser() {
   }
 
 
-  if (!email) {
-
-    showMessage(
-      "userMessage",
-      "Please enter the user's email.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  /*
-   * Any email address is allowed.
-   *
-   * HTML5 type="email" provides the
-   * basic browser email format check.
-   */
-
   const emailPattern =
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -1684,8 +1394,7 @@ function addNewUser() {
     !emailPattern.test(email)
   ) {
 
-    showMessage(
-      "userMessage",
+    showUserMessage(
       "Please enter a valid email address.",
       "error"
     );
@@ -1695,55 +1404,11 @@ function addNewUser() {
   }
 
 
-  /*
-   * Check active limit locally.
-   */
+  message.className =
+    "message info";
 
-  let active = 0;
-
-
-  allUsers.forEach(
-    function(user) {
-
-      if (
-        String(
-          user["Status"] || ""
-        )
-          .toUpperCase() ===
-        "ACTIVE"
-      ) {
-
-        active++;
-
-      }
-
-    }
-  );
-
-
-  if (
-    active >=
-    currentUserLimit
-  ) {
-
-    showMessage(
-      "userMessage",
-      "The active user limit of " +
-      currentUserLimit +
-      " has been reached.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  showMessage(
-    "userMessage",
-    "Adding user...",
-    "success"
-  );
+  message.textContent =
+    "Adding user...";
 
 
   apiRequest(
@@ -1752,54 +1417,68 @@ function addNewUser() {
       name: name,
       email: email
     },
-    function(response) {
+
+    function(result) {
 
       if (
-        response &&
-        response.status ===
-          "success"
+        !result ||
+        result.status !== "success"
       ) {
 
-        document
-          .getElementById(
-            "newUserName"
-          )
-          .value = "";
-
-
-        document
-          .getElementById(
-            "newUserEmail"
-          )
-          .value = "";
-
-
-        showMessage(
-          "userMessage",
-          response.message ||
-            "User added successfully.",
-          "success"
-        );
-
-
-        loadUsers();
-
-      }
-      else {
-
-        showMessage(
-          "userMessage",
-          response &&
-          response.message
-            ? response.message
+        showUserMessage(
+          result && result.message
+            ? result.message
             : "Unable to add user.",
           "error"
         );
 
+        return;
+
       }
 
+
+      showUserMessage(
+        "User added successfully.",
+        "success"
+      );
+
+
+      document.getElementById(
+        "addUserForm"
+      ).reset();
+
+
+      loadUsers();
+
     }
+
   );
+
+}
+
+
+/* =====================================================
+   USER MESSAGE
+===================================================== */
+
+function showUserMessage(
+  text,
+  type
+) {
+
+  const message =
+    document.getElementById(
+      "userMessage"
+    );
+
+
+  message.className =
+    "message " +
+    type;
+
+
+  message.textContent =
+    text;
 
 }
 
@@ -1826,9 +1505,7 @@ function changeUserStatus(
       " this user?"
     )
   ) {
-
     return;
-
   }
 
 
@@ -1838,31 +1515,36 @@ function changeUserStatus(
       email: email,
       status: status
     },
-    function(response) {
+
+    function(result) {
 
       if (
-        response &&
-        response.status ===
-          "success"
+        !result ||
+        result.status !== "success"
       ) {
 
-        loadUsers();
-
-      }
-      else {
-
-        showMessage(
-          "userMessage",
-          response &&
-          response.message
-            ? response.message
+        showUserMessage(
+          result && result.message
+            ? result.message
             : "Unable to update user.",
           "error"
         );
 
+        return;
+
       }
 
+
+      showUserMessage(
+        "User status updated.",
+        "success"
+      );
+
+
+      loadUsers();
+
     }
+
   );
 
 }
@@ -1878,12 +1560,10 @@ function deleteExistingUser(
 
   if (
     !confirm(
-      "Are you sure you want to permanently delete this user?"
+      "Are you sure you want to delete this user?"
     )
   ) {
-
     return;
-
   }
 
 
@@ -1892,225 +1572,102 @@ function deleteExistingUser(
       action: "deleteUser",
       email: email
     },
-    function(response) {
+
+    function(result) {
 
       if (
-        response &&
-        response.status ===
-          "success"
+        !result ||
+        result.status !== "success"
       ) {
 
-        showMessage(
-          "userMessage",
-          response.message ||
-            "User deleted successfully.",
-          "success"
-        );
-
-
-        loadUsers();
-
-      }
-      else {
-
-        showMessage(
-          "userMessage",
-          response &&
-          response.message
-            ? response.message
+        showUserMessage(
+          result && result.message
+            ? result.message
             : "Unable to delete user.",
           "error"
         );
 
+        return;
+
       }
 
+
+      showUserMessage(
+        "User deleted successfully.",
+        "success"
+      );
+
+
+      loadUsers();
+
     }
+
   );
 
 }
 
 
 /* =====================================================
-   PLACEHOLDER: UPLOAD GUEST EXCEL
+   PLACEHOLDER FUNCTIONS
 ===================================================== */
 
 function uploadGuestExcel() {
 
   alert(
-    "Upload Guest Excel will be added next."
+    "Guest Excel upload will be added next."
   );
 
 }
 
-
-/* =====================================================
-   PLACEHOLDER: GENERATE QR CODES
-===================================================== */
 
 function generateQRCodes() {
 
   alert(
-    "Generate QR Codes will be added next."
+    "QR code generation will be added next."
   );
 
 }
 
-
-/* =====================================================
-   PLACEHOLDER: DOWNLOAD QR PDF
-===================================================== */
 
 function downloadQRPDF() {
 
   alert(
-    "Download QR PDF will be added next."
+    "QR PDF download will be added after QR generation."
   );
 
 }
 
 
 /* =====================================================
-   SHOW MESSAGE
+   SESSION CHECK
 ===================================================== */
 
-function showMessage(
-  elementId,
-  message,
-  type
-) {
+(function() {
 
-  const element =
-    document.getElementById(
-      elementId
+  const loggedIn =
+    sessionStorage.getItem(
+      "icemdAdminLoggedIn"
     );
 
 
-  element.textContent =
-    message;
+  if (loggedIn === "true") {
 
+    document
+      .getElementById("loginSection")
+      .classList.add("hidden");
 
-  element.className =
-    "message " +
-    type;
-
-}
-
-
-/* =====================================================
-   ESCAPE HTML
-===================================================== */
-
-function escapeHtml(
-  value
-) {
-
-  return String(
-    value === undefined ||
-    value === null
-      ? ""
-      : value
-  )
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-    .replace(
-      /</g,
-      "&lt;"
-    )
-    .replace(
-      />/g,
-      "&gt;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-    .replace(
-      /'/g,
-      "&#039;"
-    );
-
-}
-
-
-/* =====================================================
-   SAFE JAVASCRIPT STRING
-===================================================== */
-
-function jsString(
-  value
-) {
-
-  return String(
-    value === undefined ||
-    value === null
-      ? ""
-      : value
-  )
-    .replace(
-      /\\/g,
-      "\\\\"
-    )
-    .replace(
-      /'/g,
-      "\\'"
-    )
-    .replace(
-      /\r/g,
-      "\\r"
-    )
-    .replace(
-      /\n/g,
-      "\\n"
-    );
-
-}
-
-
-/* =====================================================
-   FORMAT DATE/TIME
-===================================================== */
-
-function formatDateTime(
-  value
-) {
-
-  if (!value) {
-    return "";
-  }
-
-
-  const date =
-    new Date(value);
-
-
-  if (
-    isNaN(
-      date.getTime()
-    )
-  ) {
-
-    return String(value);
+    document
+      .getElementById("dashboardSection")
+      .classList.remove("hidden");
 
   }
 
+})();
 
-  return date.toLocaleString(
-    "en-IN",
-    {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit"
-    }
-  );
-
-}
 
 </script>
 
+
 </body>
+
 </html>
