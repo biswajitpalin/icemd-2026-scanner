@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>ICEMD-2026 Food Desk</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      color: #222;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 24px;
+      margin-top: 0;
+      margin-bottom: 5px;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 20px;
+      color: #17365d;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 25px;
+      font-size: 18px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      font-size: 16px;
+      background: white;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #17365d;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.92;
+    }
+
+    .button {
+      background: #17365d;
+      color: white;
+    }
+
+    .secondary {
+      background: #666;
+      color: white;
+    }
+
+    .meal-button {
+      background: #17365d;
+      color: white;
+      margin-top: 10px;
+    }
+
+    .meal-button.selected {
+      background: #0b7a3b;
+    }
+
+    .scan-button {
+      background: #17365d;
+      color: white;
+      font-size: 18px;
+      padding: 16px;
+      margin-top: 20px;
+    }
+
+    .message {
+      display: none;
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 7px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .message.success {
+      display: block;
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #b8dfc1;
+    }
+
+    .message.error {
+      display: block;
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f1bfc4;
+    }
+
+    .message.info {
+      display: block;
+      background: #e8f1fb;
+      color: #17365d;
+      border: 1px solid #c6d8ee;
+    }
+
+    .welcome {
+      text-align: center;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .meal-title {
+      text-align: center;
+      font-weight: bold;
+      color: #17365d;
+      margin-top: 10px;
+      margin-bottom: 5px;
+      font-size: 18px;
+    }
+
+    .selected-meal {
+      text-align: center;
+      margin-top: 15px;
+      color: #0b7a3b;
+      font-weight: bold;
+      min-height: 22px;
+    }
+
+    #scannerBox {
+      display: none;
+      margin-top: 20px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #111;
+      min-height: 250px;
+      position: relative;
+    }
+
+    #video {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #111;
+    }
+
+    .scanner-line {
+      position: absolute;
+      left: 10%;
+      right: 10%;
+      top: 50%;
+      height: 2px;
+      background: #00ff66;
+      box-shadow: 0 0 8px #00ff66;
+    }
+
+    .scan-status {
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .result-box {
+      display: none;
+      margin-top: 15px;
+      padding: 15px;
+      background: #f7f7f7;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .footer {
+      text-align: center;
+      color: #666;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+
+<div class="container">
+
+
+  <!-- =================================================
+       CATERER LOGIN
+  ================================================== -->
+
+  <div
+    id="loginPage"
+    class="card"
+  >
+
+    <h1>
+      ICEMD-2026
+    </h1>
+
+    <h2>
+      Caterer Login
+    </h2>
+
+    <p class="subtitle">
+      Food Distribution Desk
+    </p>
+
+
+    <label for="caterer">
+      Caterer
+    </label>
+
+    <select id="caterer">
+
+      <option value="">
+        Select Caterer
+      </option>
+
+      <option value="caterer1">
+        Caterer 1
+      </option>
+
+      <option value="caterer2">
+        Caterer 2
+      </option>
+
+      <option value="caterer3">
+        Caterer 3
+      </option>
+
+    </select>
+
+
+    <label for="password">
+      Password
+    </label>
+
+    <input
+      type="password"
+      id="password"
+      placeholder="Enter password"
+      autocomplete="off"
+    >
+
+
+    <button
+      class="button"
+      type="button"
+      onclick="login()"
+    >
+      Login
+    </button>
+
+
+    <button
+      class="secondary"
+      type="button"
+      onclick="goBack()"
+    >
+      Back
+    </button>
+
+
+    <div
+      id="loginMessage"
+      class="message"
+    ></div>
+
+
+    <div class="footer">
+      ICEMD-2026 IIT Jodhpur Food Desk
+    </div>
+
+  </div>
+
+
+
+  <!-- =================================================
+       FOOD SCANNER PAGE
+  ================================================== -->
+
+  <div
+    id="foodPage"
+    class="card hidden"
+  >
+
+    <h1>
+      ICEMD-2026
+    </h1>
+
+    <h2>
+      Food Distribution
+    </h2>
+
+    <p
+      id="welcomeCaterer"
+      class="welcome"
+    >
+      Welcome
+    </p>
+
+
+    <!-- MEAL SELECTION -->
+
+    <div class="meal-title">
+      Select Meal
+    </div>
+
+
+    <button
+      id="breakfastButton"
+      class="meal-button"
+      type="button"
+      onclick="selectMeal('Breakfast')"
+    >
+      Breakfast
+    </button>
+
+
+    <button
+      id="lunchButton"
+      class="meal-button"
+      type="button"
+      onclick="selectMeal('Lunch')"
+    >
+      Lunch
+    </button>
+
+
+    <button
+      id="snacksButton"
+      class="meal-button"
+      type="button"
+      onclick="selectMeal('Snacks')"
+    >
+      Snacks
+    </button>
+
+
+    <button
+      id="dinnerButton"
+      class="meal-button"
+      type="button"
+      onclick="selectMeal('Dinner')"
+    >
+      Dinner
+    </button>
+
+
+    <div
+      id="selectedMeal"
+      class="selected-meal"
+    ></div>
+
+
+    <!-- SCAN BUTTON -->
+
+    <button
+      class="scan-button"
+      type="button"
+      onclick="startScanner()"
+    >
+      📷 Scan QR Code
+    </button>
+
+
+    <!-- CAMERA -->
+
+    <div id="scannerBox">
+
+      <video
+        id="video"
+        autoplay
+        playsinline
+      ></video>
+
+      <div class="scanner-line"></div>
+
+    </div>
+
+
+    <div
+      id="scanStatus"
+      class="scan-status"
+    >
+      Camera is not active.
+    </div>
+
+
+    <!-- SCAN RESULT -->
+
+    <div
+      id="scanResult"
+      class="result-box"
+    ></div>
+
+
+    <button
+      id="stopButton"
+      class="secondary hidden"
+      type="button"
+      onclick="stopScanner()"
+    >
+      Stop Camera
+    </button>
+
+
+    <button
+      class="secondary"
+      type="button"
+      onclick="logout()"
+    >
+      Logout
+    </button>
+
+
+    <div class="footer">
+      ICEMD-2026 IIT Jodhpur Food Desk
+    </div>
+
+  </div>
+
+
+</div>
+
+
+
+<script>
+
+/* =====================================================
+   FIXED CATERER LOGIN
+
+   THREE CATERER ACCOUNTS FOR THE INITIAL UI.
+
+   These are temporary frontend credentials only.
+   Later we can connect them to Apps Script and
+   enforce the actual three-device restriction.
+===================================================== */
+
+const CATERERS = {
+
+  caterer1: {
+    name: "Caterer 1",
+    password: "food@2026"
+  },
+
+  caterer2: {
+    name: "Caterer 2",
+    password: "food@2026"
+  },
+
+  caterer3: {
+    name: "Caterer 3",
+    password: "food@2026"
+  }
+
+};
+
+
+/* =====================================================
+   CURRENT LOGIN
+===================================================== */
+
+let currentCaterer = "";
+
+let selectedMeal = "";
+
+let cameraStream = null;
+
+
+/* =====================================================
+   SHOW MESSAGE
+===================================================== */
+
+function showLoginMessage(message, type) {
+
+  const box =
+    document.getElementById("loginMessage");
+
+  box.textContent = message;
+
+  box.className =
+    "message " +
+    type;
+
+}
+
+
+/* =====================================================
+   CATERER LOGIN
+===================================================== */
+
+function login() {
+
+  const caterer =
+    document.getElementById("caterer").value;
+
+  const password =
+    document.getElementById("password").value;
+
+
+  document
+    .getElementById("loginMessage")
+    .className = "message";
+
+
+  if (!caterer || !password) {
+
+    showLoginMessage(
+      "Please select caterer and enter password.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (
+    CATERERS[caterer] &&
+    password === CATERERS[caterer].password
+  ) {
+
+    currentCaterer = caterer;
+
+
+    document
+      .getElementById("loginPage")
+      .classList.add("hidden");
+
+
+    document
+      .getElementById("foodPage")
+      .classList.remove("hidden");
+
+
+    document
+      .getElementById("welcomeCaterer")
+      .textContent =
+        "Welcome, " +
+        CATERERS[caterer].name;
+
+
+    return;
+  }
+
+
+  showLoginMessage(
+    "Invalid caterer or password.",
+    "error"
+  );
+
+}
+
+
+/* =====================================================
+   MEAL SELECTION
+===================================================== */
+
+function selectMeal(meal) {
+
+  selectedMeal = meal;
+
+
+  /*
+   * Remove selected state from all buttons.
+   */
+
+  document
+    .querySelectorAll(".meal-button")
+    .forEach(function(button) {
+
+      button.classList.remove("selected");
+
+    });
+
+
+  /*
+   * Highlight selected button.
+   */
+
+  const buttonId =
+    meal.toLowerCase() + "Button";
+
+  const selectedButton =
+    document.getElementById(buttonId);
+
+  if (selectedButton) {
+
+    selectedButton.classList.add("selected");
+
+  }
+
+
+  /*
+   * Display selected meal.
+   */
+
+  document
+    .getElementById("selectedMeal")
+    .textContent =
+      "Selected: " + meal;
+
+}
+
+
+/* =====================================================
+   START QR SCANNER
+===================================================== */
+
+async function startScanner() {
+
+  /*
+   * A meal must be selected first.
+   */
+
+  if (!selectedMeal) {
+
+    const status =
+      document.getElementById("scanStatus");
+
+    status.textContent =
+      "Please select Breakfast, Lunch, Snacks, or Dinner first.";
+
+    status.style.color = "#721c24";
+
+    return;
+  }
+
+
+  /*
+   * Check camera availability.
+   */
+
+  if (!navigator.mediaDevices ||
+      !navigator.mediaDevices.getUserMedia) {
+
+    document
+      .getElementById("scanStatus")
+      .textContent =
+        "Camera access is not supported by this browser.";
+
+    return;
+  }
+
+
+  try {
+
+    cameraStream =
+      await navigator.mediaDevices.getUserMedia({
+
+        video: {
+          facingMode: {
+            ideal: "environment"
+          }
+        },
+
+        audio: false
+
+      });
+
+
+    const video =
+      document.getElementById("video");
+
+
+    video.srcObject =
+      cameraStream;
+
+
+    document
+      .getElementById("scannerBox")
+      .style.display = "block";
+
+
+    document
+      .getElementById("stopButton")
+      .classList.remove("hidden");
+
+
+    document
+      .getElementById("scanStatus")
+      .textContent =
+        "Camera active. Point the camera at the participant QR code.";
+
+    document
+      .getElementById("scanStatus")
+      .style.color = "#666";
+
+
+    /*
+     * The actual QR decoding will be added next.
+     */
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+
+    document
+      .getElementById("scanStatus")
+      .textContent =
+        "Unable to open camera. Please allow camera permission.";
+
+    document
+      .getElementById("scanStatus")
+      .style.color = "#721c24";
+
+  }
+
+}
+
+
+/* =====================================================
+   STOP CAMERA
+===================================================== */
+
+function stopScanner() {
+
+  if (cameraStream) {
+
+    cameraStream
+      .getTracks()
+      .forEach(function(track) {
+
+        track.stop();
+
+      });
+
+    cameraStream = null;
+
+  }
+
+
+  document
+    .getElementById("video")
+    .srcObject = null;
+
+
+  document
+    .getElementById("scannerBox")
+    .style.display = "none";
+
+
+  document
+    .getElementById("stopButton")
+    .classList.add("hidden");
+
+
+  document
+    .getElementById("scanStatus")
+    .textContent =
+      "Camera is not active.";
+
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+function logout() {
+
+  stopScanner();
+
+
+  currentCaterer = "";
+
+  selectedMeal = "";
+
+
+  document
+    .getElementById("password")
+    .value = "";
+
+
+  document
+    .getElementById("caterer")
+    .value = "";
+
+
+  document
+    .getElementById("selectedMeal")
+    .textContent = "";
+
+
+  document
+    .querySelectorAll(".meal-button")
+    .forEach(function(button) {
+
+      button.classList.remove("selected");
+
+    });
+
+
+  document
+    .getElementById("foodPage")
+    .classList.add("hidden");
+
+
+  document
+    .getElementById("loginPage")
+    .classList.remove("hidden");
+
+}
+
+
+/* =====================================================
+   BACK
+===================================================== */
+
+function goBack() {
+
+  window.history.back();
+
+}
+
+</script>
+
+</body>
+</html>
