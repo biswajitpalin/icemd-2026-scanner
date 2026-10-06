@@ -131,7 +131,7 @@
 
 
         /*
-         * KEEPING THE WORKING CAMERA
+         * KEEPING YOUR WORKING CAMERA
          * CONFIGURATION UNCHANGED.
          */
         await scanner.start(
@@ -230,15 +230,13 @@
 
 
             /*
-             * SEND THE REGISTRATION ID
+             * NOW SEND THE REGISTRATION ID
              * BACK TO THE CONFERENCE WEB APP.
-             *
-             * IMPORTANT:
-             * The scanner is now inside an iframe,
-             * so we use window.parent instead of
-             * window.opener.
              */
-            if (window.parent) {
+            if (
+              window.opener &&
+              !window.opener.closed
+            ) {
 
               console.log(
                 "Sending QR to Conference web app:",
@@ -246,7 +244,7 @@
               );
 
 
-              window.parent.postMessage(
+              window.opener.postMessage(
 
                 {
                   type: "ICEMD_QR_SCAN",
@@ -270,7 +268,7 @@
             else {
 
               console.error(
-                "Conference web app not found."
+                "Conference web app window not found."
               );
 
 
