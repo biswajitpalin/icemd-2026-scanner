@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>ICEMD-2026 Admin Login</title>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
@@ -43,14 +49,12 @@
       font-size: 20px;
       color: #17365d;
       margin-top: 10px;
-      margin-bottom: 10px;
     }
 
     .subtitle {
       text-align: center;
       color: #666;
       margin-bottom: 25px;
-      font-size: 18px;
     }
 
     label {
@@ -83,13 +87,18 @@
       cursor: pointer;
     }
 
-    button:hover {
-      opacity: 0.92;
+    button:disabled {
+      background: #999 !important;
+      cursor: not-allowed;
     }
 
     .button {
       background: #17365d;
       color: white;
+    }
+
+    .button:hover {
+      opacity: 0.92;
     }
 
     .secondary {
@@ -120,287 +129,322 @@
       border: 1px solid #f1bfc4;
     }
 
-    .footer {
+    .welcome {
       text-align: center;
-      color: #666;
-      margin-top: 20px;
-      font-size: 14px;
+      font-weight: bold;
+      font-size: 18px;
+      color: #17365d;
+      margin-bottom: 15px;
     }
 
     .hidden {
       display: none !important;
     }
+
   </style>
+
 </head>
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <!-- ADMIN LOGIN -->
-    <div id="loginPage" class="card">
+  <!-- =================================================
+       ADMIN LOGIN PAGE
+  ================================================== -->
 
-      <h1>ICEMD-2026</h1>
+  <div
+    id="adminLoginPage"
+    class="card"
+  >
 
-      <h2>Admin Login</h2>
+    <h1>
+      ICEMD-2026
+    </h1>
 
-      <p class="subtitle">
-        Registration Desk
-      </p>
+    <h2>
+      Admin Login
+    </h2>
 
-      <label for="email">
-        Email
-      </label>
-
-      <input
-        type="email"
-        id="email"
-        placeholder="Enter email address"
-        autocomplete="username"
-      >
-
-      <label for="password">
-        Password
-      </label>
-
-      <input
-        type="password"
-        id="password"
-        placeholder="Enter password"
-        autocomplete="current-password"
-      >
-
-      <button
-        class="button"
-        onclick="login()"
-      >
-        Login
-      </button>
-
-      <button
-        class="secondary"
-        onclick="goBack()"
-      >
-        Back
-      </button>
-
-      <div id="message" class="message"></div>
-
-      <div class="footer">
-        ICEMD-2026 IIT Jodhpur Registration Desk
-      </div>
-
-    </div>
+    <p class="subtitle">
+      Registration Desk
+    </p>
 
 
-    <!-- SIMPLE SUCCESS PAGE -->
-    <div id="successPage" class="card hidden">
+    <label for="adminEmail">
+      Email
+    </label>
 
-      <h1>ICEMD-2026</h1>
+    <input
+      type="email"
+      id="adminEmail"
+      placeholder="Enter email address"
+      autocomplete="email"
+    >
 
-      <h2>Admin Dashboard</h2>
 
-      <p class="subtitle">
-        Welcome, Biswajit Pal
-      </p>
+    <label for="adminPassword">
+      Password
+    </label>
 
-      <button
-        class="secondary"
-        onclick="logout()"
-      >
-        Logout
-      </button>
+    <input
+      type="password"
+      id="adminPassword"
+      placeholder="Enter password"
+      autocomplete="current-password"
+    >
 
-      <div class="footer">
-        ICEMD-2026 IIT Jodhpur Registration Desk
-      </div>
 
-    </div>
+    <button
+      id="loginButton"
+      class="button"
+      onclick="adminLogin()"
+    >
+      Login
+    </button>
+
+
+    <button
+      class="button secondary"
+      onclick="goBack()"
+    >
+      Back
+    </button>
+
+
+    <div
+      id="adminMessage"
+      class="message"
+    ></div>
+
+
+    <p
+      style="
+        text-align:center;
+        color:#666;
+        margin-top:20px;
+        margin-bottom:0;
+      "
+    >
+      ICEMD-2026 IIT Jodhpur Registration Desk
+    </p>
 
   </div>
 
 
-  <script>
+  <!-- =================================================
+       ADMIN HOME PAGE
+  ================================================== -->
 
-    /*
-     * =====================================================
-     * FIXED ADMIN LOGIN
-     *
-     * This version is intentionally standalone.
-     * No Apps Script.
-     * No Google Sheet.
-     * No API.
-     * No JSONP.
-     * =====================================================
-     */
+  <div
+    id="adminHomePage"
+    class="card hidden"
+  >
 
-    const ADMIN_EMAIL = "pal.17@iitj.ac.in";
-    const ADMIN_PASSWORD = "icemd@20260317";
+    <h1>
+      ICEMD-2026
+    </h1>
 
+    <h2>
+      Admin Dashboard
+    </h2>
 
-    /*
-     * =====================================================
-     * SHOW MESSAGE
-     * =====================================================
-     */
-
-    function showMessage(message, type) {
-
-      const box =
-        document.getElementById("message");
-
-      box.innerText = message;
-
-      box.className =
-        "message " +
-        (type === "success" ? "success" : "error");
-    }
+    <p class="welcome">
+      Welcome, Biswajit Pal
+    </p>
 
 
-    /*
-     * =====================================================
-     * CLEAR MESSAGE
-     * =====================================================
-     */
-
-    function clearMessage() {
-
-      const box =
-        document.getElementById("message");
-
-      box.innerText = "";
-      box.className = "message";
-    }
+    <button
+      class="button"
+      onclick="alert('Admin console will be added here.')"
+    >
+      Admin Console
+    </button>
 
 
-    /*
-     * =====================================================
-     * ADMIN LOGIN
-     * =====================================================
-     */
-
-    function login() {
-
-      const email =
-        document
-          .getElementById("email")
-          .value
-          .trim()
-          .toLowerCase();
-
-      const password =
-        document
-          .getElementById("password")
-          .value;
-
-      clearMessage();
+    <button
+      class="button secondary"
+      onclick="adminLogout()"
+    >
+      Logout
+    </button>
 
 
-      /*
-       * Check empty fields.
-       */
+    <p
+      style="
+        text-align:center;
+        color:#666;
+        margin-top:20px;
+        margin-bottom:0;
+      "
+    >
+      ICEMD-2026 IIT Jodhpur Registration Desk
+    </p>
 
-      if (!email || !password) {
+  </div>
 
-        showMessage(
-          "Please enter email and password.",
-          "error"
-        );
-
-        return;
-      }
-
-
-      /*
-       * Check fixed credentials.
-       */
-
-      if (
-        email === ADMIN_EMAIL.toLowerCase() &&
-        password === ADMIN_PASSWORD
-      ) {
-
-        document
-          .getElementById("loginPage")
-          .classList.add("hidden");
-
-        document
-          .getElementById("successPage")
-          .classList.remove("hidden");
-
-        return;
-      }
+</div>
 
 
-      /*
-       * Invalid credentials.
-       */
+<script>
 
-      showMessage(
-        "Invalid email or password.",
-        "error"
-      );
-    }
+/* =====================================================
+   FIXED ADMIN CREDENTIALS
 
+   GitHub-only test version.
+   No Apps Script.
+   No Google Sheet.
+   No API.
+===================================================== */
 
-    /*
-     * =====================================================
-     * LOGOUT
-     * =====================================================
-     */
-
-    function logout() {
-
-      document
-        .getElementById("password")
-        .value = "";
-
-      clearMessage();
-
-      document
-        .getElementById("successPage")
-        .classList.add("hidden");
-
-      document
-        .getElementById("loginPage")
-        .classList.remove("hidden");
-    }
+const ADMIN_EMAIL = "pal.17@iitj.ac.in";
+const ADMIN_PASSWORD = "icemd@20260317";
 
 
-    /*
-     * =====================================================
-     * BACK
-     *
-     * Change this later to your desired page.
-     * For now, simply go back in browser history.
-     * =====================================================
-     */
+/* =====================================================
+   SHOW MESSAGE
+===================================================== */
 
-    function goBack() {
+function showMessage(message, type) {
 
-      if (window.history.length > 1) {
-        window.history.back();
-      }
-    }
+  const box =
+    document.getElementById("adminMessage");
+
+  box.textContent = message;
+
+  box.className =
+    "message " +
+    (type === "success" ? "success" : "error");
+}
 
 
-    /*
-     * =====================================================
-     * ENTER KEY LOGIN
-     * =====================================================
-     */
+/* =====================================================
+   CLEAR MESSAGE
+===================================================== */
+
+function clearMessage() {
+
+  const box =
+    document.getElementById("adminMessage");
+
+  box.textContent = "";
+  box.className = "message";
+}
+
+
+/* =====================================================
+   ADMIN LOGIN
+===================================================== */
+
+function adminLogin() {
+
+  const emailInput =
+    document.getElementById("adminEmail");
+
+  const passwordInput =
+    document.getElementById("adminPassword");
+
+  const email =
+    String(emailInput.value || "")
+      .trim()
+      .toLowerCase();
+
+  const password =
+    String(passwordInput.value || "");
+
+  clearMessage();
+
+
+  if (!email || !password) {
+
+    showMessage(
+      "Please enter email and password.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (
+    email === ADMIN_EMAIL &&
+    password === ADMIN_PASSWORD
+  ) {
 
     document
-      .getElementById("password")
-      .addEventListener("keydown", function(event) {
+      .getElementById("adminLoginPage")
+      .classList.add("hidden");
 
-        if (event.key === "Enter") {
-          login();
-        }
+    document
+      .getElementById("adminHomePage")
+      .classList.remove("hidden");
 
-      });
+    return;
+  }
 
-  </script>
+
+  showMessage(
+    "Invalid Admin email or password.",
+    "error"
+  );
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+function adminLogout() {
+
+  document
+    .getElementById("adminEmail")
+    .value = "";
+
+  document
+    .getElementById("adminPassword")
+    .value = "";
+
+  clearMessage();
+
+  document
+    .getElementById("adminHomePage")
+    .classList.add("hidden");
+
+  document
+    .getElementById("adminLoginPage")
+    .classList.remove("hidden");
+}
+
+
+/* =====================================================
+   BACK
+===================================================== */
+
+function goBack() {
+
+  window.history.back();
+
+}
+
+
+/* =====================================================
+   ENTER KEY
+===================================================== */
+
+document
+  .getElementById("adminPassword")
+  .addEventListener(
+    "keydown",
+    function(event) {
+
+      if (event.key === "Enter") {
+        adminLogin();
+      }
+
+    }
+  );
+
+</script>
 
 </body>
 </html>
