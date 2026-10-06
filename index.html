@@ -104,10 +104,12 @@
 
     let scanner = null;
     let running = false;
+    let processing = false;
+
 
     async function startScanner() {
 
-      if (running) {
+      if (running || processing) {
         return;
       }
 
@@ -127,6 +129,11 @@
         scanner =
           new Html5Qrcode("qr-reader");
 
+
+        /*
+         * KEEPING YOUR WORKING CAMERA
+         * CONFIGURATION UNCHANGED.
+         */
         await scanner.start(
 
           {
@@ -141,23 +148,158 @@
             }
           },
 
-          function(decodedText) {
+
+          /*
+           * ONE QR CODE FOUND
+           */
+          async function(decodedText) {
+
+            if (processing) {
+              return;
+            }
+
+            processing = true;
+
+            const registrationID =
+              String(decodedText || "").trim();
+
+
+            if (!registrationID) {
+
+              processing = false;
+
+              return;
+            }
+
 
             console.log(
               "QR detected:",
-              decodedText
+              registrationID
             );
 
+
             status.innerText =
-              "QR detected: " + decodedText;
+              "QR detected: " +
+              registrationID +
+              "\nStopping camera...";
+
+
+            /*
+             * STOP CAMERA IMMEDIATELY
+             * AFTER FINDING THE QR.
+             */
+            try {
+
+              if (scanner) {
+                await scanner.stop();
+              }
+
+            }
+            catch (e) {
+
+              console.error(
+                "Scanner stop error:",
+                e
+              );
+
+            }
+
+
+            /*
+             * CLEAR THE CAMERA VIEW.
+             */
+            try {
+
+              if (scanner) {
+                await scanner.clear();
+              }
+
+            }
+            catch (e) {
+
+              console.error(
+                "Scanner clear error:",
+                e
+              );
+
+            }
+
+
+            scanner = null;
+            running = false;
+
+
+            /*
+             * NOW SEND THE REGISTRATION ID
+             * BACK TO THE CONFERENCE WEB APP.
+             */
+            if (
+              window.opener &&
+              !window.opener.closed
+            ) {
+
+              console.log(
+                "Sending QR to Conference web app:",
+                registrationID
+              );
+
+
+              window.opener.postMessage(
+
+                {
+                  type: "ICEMD_QR_SCAN",
+
+                  registrationID:
+                    registrationID
+                },
+
+                "*"
+
+              );
+
+
+              status.innerText =
+                "QR scanned successfully:\n" +
+                registrationID +
+                "\n\nSent to Registration Desk.";
+
+            }
+
+            else {
+
+              console.error(
+                "Conference web app window not found."
+              );
+
+
+              status.innerText =
+                "QR detected:\n" +
+                registrationID +
+                "\n\nConference window not connected.";
+
+            }
+
+
+            /*
+             * QR processing is complete.
+             */
+            processing = false;
+
+            startButton.disabled = false;
 
           },
 
+
           function(errorMessage) {
-            // Ignore scan errors
+
+            /*
+             * Ignore normal QR scanning errors.
+             */
+
           }
 
         );
+
 
         running = true;
 
@@ -168,6 +310,7 @@
 
       }
 
+
       catch (error) {
 
         console.error(
@@ -176,6 +319,7 @@
         );
 
         running = false;
+        processing = false;
 
         startButton.disabled = false;
 
@@ -195,22 +339,33 @@
       }
 
       try {
+
         await scanner.stop();
+
       }
+
       catch (e) {}
 
+
       try {
+
         await scanner.clear();
+
       }
+
       catch (e) {}
+
 
       scanner = null;
 
       running = false;
+      processing = false;
+
 
       document.getElementById(
         "qr-reader"
       ).innerHTML = "";
+
 
       document.getElementById(
         "status"
