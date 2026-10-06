@@ -105,6 +105,14 @@
     let scanner = null;
     let running = false;
 
+    /*
+     * Prevent the same QR code from being
+     * sent repeatedly while it remains
+     * in front of the camera.
+     */
+    let processing = false;
+
+
     async function startScanner() {
 
       if (running) {
@@ -148,16 +156,97 @@
               decodedText
             );
 
+
+            /*
+             * Ignore repeated detections
+             * while this QR is being processed.
+             */
+            if (processing) {
+              return;
+            }
+
+            processing = true;
+
+
+            /*
+             * Get the Registration ID
+             * from the QR code.
+             */
+            const registrationID =
+              String(decodedText || "").trim();
+
+
+            if (!registrationID) {
+
+              processing = false;
+
+              return;
+            }
+
+
             status.innerText =
-              "QR detected: " + decodedText;
+              "QR detected: " +
+              registrationID;
+
+
+            /*
+             * Send the Registration ID
+             * back to the IIT Jodhpur
+             * Registration Desk window.
+             */
+            if (
+              window.opener &&
+              !window.opener.closed
+            ) {
+
+              window.opener.postMessage(
+
+                {
+                  type: "ICEMD_QR_SCAN",
+                  registrationID:
+                    registrationID
+                },
+
+                "*"
+
+              );
+
+            }
+
+
+            /*
+             * Allow the next scan after
+             * a short delay.
+             */
+            setTimeout(
+
+              function() {
+
+                processing = false;
+
+                if (running) {
+
+                  status.innerText =
+                    "Camera active — point at the QR code.";
+
+                }
+
+              },
+
+              2500
+
+            );
 
           },
 
           function(errorMessage) {
+
             // Ignore scan errors
+
           }
 
         );
+
 
         running = true;
 
@@ -177,6 +266,8 @@
 
         running = false;
 
+        processing = false;
+
         startButton.disabled = false;
 
         status.innerText =
@@ -195,22 +286,34 @@
       }
 
       try {
+
         await scanner.stop();
+
       }
+
       catch (e) {}
 
+
       try {
+
         await scanner.clear();
+
       }
+
       catch (e) {}
+
 
       scanner = null;
 
       running = false;
 
+      processing = false;
+
+
       document.getElementById(
         "qr-reader"
       ).innerHTML = "";
+
 
       document.getElementById(
         "status"
