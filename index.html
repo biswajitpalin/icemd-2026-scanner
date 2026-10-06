@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>ICEMD-2026 Registration Desk</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      color: #222;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 24px;
+      margin-top: 0;
+      margin-bottom: 5px;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 20px;
+      color: #17365d;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 25px;
+      font-size: 18px;
+    }
+
+    .option {
+      display: block;
+      width: 100%;
+      padding: 18px;
+      margin-top: 15px;
+
+      background: #17365d;
+      color: white;
+
+      text-decoration: none;
+      text-align: center;
+
+      border-radius: 8px;
+
+      font-size: 17px;
+      font-weight: normal;
+
+      transition:
+        background 0.15s ease,
+        transform 0.1s ease;
+    }
+
+    .option:hover {
+      background: #214a7a;
+    }
+
+    .option:active {
+      transform: scale(0.99);
+    }
+
+    .option-title {
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+
+    .option-description {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .admin {
+      background: #17365d;
+    }
+
+    .assistant {
+      background: #17365d;
+    }
+
+    .food {
+      background: #17365d;
+    }
+
+    .footer {
+      text-align: center;
+      color: #666;
+      margin-top: 25px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+  <div class="card">
+
+    <h1>
+      ICEMD-2026
+    </h1>
+
+    <h2>
+      Registration Desk
+    </h2>
+
+    <p class="subtitle">
+      Select an option to continue
+    </p>
+
+
+    <!-- =================================================
+         ADMIN CONSOLE
+    ================================================== -->
+
+    <a
+      href="admin.html"
+      class="option admin"
+    >
+
+      <div class="option-title">
+        Admin Console
+      </div>
+
+      <div class="option-description">
+        Registration and system management
+      </div>
+
+    </a>
+
+
+    <!-- =================================================
+         ASSISTANT SCANNER
+    ================================================== -->
+
+    <a
+      href="assistant.html"
+      class="option assistant"
+    >
+
+      <div class="option-title">
+        Assistant Scanner
+      </div>
+
+      <div class="option-description">
+        Participant QR scanning and attendance
+      </div>
+
+    </a>
+
+
+    <!-- =================================================
+         FOOD SCANNER
+    ================================================== -->
+
+    <a
+      href="food.html"
+      class="option food"
+    >
+
+      <div class="option-title">
+        Food Scanner
+      </div>
+
+      <div class="option-description">
+        Breakfast, Lunch, Snacks and Dinner
+      </div>
+
+    </a>
+
+
+    <div class="footer">
+      ICEMD-2026 IIT Jodhpur<br>
+      Registration Desk
+    </div>
+
+  </div>
+
+</div>
+
+
+</body>
+</html>
