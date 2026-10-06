@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>ICEMD-2026 QR Scanner</title>
 
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
@@ -73,7 +72,6 @@
 <body>
 
 <div class="container">
-
   <div class="card">
 
     <h2>ICEMD-2026 QR Scanner</h2>
@@ -84,34 +82,25 @@
       Press Start Scanner.
     </div>
 
-    <button id="startButton"
-            onclick="startScanner()">
+    <button id="startButton" onclick="startScanner()">
       Start Scanner
     </button>
 
-    <button id="stopButton"
-            onclick="stopScanner()">
+    <button id="stopButton" onclick="stopScanner()">
       Stop Scanner
     </button>
 
   </div>
-
 </div>
-
 
 <script>
 
 let scanner = null;
 let running = false;
 
-
-/* START */
-
 async function startScanner() {
 
-  if (running) {
-    return;
-  }
+  if (running) return;
 
   const status =
     document.getElementById("status");
@@ -131,55 +120,27 @@ async function startScanner() {
 
     await scanner.start(
 
-      {
-        facingMode: "environment"
-      },
+      { facingMode: "environment" },
 
       {
         fps: 10,
-
         qrbox: {
           width: 250,
           height: 250
         }
+      },
+
+      function(decodedText) {
+
+        console.log("QR:", decodedText);
+
+        status.innerText =
+          "QR detected: " + decodedText;
 
       },
 
-    function(decodedText) {
-    
-      console.log(
-        "QR:",
-        decodedText
-      );
-    
-      const registrationID =
-        String(decodedText || "").trim();
-    
-      if (!registrationID) {
-        return;
-      }
-    
-      status.innerText =
-        "QR detected: " + registrationID;
-    
-      if (window.opener) {
-    
-        window.opener.postMessage(
-          {
-            type: "ICEMD_QR_SCAN",
-            registrationID: registrationID
-          },
-          "*"
-        );
-    
-      }
-    
-    }
-
       function(errorMessage) {
-
-        // Ignore normal scanning errors.
-
+        // Ignore continuous scan errors
       }
 
     );
@@ -209,17 +170,12 @@ async function startScanner() {
       (error.message || error);
 
   }
-
 }
 
 
-/* STOP */
-
 async function stopScanner() {
 
-  if (!scanner) {
-    return;
-  }
+  if (!scanner) return;
 
   try {
     await scanner.stop();
@@ -235,9 +191,13 @@ async function stopScanner() {
 
   running = false;
 
-  document.getElementById("qr-reader").innerHTML = "";
+  document.getElementById(
+    "qr-reader"
+  ).innerHTML = "";
 
-  document.getElementById("status").innerText =
+  document.getElementById(
+    "status"
+  ).innerText =
     "Scanner stopped.";
 
 }
