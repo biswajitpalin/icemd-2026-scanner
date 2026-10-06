@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>ICEMD-2026 QR Scanner</title>
+
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      color: #222;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.10);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 22px;
+      margin-top: 0;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    #qr-reader {
+      width: 100%;
+      overflow: hidden;
+      border-radius: 12px;
+      background: #111;
+    }
+
+    #qr-reader video {
+      width: 100% !important;
+      height: auto !important;
+      display: block;
+    }
+
+    .status {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #f0f2f5;
+      text-align: center;
+      font-size: 15px;
+    }
+
+    .result {
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: bold;
+      display: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 13px;
+      margin-top: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .start-button {
+      background: #198754;
+      color: white;
+    }
+
+    .stop-button {
+      background: #6c757d;
+      color: white;
+    }
+
+    .close-button {
+      background: #dc3545;
+      color: white;
+    }
+
+    .note {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="card">
+
+    <h1>ICEMD-2026</h1>
+
+    <div class="subtitle">
+      Registration QR Scanner
+    </div>
+
+    <div id="qr-reader"></div>
+
+    <div id="scannerStatus" class="status">
+      Press "Start Scanner" to activate the camera.
+    </div>
+
+    <div id="scanResult" class="result"></div>
+
+    <button
+      id="startButton"
+      class="start-button"
+      onclick="startScanner()">
+      Start Scanner
+    </button>
+
+    <button
+      id="stopButton"
+      class="stop-button"
+      onclick="stopScanner()">
+      Stop Scanner
+    </button>
+
+    <button
+      class="close-button"
+      onclick="closeScanner()">
+      Close Scanner
+    </button>
+
+    <div class="note">
+      Please allow camera access when your browser asks.
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+let scanner = null;
+let scannerRunning = false;
+let processing = false;
+
+
+/* ----------------------------------
+   START SCANNER
+---------------------------------- */
+
+async function startScanner() {
+
+  if (scannerRunning) {
+    return;
+  }
+
+  const status =
+    document.getElementById("scannerStatus");
+
+  const startButton =
+    document.getElementById("startButton");
+
+  if (typeof Html5Qrcode === "undefined") {
+
+    status.innerText =
+      "QR scanner library could not be loaded.";
+
+    return;
+  }
+
+  startButton.disabled = true;
+
+  status.innerText =
+    "Starting camera... Please allow camera access.";
+
+  try {
+
+    if (scanner) {
+
+      try {
+        await scanner.stop();
+      } catch (e) {}
+
+      try {
+        await scanner.clear();
+      } catch (e) {}
+
+      scanner = null;
+    }
+
+    document.getElementById("qr-reader").innerHTML = "";
+
+    scanner =
+      new Html5Qrcode("qr-reader");
+
+    await scanner.start(
+
+      {
+        facingMode: {
+          ideal: "environment"
+        }
+      },
+
+      {
+        fps: 10,
+
+        qrbox: function(width, height) {
+
+          const minEdge =
+            Math.min(width, height);
+
+          let size =
+            Math.floor(minEdge * 0.70);
+
+          if (size > 320) {
+            size = 320;
+          }
+
+          if (size < 180) {
+            size = 180;
+          }
+
+          return {
+            width: size,
+            height: size
+          };
+        },
+
+        aspectRatio: 1.0,
+
+        disableFlip: false
+      },
+
+      function(decodedText) {
+
+        if (processing) {
+          return;
+        }
+
+        processing = true;
+
+        handleQRCode(decodedText);
+      },
+
+      function(errorMessage) {
+        // Normal QR detection failures are ignored.
+      }
+
+    );
+
+    scannerRunning = true;
+
+    startButton.disabled = false;
+
+    status.innerHTML =
+      "✓ <strong>Camera active.</strong><br>" +
+      "Point the camera at the guest QR code.";
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+    scannerRunning = false;
+
+    startButton.disabled = false;
+
+    status.innerHTML =
+      "<strong>Unable to start camera.</strong><br>" +
+      "Please allow camera permission and try again.";
+
+    if (scanner) {
+
+      try {
+        await scanner.stop();
+      } catch (e) {}
+
+      try {
+        await scanner.clear();
+      } catch (e) {}
+
+      scanner = null;
+    }
+  }
+}
+
+
+/* ----------------------------------
+   QR DETECTED
+---------------------------------- */
+
+function handleQRCode(decodedText) {
+
+  const registrationID =
+    String(decodedText || "").trim();
+
+  console.log(
+    "QR detected:",
+    registrationID
+  );
+
+  if (!registrationID) {
+
+    processing = false;
+
+    return;
+  }
+
+  const status =
+    document.getElementById("scannerStatus");
+
+  const result =
+    document.getElementById("scanResult");
+
+  status.innerText =
+    "QR detected. Sending registration ID...";
+
+  result.style.display = "block";
+
+  result.innerText =
+    registrationID;
+
+  /*
+   * Send the Registration ID back
+   * to the Apps Script window.
+   */
+
+  if (window.opener) {
+
+    window.opener.postMessage(
+
+      {
+        type: "ICEMD_QR_SCAN",
+        registrationID: registrationID
+      },
+
+      "*"
+
+    );
+
+    status.innerHTML =
+      "✓ QR sent to registration desk.<br>" +
+      "Ready for next scan.";
+
+  }
+
+  else {
+
+    status.innerText =
+      "Registration desk window was not found.";
+  }
+
+  /*
+   * Allow the next QR scan after
+   * a short delay.
+   */
+
+  setTimeout(function() {
+
+    processing = false;
+
+    result.style.display = "none";
+
+  }, 2000);
+}
+
+
+/* ----------------------------------
+   STOP SCANNER
+---------------------------------- */
+
+async function stopScanner() {
+
+  if (!scanner) {
+    return;
+  }
+
+  try {
+    await scanner.stop();
+  } catch (e) {}
+
+  try {
+    await scanner.clear();
+  } catch (e) {}
+
+  scanner = null;
+
+  scannerRunning = false;
+
+  processing = false;
+
+  document.getElementById("scannerStatus").innerText =
+    "Scanner stopped.";
+
+  document.getElementById("qr-reader").innerHTML = "";
+
+}
+
+
+/* ----------------------------------
+   CLOSE WINDOW
+---------------------------------- */
+
+async function closeScanner() {
+
+  await stopScanner();
+
+  window.close();
+
+}
+
+</script>
+
+</body>
+</html>
