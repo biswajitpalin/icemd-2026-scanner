@@ -1073,7 +1073,7 @@ function loadUsers() {
 
       const users =
         Array.isArray(result.users)
-          ? result.users
+          ? result.data
           : [];
 
 
@@ -1127,35 +1127,24 @@ function loadUsers() {
    USER SUMMARY
 ===================================================== */
 
-function updateUserSummary(
-  users,
-  limit
-) {
+function updateUserSummary(users, limit) {
 
-  const total =
-    users.length;
+  const total = users.length;
 
+  const active = users.filter(function(user) {
 
-  const active =
-    users.filter(function(user) {
+    return String(user["Status"] || "")
+      .toUpperCase() === "ACTIVE";
 
-      return (
-        String(user.status || "")
-          .toUpperCase() === "ACTIVE"
-      );
-
-    }).length;
-
+  }).length;
 
   document.getElementById(
     "totalUsers"
   ).textContent = total;
 
-
   document.getElementById(
     "activeUsers"
   ).textContent = active;
-
 
   document.getElementById(
     "userLimit"
@@ -1176,8 +1165,7 @@ function renderUsers(users) {
 
   if (!users.length) {
 
-    list.className =
-      "empty";
+    list.className = "empty";
 
     list.textContent =
       "No users have been added yet.";
@@ -1187,14 +1175,27 @@ function renderUsers(users) {
   }
 
 
-  list.className =
-    "user-list";
-
+  list.className = "user-list";
 
   list.innerHTML = "";
 
 
   users.forEach(function(user) {
+
+    const name =
+      user["Name"] || "";
+
+    const email =
+      user["Email ID"] || "";
+
+    const userStatus =
+      String(user["Status"] || "")
+        .toUpperCase();
+
+
+    const isActive =
+      userStatus === "ACTIVE";
+
 
     const item =
       document.createElement("div");
@@ -1203,37 +1204,30 @@ function renderUsers(users) {
       "user-item";
 
 
-    const name =
+    const nameElement =
       document.createElement("div");
 
-    name.className =
+    nameElement.className =
       "user-name";
 
-    name.textContent =
-      user.name || "";
+    nameElement.textContent =
+      name;
 
 
-
-    const email =
+    const emailElement =
       document.createElement("div");
 
-    email.className =
+    emailElement.className =
       "user-email";
 
-    email.textContent =
-      user.email || "";
+    emailElement.textContent =
+      email;
 
 
-
-    const status =
+    const statusElement =
       document.createElement("div");
 
-    const isActive =
-      String(user.status || "")
-        .toUpperCase() === "ACTIVE";
-
-
-    status.className =
+    statusElement.className =
       "user-status " +
       (
         isActive
@@ -1241,15 +1235,13 @@ function renderUsers(users) {
           : "status-inactive"
       );
 
-
-    status.textContent =
+    statusElement.textContent =
       "Status: " +
       (
         isActive
           ? "ACTIVE"
           : "INACTIVE"
       );
-
 
 
     const actions =
@@ -1278,14 +1270,13 @@ function renderUsers(users) {
       function() {
 
         changeUserStatus(
-          user.email,
+          email,
           isActive
             ? "INACTIVE"
             : "ACTIVE"
         );
 
       };
-
 
 
     const deleteButton =
@@ -1304,12 +1295,9 @@ function renderUsers(users) {
     deleteButton.onclick =
       function() {
 
-        deleteExistingUser(
-          user.email
-        );
+        deleteExistingUser(email);
 
       };
-
 
 
     actions.appendChild(
@@ -1321,21 +1309,30 @@ function renderUsers(users) {
     );
 
 
-    item.appendChild(name);
+    item.appendChild(
+      nameElement
+    );
 
-    item.appendChild(email);
+    item.appendChild(
+      emailElement
+    );
 
-    item.appendChild(status);
+    item.appendChild(
+      statusElement
+    );
 
-    item.appendChild(actions);
+    item.appendChild(
+      actions
+    );
 
 
-    list.appendChild(item);
+    list.appendChild(
+      item
+    );
 
   });
 
 }
-
 
 /* =====================================================
    ADD NEW USER
