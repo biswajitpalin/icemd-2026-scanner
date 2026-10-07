@@ -1,811 +1,937 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ICEMD-2026 IIT Jodhpur - Food Service</title>
 
-  <meta charset="UTF-8">
+<style>
+*{box-sizing:border-box}
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+body{
+margin:0;
+padding:20px;
+font-family:Arial,sans-serif;
+background:#f5f5f5;
+color:#222
+}
 
-  <title>ICEMD-2026 Food Desk</title>
+.container{
+max-width:500px;
+margin:0 auto
+}
 
-  <style>
+.card{
+background:#fff;
+padding:22px;
+border-radius:12px;
+box-shadow:0 3px 12px rgba(0,0,0,.08)
+}
 
-    * {
-      box-sizing: border-box;
-    }
+h1{
+text-align:center;
+font-size:24px;
+margin:0 0 5px
+}
 
-    body {
-      margin: 0;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      color: #222;
-    }
+h2{
+text-align:center;
+font-size:20px;
+color:#17365d;
+margin:10px 0
+}
 
-    .container {
-      max-width: 500px;
-      margin: 0 auto;
-    }
+.subtitle{
+text-align:center;
+color:#666;
+margin-bottom:25px;
+font-size:18px
+}
 
-    .card {
-      background: white;
-      padding: 22px;
-      border-radius: 12px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-    }
+.input-group{
+margin-top:15px
+}
 
-    h1 {
-      text-align: center;
-      font-size: 24px;
-      margin-top: 0;
-      margin-bottom: 5px;
-    }
+.input-group label{
+display:block;
+font-size:14px;
+color:#444;
+margin-bottom:6px
+}
 
-    h2 {
-      text-align: center;
-      font-size: 20px;
-      color: #17365d;
-      margin-top: 10px;
-      margin-bottom: 10px;
-    }
+input{
+width:100%;
+padding:13px;
+border:1px solid #ccc;
+border-radius:7px;
+font-family:Arial,sans-serif;
+font-size:16px
+}
 
-    .subtitle {
-      text-align: center;
-      color: #666;
-      margin-bottom: 25px;
-      font-size: 18px;
-    }
+input:focus{
+outline:none;
+border-color:#17365d
+}
 
-    label {
-      display: block;
-      margin-top: 15px;
-      margin-bottom: 6px;
-      font-weight: bold;
-    }
+.option{
+display:block;
+width:100%;
+padding:16px;
+margin-top:15px;
+background:#17365d;
+color:#fff;
+border:none;
+border-radius:8px;
+font-family:Arial,sans-serif;
+font-size:17px;
+cursor:pointer
+}
 
-    input,
-    select {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 7px;
-      font-size: 16px;
-      background: white;
-    }
+.option:hover{
+background:#214a7a
+}
 
-    input:focus,
-    select:focus {
-      outline: none;
-      border-color: #17365d;
-    }
+.option:active{
+transform:scale(.99)
+}
 
-    button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 15px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-    }
+.back-button{
+background:#666
+}
 
-    button:hover {
-      opacity: 0.92;
-    }
+.back-button:hover{
+background:#555
+}
 
-    .button {
-      background: #17365d;
-      color: white;
-    }
+.logout-button{
+background:#8b0000
+}
 
-    .secondary {
-      background: #666;
-      color: white;
-    }
+.logout-button:hover{
+background:#a00000
+}
 
-    .meal-button {
-      background: #17365d;
-      color: white;
-      margin-top: 10px;
-    }
+.message{
+display:none;
+margin-top:15px;
+padding:11px;
+border-radius:7px;
+text-align:center;
+font-size:14px;
+line-height:1.5
+}
 
-    .meal-button.selected {
-      background: #0b7a3b;
-    }
+.success{
+display:block;
+background:#e8f5e9;
+color:#2e7d32
+}
 
-    .scan-button {
-      background: #17365d;
-      color: white;
-      font-size: 18px;
-      padding: 16px;
-      margin-top: 20px;
-    }
+.error{
+display:block;
+background:#ffebee;
+color:#c62828
+}
 
-    .message {
-      display: none;
-      margin-top: 15px;
-      padding: 12px;
-      border-radius: 7px;
-      text-align: center;
-      line-height: 1.5;
-    }
+.info{
+display:block;
+background:#eaf2f8;
+color:#17365d
+}
 
-    .message.success {
-      display: block;
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #b8dfc1;
-    }
+.hidden{
+display:none!important
+}
 
-    .message.error {
-      display: block;
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f1bfc4;
-    }
+.otp-note{
+text-align:center;
+color:#666;
+font-size:13px;
+margin-top:10px;
+line-height:1.5
+}
 
-    .message.info {
-      display: block;
-      background: #e8f1fb;
-      color: #17365d;
-      border: 1px solid #c6d8ee;
-    }
+.active-meal{
+margin-top:18px;
+padding:15px;
+border-radius:9px;
+background:#eaf2f8;
+color:#17365d;
+text-align:center
+}
 
-    .welcome {
-      text-align: center;
-      color: #666;
-      margin-bottom: 20px;
-    }
+.active-date{
+font-size:13px;
+color:#666;
+margin-bottom:5px
+}
 
-    .meal-title {
-      text-align: center;
-      font-weight: bold;
-      color: #17365d;
-      margin-top: 10px;
-      margin-bottom: 5px;
-      font-size: 18px;
-    }
+.meal-name{
+font-size:22px;
+font-weight:bold
+}
 
-    .selected-meal {
-      text-align: center;
-      margin-top: 15px;
-      color: #0b7a3b;
-      font-weight: bold;
-      min-height: 22px;
-    }
+.scanner-box{
+margin-top:18px;
+border:1px solid #ddd;
+border-radius:10px;
+padding:12px;
+background:#fff
+}
 
-    #scannerBox {
-      display: none;
-      margin-top: 20px;
-      border-radius: 10px;
-      overflow: hidden;
-      background: #111;
-      min-height: 250px;
-      position: relative;
-    }
+#reader{
+width:100%;
+overflow:hidden;
+border-radius:8px
+}
 
-    #video {
-      display: block;
-      width: 100%;
-      height: auto;
-      background: #111;
-    }
+.manual-box{
+margin-top:18px;
+padding-top:18px;
+border-top:1px solid #ddd
+}
 
-    .scanner-line {
-      position: absolute;
-      left: 10%;
-      right: 10%;
-      top: 50%;
-      height: 2px;
-      background: #00ff66;
-      box-shadow: 0 0 8px #00ff66;
-    }
+.result-card{
+margin-top:18px;
+border:1px solid #ddd;
+border-radius:10px;
+padding:15px;
+background:#fff
+}
 
-    .scan-status {
-      text-align: center;
-      color: #666;
-      font-size: 14px;
-      margin-top: 10px;
-    }
+.result-title{
+font-size:18px;
+font-weight:bold;
+color:#17365d;
+text-align:center;
+margin-bottom:12px
+}
 
-    .result-box {
-      display: none;
-      margin-top: 15px;
-      padding: 15px;
-      background: #f7f7f7;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      text-align: center;
-    }
+.result-row{
+display:flex;
+gap:8px;
+padding:7px 0;
+border-bottom:1px solid #eee;
+font-size:14px
+}
 
-    .footer {
-      text-align: center;
-      color: #666;
-      margin-top: 20px;
-      font-size: 14px;
-    }
+.result-row:last-child{
+border-bottom:none
+}
 
-    .hidden {
-      display: none !important;
-    }
+.result-label{
+font-weight:bold;
+width:115px;
+flex-shrink:0
+}
 
-  </style>
+.result-value{
+word-break:break-word
+}
 
+.status-success{
+background:#e8f5e9;
+color:#2e7d32;
+padding:12px;
+border-radius:8px;
+text-align:center;
+font-weight:bold
+}
+
+.status-error{
+background:#ffebee;
+color:#c62828;
+padding:12px;
+border-radius:8px;
+text-align:center;
+font-weight:bold
+}
+
+.camera-note{
+text-align:center;
+font-size:13px;
+color:#666;
+margin:10px 0
+}
+
+.footer{
+text-align:center;
+color:#666;
+margin-top:25px;
+font-size:14px;
+line-height:1.5
+}
+
+.loading{
+text-align:center;
+color:#666;
+padding:15px
+}
+</style>
 </head>
 
 <body>
 
-
 <div class="container">
-
-
-  <!-- =================================================
-       CATERER LOGIN
-  ================================================== -->
-
-  <div
-    id="loginPage"
-    class="card"
-  >
-
-    <h1>
-      ICEMD-2026
-    </h1>
-
-    <h2>
-      Caterer Login
-    </h2>
-
-    <p class="subtitle">
-      Food Distribution Desk
-    </p>
-
-
-    <label for="caterer">
-      Caterer
-    </label>
-
-    <select id="caterer">
-
-      <option value="">
-        Select Caterer
-      </option>
-
-      <option value="caterer1">
-        Caterer 1
-      </option>
-
-      <option value="caterer2">
-        Caterer 2
-      </option>
-
-      <option value="caterer3">
-        Caterer 3
-      </option>
-
-    </select>
-
-
-    <label for="password">
-      Password
-    </label>
-
-    <input
-      type="password"
-      id="password"
-      placeholder="Enter password"
-      autocomplete="off"
-    >
-
-
-    <button
-      class="button"
-      type="button"
-      onclick="login()"
-    >
-      Login
-    </button>
-
-
-    <button
-      class="secondary"
-      type="button"
-      onclick="goBack()"
-    >
-      Back
-    </button>
-
-
-    <div
-      id="loginMessage"
-      class="message"
-    ></div>
-
-
-  </div>
-
-
-
-  <!-- =================================================
-       FOOD SCANNER PAGE
-  ================================================== -->
-
-  <div
-    id="foodPage"
-    class="card hidden"
-  >
-
-    <h1>
-      ICEMD-2026
-    </h1>
-
-    <h2>
-      Food Distribution
-    </h2>
-
-    <p
-      id="welcomeCaterer"
-      class="welcome"
-    >
-      Welcome
-    </p>
-
-
-    <!-- MEAL SELECTION -->
-
-    <div class="meal-title">
-      Select Meal
-    </div>
-
-
-    <button
-      id="breakfastButton"
-      class="meal-button"
-      type="button"
-      onclick="selectMeal('Breakfast')"
-    >
-      Breakfast
-    </button>
-
-
-    <button
-      id="lunchButton"
-      class="meal-button"
-      type="button"
-      onclick="selectMeal('Lunch')"
-    >
-      Lunch
-    </button>
-
-
-    <button
-      id="snacksButton"
-      class="meal-button"
-      type="button"
-      onclick="selectMeal('Snacks')"
-    >
-      Snacks
-    </button>
-
-
-    <button
-      id="dinnerButton"
-      class="meal-button"
-      type="button"
-      onclick="selectMeal('Dinner')"
-    >
-      Dinner
-    </button>
-
-
-    <div
-      id="selectedMeal"
-      class="selected-meal"
-    ></div>
-
-
-    <!-- SCAN BUTTON -->
-
-    <button
-      class="scan-button"
-      type="button"
-      onclick="startScanner()"
-    >
-      📷 Scan QR Code
-    </button>
-
-
-    <!-- CAMERA -->
-
-    <div id="scannerBox">
-
-      <video
-        id="video"
-        autoplay
-        playsinline
-      ></video>
-
-      <div class="scanner-line"></div>
-
-    </div>
-
-
-    <div
-      id="scanStatus"
-      class="scan-status"
-    >
-      Camera is not active.
-    </div>
-
-
-    <!-- SCAN RESULT -->
-
-    <div
-      id="scanResult"
-      class="result-box"
-    ></div>
-
-
-    <button
-      id="stopButton"
-      class="secondary hidden"
-      type="button"
-      onclick="stopScanner()"
-    >
-      Stop Camera
-    </button>
-
-
-    <button
-      class="secondary"
-      type="button"
-      onclick="logout()"
-    >
-      Logout
-    </button>
-
-
-    <div class="footer">
-      ICEMD-2026 IIT Jodhpur Food Desk
-    </div>
-
-  </div>
-
+<div class="card">
+
+<!-- LOGIN -->
+
+<div id="loginSection">
+
+<h1>ICEMD-2026</h1>
+<h2>IIT Jodhpur, India</h2>
+<p class="subtitle">Food Service</p>
+
+<form id="foodLoginForm" onsubmit="foodLogin(event)">
+
+<div class="input-group">
+<label for="foodUserName">Name</label>
+<input
+type="text"
+id="foodUserName"
+placeholder="Enter your full name"
+autocomplete="name"
+required>
+</div>
+
+<div class="input-group">
+<label for="foodUserEmail">Email</label>
+<input
+type="email"
+id="foodUserEmail"
+placeholder="Enter your email"
+autocomplete="email"
+required>
+</div>
+
+<button type="submit" class="option">
+Send OTP
+</button>
+
+</form>
+
+<div id="loginMessage" class="message"></div>
+
+<button
+type="button"
+class="option back-button"
+onclick="goHome()">
+Back
+</button>
 
 </div>
 
+
+<!-- OTP -->
+
+<div id="otpSection" class="hidden">
+
+<h1>ICEMD-2026</h1>
+<h2>IIT Jodhpur, India</h2>
+<p class="subtitle">Verify Food Service User</p>
+
+<div
+style="
+text-align:center;
+color:#666;
+font-size:14px;
+margin-bottom:15px;
+"
+id="otpEmailDisplay">
+</div>
+
+<form id="otpForm" onsubmit="verifyFoodOTP(event)">
+
+<div class="input-group">
+
+<label for="foodOTP">
+OTP
+</label>
+
+<input
+type="text"
+id="foodOTP"
+placeholder="Enter OTP"
+inputmode="numeric"
+autocomplete="one-time-code"
+maxlength="6"
+required>
+
+</div>
+
+<button type="submit" class="option">
+Verify OTP
+</button>
+
+</form>
+
+<div id="otpMessage" class="message"></div>
+
+<button
+type="button"
+class="option back-button"
+onclick="backToFoodLogin()">
+Back
+</button>
+
+</div>
+
+
+<!-- FOOD SCANNER -->
+
+<div id="scannerSection" class="hidden">
+
+<h1>ICEMD-2026</h1>
+<h2>IIT Jodhpur, India</h2>
+<p class="subtitle">Food Service</p>
+
+<div
+style="
+text-align:center;
+font-size:14px;
+color:#666;
+margin-bottom:15px;
+"
+>
+Welcome, <span id="loggedFoodUser"></span>
+</div>
+
+
+<!-- ACTIVE FOOD -->
+
+<div id="activeMealBox" class="active-meal">
+
+<div class="loading">
+Checking today's food service...
+</div>
+
+</div>
+
+
+<!-- SCANNER -->
+
+<div class="scanner-box">
+
+<div
+style="
+text-align:center;
+font-size:17px;
+font-weight:bold;
+color:#17365d;
+margin-bottom:10px;
+"
+>
+Scan Guest QR Code
+</div>
+
+<div id="reader"></div>
+
+<div class="camera-note">
+Camera access is required to scan the registration QR code.
+</div>
+
+<button
+type="button"
+class="option"
+onclick="startScanner()">
+Start Camera
+</button>
+
+<button
+type="button"
+class="option back-button"
+onclick="stopScanner()">
+Stop Camera
+</button>
+
+</div>
+
+
+<!-- MANUAL -->
+
+<div class="manual-box">
+
+<div
+style="
+color:#17365d;
+font-size:17px;
+font-weight:bold;
+margin-bottom:5px;
+"
+>
+Manual Registration ID
+</div>
+
+<div
+style="
+color:#666;
+font-size:13px;
+margin-bottom:10px;
+"
+>
+Use this only if QR scanning is not possible.
+</div>
+
+<div class="input-group">
+
+<input
+type="text"
+id="manualRegistrationId"
+placeholder="Example: ICEMD2026-0001"
+autocomplete="off">
+
+</div>
+
+<button
+type="button"
+class="option"
+onclick="submitManualFood()">
+Submit Registration ID
+</button>
+
+</div>
+
+
+<!-- RESULT -->
+
+<div id="resultArea"></div>
+
+
+<button
+type="button"
+class="option"
+onclick="clearFoodResult()">
+Clear Result
+</button>
+
+<button
+type="button"
+class="option logout-button"
+onclick="foodLogout()">
+Logout
+</button>
+
+</div>
+
+
+<!-- FOOTER -->
+
+<div class="footer">
+
+<a
+href="https://events.iitj.ac.in/icemd/index.html"
+target="_blank">
+ICEMD-2026
+</a>
+
+IITJ | December 21-23<br>
+
+Designed and managed by Biswajit Pal
+
+</div>
+
+</div>
+</div>
 
 
 <script>
 
 /* =====================================================
-   FIXED CATERER LOGIN
-
-   THREE CATERER ACCOUNTS FOR THE INITIAL UI.
-
-   These are temporary frontend credentials only.
-   Later we can connect them to Apps Script and
-   enforce the actual three-device restriction.
+   APPS SCRIPT BACKEND
 ===================================================== */
 
-const CATERERS = {
+const APPS_SCRIPT_URL=
+"https://script.google.com/macros/s/AKfycbxD0VHRLp17LUYiPlYzxPRWwsZUagkVZycolhHfn6Nyt6XN-N2bQD0_uekzWlZc3iOgrA/exec";
 
-  caterer1: {
-    name: "Caterer 1",
-    password: "food@2026"
-  },
 
-  caterer2: {
-    name: "Caterer 2",
-    password: "food@2026"
-  },
+/* =====================================================
+   GLOBAL VARIABLES
+===================================================== */
 
-  caterer3: {
-    name: "Caterer 3",
-    password: "food@2026"
-  }
+let foodUserName="";
+let foodUserEmail="";
+let html5QrCode=null;
+let scannerRunning=false;
+
+
+/* =====================================================
+   HOME
+===================================================== */
+
+function goHome(){
+
+window.location.href="index.html";
+
+}
+
+
+/* =====================================================
+   JSONP API
+===================================================== */
+
+function apiRequest(params,callback){
+
+const callbackName=
+"icemdFoodCallback_"+
+Date.now()+"_"+
+Math.floor(Math.random()*10000);
+
+params.callback=callbackName;
+
+const query=
+Object.keys(params)
+.map(function(key){
+
+return encodeURIComponent(key)+
+"="+
+encodeURIComponent(params[key]);
+
+})
+.join("&");
+
+const script=
+document.createElement("script");
+
+let finished=false;
+
+const timeout=
+setTimeout(function(){
+
+if(finished)return;
+
+finished=true;
+
+try{
+delete window[callbackName];
+}catch(e){}
+
+if(script.parentNode)
+script.parentNode.removeChild(script);
+
+callback({
+status:"error",
+message:
+"Unable to connect to the server."
+});
+
+},15000);
+
+window[callbackName]=
+function(data){
+
+if(finished)return;
+
+finished=true;
+
+clearTimeout(timeout);
+
+try{
+delete window[callbackName];
+}catch(e){}
+
+if(script.parentNode)
+script.parentNode.removeChild(script);
+
+callback(data);
 
 };
 
+script.src=
+APPS_SCRIPT_URL+
+"?"+
+query;
 
-/* =====================================================
-   CURRENT LOGIN
-===================================================== */
+script.onerror=
+function(){
 
-let currentCaterer = "";
+if(finished)return;
 
-let selectedMeal = "";
+finished=true;
 
-let cameraStream = null;
+clearTimeout(timeout);
 
+try{
+delete window[callbackName];
+}catch(e){}
 
-/* =====================================================
-   SHOW MESSAGE
-===================================================== */
+if(script.parentNode)
+script.parentNode.removeChild(script);
 
-function showLoginMessage(message, type) {
+callback({
+status:"error",
+message:
+"Unable to connect to the server."
+});
 
-  const box =
-    document.getElementById("loginMessage");
+};
 
-  box.textContent = message;
-
-  box.className =
-    "message " +
-    type;
-
-}
-
-
-/* =====================================================
-   CATERER LOGIN
-===================================================== */
-
-function login() {
-
-  const caterer =
-    document.getElementById("caterer").value;
-
-  const password =
-    document.getElementById("password").value;
-
-
-  document
-    .getElementById("loginMessage")
-    .className = "message";
-
-
-  if (!caterer || !password) {
-
-    showLoginMessage(
-      "Please select caterer and enter password.",
-      "error"
-    );
-
-    return;
-  }
-
-
-  if (
-    CATERERS[caterer] &&
-    password === CATERERS[caterer].password
-  ) {
-
-    currentCaterer = caterer;
-
-
-    document
-      .getElementById("loginPage")
-      .classList.add("hidden");
-
-
-    document
-      .getElementById("foodPage")
-      .classList.remove("hidden");
-
-
-    document
-      .getElementById("welcomeCaterer")
-      .textContent =
-        "Welcome, " +
-        CATERERS[caterer].name;
-
-
-    return;
-  }
-
-
-  showLoginMessage(
-    "Invalid caterer or password.",
-    "error"
-  );
+document.body.appendChild(script);
 
 }
 
 
 /* =====================================================
-   MEAL SELECTION
+   API PROMISE
 ===================================================== */
 
-function selectMeal(meal) {
+function apiRequestPromise(params){
 
-  selectedMeal = meal;
+return new Promise(function(resolve){
 
+apiRequest(
+params,
+function(result){
+resolve(result);
+}
+);
 
-  /*
-   * Remove selected state from all buttons.
-   */
-
-  document
-    .querySelectorAll(".meal-button")
-    .forEach(function(button) {
-
-      button.classList.remove("selected");
-
-    });
-
-
-  /*
-   * Highlight selected button.
-   */
-
-  const buttonId =
-    meal.toLowerCase() + "Button";
-
-  const selectedButton =
-    document.getElementById(buttonId);
-
-  if (selectedButton) {
-
-    selectedButton.classList.add("selected");
-
-  }
-
-
-  /*
-   * Display selected meal.
-   */
-
-  document
-    .getElementById("selectedMeal")
-    .textContent =
-      "Selected: " + meal;
+});
 
 }
 
 
 /* =====================================================
-   START QR SCANNER
+   FOOD LOGIN
 ===================================================== */
 
-async function startScanner() {
+function foodLogin(event){
 
-  /*
-   * A meal must be selected first.
-   */
+event.preventDefault();
 
-  if (!selectedMeal) {
+foodUserName=
+document
+.getElementById("foodUserName")
+.value
+.trim();
 
-    const status =
-      document.getElementById("scanStatus");
+foodUserEmail=
+document
+.getElementById("foodUserEmail")
+.value
+.trim()
+.toLowerCase();
 
-    status.textContent =
-      "Please select Breakfast, Lunch, Snacks, or Dinner first.";
+const message=
+document.getElementById(
+"loginMessage"
+);
 
-    status.style.color = "#721c24";
+message.className="message";
+message.textContent="";
 
-    return;
-  }
+if(!foodUserName){
 
+message.className=
+"message error";
 
-  /*
-   * Check camera availability.
-   */
+message.textContent=
+"Please enter your full name.";
 
-  if (!navigator.mediaDevices ||
-      !navigator.mediaDevices.getUserMedia) {
+return;
 
-    document
-      .getElementById("scanStatus")
-      .textContent =
-        "Camera access is not supported by this browser.";
+}
 
-    return;
-  }
+const emailPattern=
+/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+if(!emailPattern.test(foodUserEmail)){
 
-  try {
+message.className=
+"message error";
 
-    cameraStream =
-      await navigator.mediaDevices.getUserMedia({
+message.textContent=
+"Please enter a valid email address.";
 
-        video: {
-          facingMode: {
-            ideal: "environment"
-          }
-        },
+return;
 
-        audio: false
+}
 
-      });
+message.className=
+"message info";
 
+message.textContent=
+"Sending OTP...";
 
-    const video =
-      document.getElementById("video");
+apiRequest(
+{
+action:"requestAssistantOTP",
+name:foodUserName,
+email:foodUserEmail
+},
+function(result){
 
+if(!result||result.status!=="success"){
 
-    video.srcObject =
-      cameraStream;
+message.className=
+"message error";
 
+message.textContent=
+result&&result.message
+?result.message
+:"Unable to send OTP.";
 
-    document
-      .getElementById("scannerBox")
-      .style.display = "block";
+return;
 
+}
 
-    document
-      .getElementById("stopButton")
-      .classList.remove("hidden");
+document.getElementById(
+"loginSection"
+).classList.add("hidden");
 
+document.getElementById(
+"otpSection"
+).classList.remove("hidden");
 
-    document
-      .getElementById("scanStatus")
-      .textContent =
-        "Camera active. Point the camera at the participant QR code.";
+document.getElementById(
+"otpEmailDisplay"
+).textContent=
+"OTP sent to "+
+foodUserEmail;
 
-    document
-      .getElementById("scanStatus")
-      .style.color = "#666";
+const otpMessage=
+document.getElementById(
+"otpMessage"
+);
 
+otpMessage.className=
+"message success";
 
-    /*
-     * The actual QR decoding will be added next.
-     */
+otpMessage.textContent=
+"OTP sent successfully. Please check your email.";
 
-  }
+document.getElementById(
+"foodOTP"
+).focus();
 
-  catch (error) {
-
-    console.error(error);
-
-
-    document
-      .getElementById("scanStatus")
-      .textContent =
-        "Unable to open camera. Please allow camera permission.";
-
-    document
-      .getElementById("scanStatus")
-      .style.color = "#721c24";
-
-  }
+});
 
 }
 
 
 /* =====================================================
-   STOP CAMERA
+   VERIFY OTP
 ===================================================== */
 
-function stopScanner() {
+function verifyFoodOTP(event){
 
-  if (cameraStream) {
+event.preventDefault();
 
-    cameraStream
-      .getTracks()
-      .forEach(function(track) {
+const otp=
+document
+.getElementById("foodOTP")
+.value
+.trim();
 
-        track.stop();
+const message=
+document.getElementById(
+"otpMessage"
+);
 
-      });
+message.className="message";
+message.textContent="";
 
-    cameraStream = null;
+if(!otp){
 
-  }
+message.className=
+"message error";
+
+message.textContent=
+"Please enter the OTP.";
+
+return;
+
+}
+
+message.className=
+"message info";
+
+message.textContent=
+"Verifying OTP...";
+
+apiRequest(
+{
+action:"verifyAssistantOTP",
+name:foodUserName,
+email:foodUserEmail,
+otp:otp
+},
+function(result){
+
+if(!result||result.status!=="success"){
+
+message.className=
+"message error";
+
+message.textContent=
+result&&result.message
+?result.message
+:"Invalid or expired OTP.";
+
+return;
+
+}
+
+sessionStorage.setItem(
+"icemdFoodLoggedIn",
+"true"
+);
+
+sessionStorage.setItem(
+"icemdFoodUserName",
+foodUserName
+);
+
+sessionStorage.setItem(
+"icemdFoodUserEmail",
+foodUserEmail
+);
+
+document.getElementById(
+"otpSection"
+).classList.add("hidden");
+
+document.getElementById(
+"scannerSection"
+).classList.remove("hidden");
+
+document.getElementById(
+"loggedFoodUser"
+).textContent=
+foodUserName;
+
+loadActiveFood();
+
+});
+
+}
 
 
-  document
-    .getElementById("video")
-    .srcObject = null;
+/* =====================================================
+   BACK TO LOGIN
+===================================================== */
 
+function backToFoodLogin(){
 
-  document
-    .getElementById("scannerBox")
-    .style.display = "none";
+document.getElementById(
+"otpSection"
+).classList.add("hidden");
 
+document.getElementById(
+"loginSection"
+).classList.remove("hidden");
 
-  document
-    .getElementById("stopButton")
-    .classList.add("hidden");
+document.getElementById(
+"foodOTP"
+).value="";
 
+const message=
+document.getElementById(
+"otpMessage"
+);
 
-  document
-    .getElementById("scanStatus")
-    .textContent =
-      "Camera is not active.";
+message.className="message";
+message.textContent="";
 
 }
 
@@ -814,61 +940,807 @@ function stopScanner() {
    LOGOUT
 ===================================================== */
 
-function logout() {
+function foodLogout(){
 
-  stopScanner();
+stopScanner();
 
+sessionStorage.removeItem(
+"icemdFoodLoggedIn"
+);
 
-  currentCaterer = "";
+sessionStorage.removeItem(
+"icemdFoodUserName"
+);
 
-  selectedMeal = "";
+sessionStorage.removeItem(
+"icemdFoodUserEmail"
+);
 
+foodUserName="";
+foodUserEmail="";
 
-  document
-    .getElementById("password")
-    .value = "";
+document.getElementById(
+"foodOTP"
+).value="";
 
+document.getElementById(
+"manualRegistrationId"
+).value="";
 
-  document
-    .getElementById("caterer")
-    .value = "";
+document.getElementById(
+"resultArea"
+).innerHTML="";
 
+document.getElementById(
+"scannerSection"
+).classList.add("hidden");
 
-  document
-    .getElementById("selectedMeal")
-    .textContent = "";
+document.getElementById(
+"otpSection"
+).classList.add("hidden");
 
-
-  document
-    .querySelectorAll(".meal-button")
-    .forEach(function(button) {
-
-      button.classList.remove("selected");
-
-    });
-
-
-  document
-    .getElementById("foodPage")
-    .classList.add("hidden");
-
-
-  document
-    .getElementById("loginPage")
-    .classList.remove("hidden");
+document.getElementById(
+"loginSection"
+).classList.remove("hidden");
 
 }
 
 
 /* =====================================================
-   BACK
+   LOAD ACTIVE FOOD
 ===================================================== */
 
-function goBack() {
+function loadActiveFood(){
 
-  window.history.back();
+const box=
+document.getElementById(
+"activeMealBox"
+);
+
+box.innerHTML=
+'<div class="loading">Checking today\'s food service...</div>';
+
+apiRequest(
+{
+action:"activeFood"
+},
+function(result){
+
+if(!result||result.status!=="success"){
+
+box.innerHTML=
+'<div class="status-error">'+
+escapeHTML(
+result&&result.message
+?result.message
+:"Unable to check food service."
+)+
+'</div>';
+
+return;
 
 }
+
+if(!result.active){
+
+box.innerHTML=
+'<div class="status-error">'+
+'Food service is currently OFF.'+
+'<br><span style="font-weight:normal;font-size:13px;">'+
+'No meal is available for scanning at this time.'+
+'</span>'+
+'</div>';
+
+return;
+
+}
+
+box.innerHTML=
+'<div class="active-date">'+
+'Today • '+escapeHTML(result.date)+
+'</div>'+
+'<div class="meal-name">'+
+escapeHTML(result.meal)+
+'</div>'+
+'<div style="margin-top:5px;font-size:13px;color:#666;">'+
+'Active food service'+
+'</div>';
+
+});
+
+}
+
+
+/* =====================================================
+   CAMERA PERMISSION
+===================================================== */
+
+async function requestCameraPermission(){
+
+if(
+!navigator.mediaDevices||
+!navigator.mediaDevices.getUserMedia
+){
+
+throw new Error(
+"Camera access is not supported by this browser."
+);
+
+}
+
+const stream=
+await navigator.mediaDevices.getUserMedia({
+video:{
+facingMode:{
+ideal:"environment"
+}
+},
+audio:false
+});
+
+stream.getTracks().forEach(
+function(track){
+track.stop();
+}
+);
+
+}
+
+
+/* =====================================================
+   START SCANNER
+===================================================== */
+
+async function startScanner(){
+
+try{
+
+if(scannerRunning){
+
+return;
+
+}
+
+const activeResult=
+await apiRequestPromise({
+action:"activeFood"
+});
+
+if(
+!activeResult||
+activeResult.status!=="success"
+){
+
+showResult(
+"Unable to check today's food service.",
+null,
+"error"
+);
+
+return;
+
+}
+
+if(!activeResult.active){
+
+showResult(
+"Food service is currently OFF. No meal can be issued.",
+null,
+"error"
+);
+
+return;
+
+}
+
+
+/* ---------------------------------------------
+   Force camera permission request
+--------------------------------------------- */
+
+try{
+
+await requestCameraPermission();
+
+}catch(cameraError){
+
+console.error(
+"Camera permission error:",
+cameraError
+);
+
+showResult(
+"Camera permission is required. Please allow camera access in your browser settings and try again.",
+null,
+"error"
+);
+
+return;
+
+}
+
+
+/* ---------------------------------------------
+   Load Html5Qrcode dynamically
+--------------------------------------------- */
+
+if(
+typeof Html5Qrcode==="undefined"
+){
+
+await loadQRLibrary();
+
+}
+
+
+/* ---------------------------------------------
+   Create scanner
+--------------------------------------------- */
+
+if(!html5QrCode){
+
+html5QrCode=
+new Html5Qrcode("reader");
+
+}
+
+scannerRunning=true;
+
+await html5QrCode.start(
+
+{
+facingMode:"environment"
+},
+
+{
+fps:10,
+qrbox:{
+width:250,
+height:250
+},
+aspectRatio:1.0
+},
+
+function(decodedText){
+
+handleFoodQR(decodedText);
+
+},
+
+function(errorMessage){
+
+}
+
+);
+
+}catch(error){
+
+scannerRunning=false;
+
+console.error(
+"Scanner start error:",
+error
+);
+
+showResult(
+"Unable to start camera. Please allow camera permission and try again.",
+null,
+"error"
+);
+
+}
+
+}
+
+
+/* =====================================================
+   LOAD QR LIBRARY
+===================================================== */
+
+function loadQRLibrary(){
+
+return new Promise(function(resolve,reject){
+
+if(typeof Html5Qrcode!=="undefined"){
+
+resolve();
+
+return;
+
+}
+
+const script=
+document.createElement("script");
+
+script.src=
+"https://unpkg.com/html5-qrcode";
+
+script.onload=
+function(){
+resolve();
+};
+
+script.onerror=
+function(){
+reject(
+new Error(
+"Unable to load QR scanner library."
+)
+);
+};
+
+document.head.appendChild(script);
+
+});
+
+}
+
+
+/* =====================================================
+   STOP SCANNER
+===================================================== */
+
+async function stopScanner(){
+
+if(
+!html5QrCode||
+!scannerRunning
+){
+
+return;
+
+}
+
+try{
+
+await html5QrCode.stop();
+
+}catch(error){
+
+console.warn(
+"Scanner stop warning:",
+error
+);
+
+}
+
+scannerRunning=false;
+
+}
+
+
+/* =====================================================
+   HANDLE QR
+===================================================== */
+
+function handleFoodQR(decodedText){
+
+const registrationId=
+String(decodedText||"").trim();
+
+if(!registrationId){
+
+return;
+
+}
+
+stopScanner();
+
+processFoodScan(
+registrationId
+);
+
+}
+
+
+/* =====================================================
+   MANUAL SUBMISSION
+===================================================== */
+
+function submitManualFood(){
+
+const registrationId=
+document
+.getElementById(
+"manualRegistrationId"
+)
+.value
+.trim();
+
+if(!registrationId){
+
+showResult(
+"Please enter a Registration ID.",
+null,
+"error"
+);
+
+return;
+
+}
+
+processFoodScan(
+registrationId
+);
+
+}
+
+
+/* =====================================================
+   PROCESS FOOD SCAN
+===================================================== */
+
+function processFoodScan(registrationId){
+
+if(!foodUserName){
+
+showResult(
+"Food service user session is not available. Please login again.",
+null,
+"error"
+);
+
+return;
+
+}
+
+showResult(
+"Processing food request...",
+null,
+"info"
+);
+
+apiRequest(
+{
+action:"scanFood",
+registrationId:registrationId,
+scannedBy:foodUserName
+},
+function(result){
+
+if(
+!result||
+result.status!=="success"
+){
+
+showFailedFoodResult(
+result||{
+message:
+"Food request was not accepted."
+}
+);
+
+return;
+
+}
+
+showSuccessfulFoodResult(
+result
+);
+
+});
+
+}
+
+
+/* =====================================================
+   SUCCESS RESULT
+===================================================== */
+
+function showSuccessfulFoodResult(result){
+
+const area=
+document.getElementById(
+"resultArea"
+);
+
+area.innerHTML=
+'<div class="result-card">'+
+
+'<div class="status-success">'+
+'Food Issued Successfully'+
+'</div>'+
+
+'<div class="result-title" style="margin-top:15px;">'+
+'Guest Details'+
+'</div>'+
+
+resultRow(
+"Name",
+result.name
+)+
+
+resultRow(
+"Email",
+result.email
+)+
+
+resultRow(
+"Institute",
+result.institute
+)+
+
+resultRow(
+"Registration ID",
+result.registrationId
+)+
+
+resultRow(
+"Meal",
+result.meal
+)+
+
+resultRow(
+"Date",
+result.date
+)+
+
+resultRow(
+"Time",
+result.time
+)+
+
+resultRow(
+"Scanned By",
+result.scannedBy
+)+
+
+'</div>';
+
+document.getElementById(
+"manualRegistrationId"
+).value="";
+
+}
+
+
+/* =====================================================
+   FAILED RESULT
+===================================================== */
+
+function showFailedFoodResult(result){
+
+const area=
+document.getElementById(
+"resultArea"
+);
+
+const reason=
+result.message||
+"Food request was not accepted.";
+
+area.innerHTML=
+'<div class="result-card">'+
+
+'<div class="status-error">'+
+'Food Not Issued'+
+'</div>'+
+
+'<div class="result-title" style="margin-top:15px;">'+
+'Reason'+
+'</div>'+
+
+'<div style="text-align:center;color:#c62828;font-size:15px;line-height:1.5;">'+
+escapeHTML(reason)+
+'</div>'+
+
+(
+result.registrationId
+?
+'<div style="margin-top:12px;">'+
+resultRow(
+"Registration ID",
+result.registrationId
+)+
+'</div>'
+:""
+)+
+
+(
+result.name
+?resultRow("Name",result.name)
+:""
+)+
+
+(
+result.email
+?resultRow("Email",result.email)
+:""
+)+
+
+(
+result.institute
+?resultRow("Institute",result.institute)
+:""
+)+
+
+'</div>';
+
+}
+
+
+/* =====================================================
+   GENERIC RESULT
+===================================================== */
+
+function showResult(message,result,type){
+
+const area=
+document.getElementById(
+"resultArea"
+);
+
+let html=
+'<div class="result-card">';
+
+if(type==="error"){
+
+html+=
+'<div class="status-error">'+
+escapeHTML(message)+
+'</div>';
+
+}else if(type==="info"){
+
+html+=
+'<div class="info" style="margin-top:0;display:block;">'+
+escapeHTML(message)+
+'</div>';
+
+}else{
+
+html+=
+'<div class="status-success">'+
+escapeHTML(message)+
+'</div>';
+
+}
+
+if(result){
+
+if(result.registrationId)
+html+=resultRow(
+"Registration ID",
+result.registrationId
+);
+
+if(result.name)
+html+=resultRow(
+"Name",
+result.name
+);
+
+if(result.email)
+html+=resultRow(
+"Email",
+result.email
+);
+
+if(result.institute)
+html+=resultRow(
+"Institute",
+result.institute
+);
+
+}
+
+html+=
+'</div>';
+
+area.innerHTML=html;
+
+}
+
+
+/* =====================================================
+   RESULT ROW
+===================================================== */
+
+function resultRow(label,value){
+
+return(
+'<div class="result-row">'+
+'<div class="result-label">'+
+escapeHTML(label)+
+'</div>'+
+'<div class="result-value">'+
+escapeHTML(value||"")+
+'</div>'+
+'</div>'
+);
+
+}
+
+
+/* =====================================================
+   CLEAR RESULT
+===================================================== */
+
+function clearFoodResult(){
+
+document.getElementById(
+"resultArea"
+).innerHTML="";
+
+document.getElementById(
+"manualRegistrationId"
+).value="";
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHTML(value){
+
+return String(value||"")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+/* =====================================================
+   SESSION RESTORE
+===================================================== */
+
+(function(){
+
+const loggedIn=
+sessionStorage.getItem(
+"icemdFoodLoggedIn"
+);
+
+const savedName=
+sessionStorage.getItem(
+"icemdFoodUserName"
+);
+
+const savedEmail=
+sessionStorage.getItem(
+"icemdFoodUserEmail"
+);
+
+if(
+loggedIn==="true"&&
+savedName&&
+savedEmail
+){
+
+foodUserName=savedName;
+foodUserEmail=savedEmail;
+
+document.getElementById(
+"foodUserName"
+).value=savedName;
+
+document.getElementById(
+"foodUserEmail"
+).value=savedEmail;
+
+document.getElementById(
+"loginSection"
+).classList.add("hidden");
+
+document.getElementById(
+"scannerSection"
+).classList.remove("hidden");
+
+document.getElementById(
+"loggedFoodUser"
+).textContent=
+savedName;
+
+loadActiveFood();
+
+}
+
+})();
 
 </script>
 
