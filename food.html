@@ -1,288 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width,initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>ICEMD-2026 Food Scanner</title>
-
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
 <style>
-
-*{
-box-sizing:border-box;
-}
-
-body{
-margin:0;
-padding:20px;
-font-family:Arial,sans-serif;
-background:#f5f5f5;
-color:#222;
-}
-
-.container{
-max-width:500px;
-margin:0 auto;
-}
-
-.card{
-background:white;
-padding:22px;
-border-radius:12px;
-box-shadow:0 3px 12px rgba(0,0,0,0.08);
-}
-
-h1{
-text-align:center;
-font-size:24px;
-margin-top:0;
-margin-bottom:5px;
-}
-
-h2{
-text-align:center;
-font-size:20px;
-margin-top:10px;
-}
-
-h3{
-text-align:center;
-color:#17365d;
-}
-
-.subtitle{
-text-align:center;
-color:#666;
-margin-bottom:25px;
-}
-
-label{
-display:block;
-margin-top:15px;
-margin-bottom:6px;
-font-weight:bold;
-}
-
-input,select{
-width:100%;
-padding:12px;
-border:1px solid #ccc;
-border-radius:7px;
-font-size:16px;
-background:white;
-}
-
-input:focus,select:focus{
-outline:none;
-border-color:#17365d;
-}
-
-button{
-width:100%;
-padding:14px;
-margin-top:15px;
-border:none;
-border-radius:8px;
-font-size:16px;
-cursor:pointer;
-}
-
-button:disabled{
-background:#999!important;
-cursor:not-allowed;
-}
-
-.button{
-background:#17365d;
-color:white;
-}
-
-.button:hover{
-opacity:.92;
-}
-
-.success-button{
-background:#198754;
-color:white;
-}
-
-.secondary{
-background:#666;
-color:white;
-}
-
-.danger{
-background:#b02a37;
-color:white;
-}
-
-.message{
-margin-top:15px;
-padding:12px;
-border-radius:7px;
-text-align:center;
-line-height:1.5;
-display:none;
-}
-
-.message.success{
-display:block;
-background:#d4edda;
-color:#155724;
-border:1px solid #b8dfc1;
-}
-
-.message.error{
-display:block;
-background:#f8d7da;
-color:#721c24;
-border:1px solid #f1bfc4;
-}
-
-.welcome{
-text-align:center;
-font-weight:bold;
-font-size:18px;
-color:#17365d;
-margin-bottom:15px;
-}
-
-.scanner-info{
-background:#eef3f8;
-border-radius:8px;
-padding:15px;
-margin-top:15px;
-font-size:14px;
-line-height:1.5;
-text-align:center;
-}
-
-.food-info{
-background:#eef3f8;
-border-radius:8px;
-padding:15px;
-margin-top:15px;
-font-size:15px;
-line-height:1.6;
-text-align:center;
-}
-
-.food-info strong{
-color:#17365d;
-}
-
-.scanner-box{
-width:100%;
-margin-top:20px;
-}
-
-#qr-reader{
-width:100%;
-}
-
-#qr-reader video{
-width:100%!important;
-height:auto!important;
-border-radius:8px;
-}
-
-.scanner-status{
-margin-top:15px;
-padding:12px;
-border-radius:7px;
-background:#eef3f8;
-color:#17365d;
-text-align:center;
-font-size:14px;
-line-height:1.5;
-white-space:pre-line;
-}
-
-.scan-result{
-display:none;
-margin-top:20px;
-padding:20px;
-border-radius:10px;
-}
-
-.scan-accepted{
-display:block;
-background:#d4edda;
-color:#155724;
-border:1px solid #b8dfc1;
-}
-
-.scan-duplicate{
-display:block;
-background:#f8d7da;
-color:#721c24;
-border:1px solid #f1bfc4;
-}
-
-.scan-invalid{
-display:block;
-background:#f8d7da;
-color:#721c24;
-border:1px solid #f1bfc4;
-}
-
-.scan-result h2{
-margin-top:0;
-text-align:center;
-}
-
-.scan-result p{
-margin:8px 0;
-font-size:14px;
-line-height:1.5;
-word-break:break-word;
-}
-
-.manual-test{
-margin-top:25px;
-padding-top:20px;
-border-top:1px solid #ddd;
-}
-
-.manual-note{
-font-size:13px;
-color:#666;
-text-align:center;
-line-height:1.5;
-}
-
-.camera-note{
-margin-top:12px;
-font-size:12px;
-color:#666;
-text-align:center;
-line-height:1.5;
-}
-
-.hidden{
-display:none!important;
-}
-
-.loading{
-opacity:.7;
-}
-
+*{box-sizing:border-box}
+body{margin:0;padding:20px;font-family:Arial,sans-serif;background:#f5f5f5;color:#222}
+.container{max-width:500px;margin:0 auto}
+.card{background:white;padding:22px;border-radius:12px;box-shadow:0 3px 12px rgba(0,0,0,.08)}
+h1{text-align:center;font-size:24px;margin-top:0;margin-bottom:5px}
+h2{text-align:center;font-size:20px;margin-top:10px}
+h3{text-align:center;color:#17365d}
+.subtitle{text-align:center;color:#666;margin-bottom:25px}
+label{display:block;margin-top:15px;margin-bottom:6px;font-weight:bold}
+input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;background:white}
+input:focus,select:focus{outline:none;border-color:#17365d}
+button{width:100%;padding:14px;margin-top:15px;border:none;border-radius:8px;font-size:16px;cursor:pointer}
+button:disabled{background:#999!important;cursor:not-allowed}
+.button{background:#17365d;color:white}
+.button:hover{opacity:.92}
+.success-button{background:#198754;color:white}
+.secondary{background:#666;color:white}
+.danger{background:#b02a37;color:white}
+.message{margin-top:15px;padding:12px;border-radius:7px;text-align:center;line-height:1.5;display:none}
+.message.success{display:block;background:#d4edda;color:#155724;border:1px solid #b8dfc1}
+.message.error{display:block;background:#f8d7da;color:#721c24;border:1px solid #f1bfc4}
+.welcome{text-align:center;font-weight:bold;font-size:18px;color:#17365d;margin-bottom:15px}
+.food-info{background:#eef3f8;border-radius:8px;padding:15px;margin-top:15px;font-size:15px;line-height:1.6;text-align:center}
+.food-info strong{color:#17365d}
+.scanner-box{width:100%;margin-top:20px}
+#qr-reader{width:100%}
+#qr-reader video{width:100%!important;height:auto!important;border-radius:8px}
+.scan-result{display:none;margin-top:20px;padding:20px;border-radius:10px}
+.scan-accepted{display:block;background:#d4edda;color:#155724;border:1px solid #b8dfc1}
+.scan-duplicate{display:block;background:#f8d7da;color:#721c24;border:1px solid #f1bfc4}
+.scan-invalid{display:block;background:#f8d7da;color:#721c24;border:1px solid #f1bfc4}
+.scan-result h2{margin-top:0;text-align:center}
+.scan-result p{margin:8px 0;font-size:14px;line-height:1.5;word-break:break-word}
+.hidden{display:none!important}
 </style>
-
 </head>
 
 <body>
 
 <div class="container">
 
-<!-- =====================================================
-     FOOD LOGIN
-====================================================== -->
+<!-- FOOD LOGIN -->
 
 <div id="foodLoginPage" class="card">
 
@@ -290,45 +56,20 @@ opacity:.7;
 
 <h2>Food Service Scanner</h2>
 
-<p class="subtitle">
-Food Distribution
-</p>
+<p class="subtitle">Food Distribution</p>
 
-<label for="scannerName">
-Scanner
-</label>
+<label for="scannerName">Scanner</label>
 
 <select id="scannerName">
-
-<option value="">
-Select Scanner
-</option>
-
-<option value="Scanner 1">
-Scanner 1
-</option>
-
-<option value="Scanner 2">
-Scanner 2
-</option>
-
-<option value="Scanner 3">
-Scanner 3
-</option>
-
-<option value="Scanner 4">
-Scanner 4
-</option>
-
-<option value="Scanner 5">
-Scanner 5
-</option>
-
+<option value="">Select Scanner</option>
+<option value="Scanner 1">Scanner 1</option>
+<option value="Scanner 2">Scanner 2</option>
+<option value="Scanner 3">Scanner 3</option>
+<option value="Scanner 4">Scanner 4</option>
+<option value="Scanner 5">Scanner 5</option>
 </select>
 
-<label for="scannerPassword">
-Password
-</label>
+<label for="scannerPassword">Password</label>
 
 <input
 type="password"
@@ -352,45 +93,30 @@ onclick="goHome()"
 Back
 </button>
 
-<div
-id="loginMessage"
-class="message"
-></div>
+<div id="loginMessage" class="message"></div>
 
 </div>
 
 
-<!-- =====================================================
-     FOOD SCANNER
-====================================================== -->
+<!-- FOOD SCANNER -->
 
-<div
-id="foodScannerPage"
-class="card hidden"
->
+<div id="foodScannerPage" class="card hidden">
 
 <h1>ICEMD-2026</h1>
 
 <h2>Food QR Scanner</h2>
 
-<p
-id="foodWelcome"
-class="welcome"
-></p>
-
+<p id="foodWelcome" class="welcome"></p>
 
 <div class="food-info">
 
-<div>
-<strong>Active Food Service</strong>
-</div>
+<div><strong>Active Food Service</strong></div>
 
 <div id="foodServiceText">
 Checking Admin setting...
 </div>
 
 </div>
-
 
 <!-- CAMERA -->
 
@@ -400,14 +126,12 @@ Checking Admin setting...
 
 </div>
 
-
 <!-- RESULT -->
 
 <div
 id="scanResult"
 class="scan-result"
 ></div>
-
 
 <!-- START -->
 
@@ -419,7 +143,6 @@ onclick="startScanner()"
 Start Scanner
 </button>
 
-
 <!-- STOP -->
 
 <button
@@ -429,7 +152,6 @@ onclick="stopQRScanner()"
 >
 Stop Scanner
 </button>
-
 
 <!-- LOGOUT -->
 
@@ -447,30 +169,21 @@ Logout
 
 <script>
 
-/* =====================================================
-   APPS SCRIPT URL
-===================================================== */
+/* APPS SCRIPT URL */
 
-const APPS_SCRIPT_URL =
+const APPS_SCRIPT_URL=
 "https://script.google.com/macros/s/AKfycbxD0VHRLp17LUYiPlYzxPRWwsZUagkVZycolhHfn6Nyt6XN-N2bQD0_uekzWlZc3iOgrA/exec";
 
 
-/* =====================================================
-   GLOBAL VARIABLES
-===================================================== */
+/* GLOBAL VARIABLES */
 
 let currentScannerName="";
-
 let scanner=null;
-
 let scannerRunning=false;
-
 let processingScan=false;
 
 
-/* =====================================================
-   ESCAPE HTML
-===================================================== */
+/* ESCAPE HTML */
 
 function escapeHtml(value){
 
@@ -484,14 +197,11 @@ return String(value??"")
 }
 
 
-/* =====================================================
-   SHOW LOGIN MESSAGE
-===================================================== */
+/* LOGIN MESSAGE */
 
 function showLoginMessage(message,type){
 
-const box=
-document.getElementById("loginMessage");
+const box=document.getElementById("loginMessage");
 
 box.innerText=message;
 
@@ -502,9 +212,7 @@ box.className=
 }
 
 
-/* =====================================================
-   GO HOME
-===================================================== */
+/* HOME */
 
 function goHome(){
 
@@ -513,17 +221,16 @@ window.location.href="index.html";
 }
 
 
-/* =====================================================
-   API REQUEST USING JSONP
-===================================================== */
+/* API REQUEST */
 
 function apiRequest(params,callback){
 
 const callbackName=
-"icemdFoodCallback_"+Date.now()+"_"+Math.floor(Math.random()*100000);
+"icemdFoodCallback_"+
+Date.now()+"_"+
+Math.floor(Math.random()*100000);
 
-const script=
-document.createElement("script");
+const script=document.createElement("script");
 
 let finished=false;
 
@@ -547,8 +254,7 @@ callback(data);
 
 params.callback=callbackName;
 
-const query=
-new URLSearchParams(params);
+const query=new URLSearchParams(params);
 
 script.src=
 APPS_SCRIPT_URL+
@@ -581,23 +287,17 @@ document.body.appendChild(script);
 }
 
 
-/* =====================================================
-   FOOD LOGIN
-===================================================== */
+/* FOOD LOGIN */
 
 function foodLogin(){
 
 const scannerName=
-document
-.getElementById("scannerName")
-.value
-.trim();
+document.getElementById("scannerName")
+.value.trim();
 
 const password=
-document
-.getElementById("scannerPassword")
-.value
-.trim();
+document.getElementById("scannerPassword")
+.value.trim();
 
 if(!scannerName||!password){
 
@@ -614,7 +314,6 @@ const button=
 document.getElementById("loginButton");
 
 button.disabled=true;
-
 button.innerText="Checking...";
 
 showLoginMessage(
@@ -625,9 +324,7 @@ showLoginMessage(
 apiRequest({
 
 action:"foodLogin",
-
 name:scannerName,
-
 password:password
 
 },function(result){
@@ -635,64 +332,42 @@ password:password
 console.log("Food login response:",result);
 
 button.disabled=false;
-
 button.innerText="Login";
 
-if(
-result &&
-result.status==="success"
-){
+if(result&&result.status==="success"){
 
 currentScannerName=
-result.scanner||
-scannerName;
+result.scanner||scannerName;
 
 sessionStorage.setItem(
 "icemdFoodScanner",
 currentScannerName
 );
 
-document
-.getElementById("foodWelcome")
+document.getElementById("foodWelcome")
 .innerText=
 "Welcome, "+
 currentScannerName;
 
+document.getElementById("foodLoginPage")
+.classList.add("hidden");
 
-document
-.getElementById("foodLoginPage")
-.classList
-.add("hidden");
+document.getElementById("foodScannerPage")
+.classList.remove("hidden");
 
+document.getElementById("scanResult")
+.style.display="none";
 
-document
-.getElementById("foodScannerPage")
-.classList
-.remove("hidden");
-
-
-document
-.getElementById("scanResult")
-.style
-.display="none";
-
-
-document
-.getElementById("scanResult")
+document.getElementById("scanResult")
 .innerHTML="";
 
-
 processingScan=false;
-
 scannerRunning=false;
-
 scanner=null;
 
 loadFoodService();
 
-}
-
-else{
+}else{
 
 showLoginMessage(
 result&&result.message
@@ -708,16 +383,12 @@ result&&result.message
 }
 
 
-/* =====================================================
-   LOAD ADMIN-SELECTED FOOD SERVICE
-===================================================== */
+/* LOAD ADMIN FOOD SERVICE */
 
 function loadFoodService(){
 
 const serviceText=
-document.getElementById(
-"foodServiceText"
-);
+document.getElementById("foodServiceText");
 
 serviceText.innerText=
 "Checking Admin setting...";
@@ -728,14 +399,11 @@ action:"getActiveFoodService"
 
 },function(result){
 
-console.log(
-"Food service response:",
-result
-);
+console.log("Food service response:",result);
 
 if(
-result &&
-result.status==="success" &&
+result&&
+result.status==="success"&&
 result.active
 ){
 
@@ -747,10 +415,7 @@ escapeHtml(result.meal||"")+
 "Conference Date: "+
 escapeHtml(result.date||"");
 
-
-}
-
-else{
+}else{
 
 serviceText.innerHTML=
 "<strong>No food service enabled.</strong>"+
@@ -764,53 +429,24 @@ serviceText.innerHTML=
 }
 
 
-/* =====================================================
-   START QR SCANNER
-===================================================== */
+/* START QR SCANNER */
 
 async function startScanner(){
 
-if(
-scannerRunning||
-processingScan
-){
-
-return;
-
-}
-
-const status=
-document.getElementById(
-"scannerStatus"
-);
+if(scannerRunning||processingScan)return;
 
 const startButton=
-document.getElementById(
-"startScannerButton"
-);
+document.getElementById("startScannerButton");
 
 const resultBox=
-document.getElementById(
-"scanResult"
-);
-
+document.getElementById("scanResult");
 
 resultBox.style.display="none";
-
 resultBox.innerHTML="";
-
-
-status.innerText=
-"Starting camera...";
 
 startButton.disabled=true;
 
-
 try{
-
-/*
- Force browser camera permission
-*/
 
 if(
 !navigator.mediaDevices||
@@ -822,12 +458,6 @@ throw new Error(
 );
 
 }
-
-
-status.innerText=
-"Requesting camera permission...\n"+
-"Please press Allow when the browser asks for camera access.";
-
 
 const permissionStream=
 await navigator.mediaDevices.getUserMedia({
@@ -842,23 +472,14 @@ audio:false
 
 });
 
-
 permissionStream
 .getTracks()
 .forEach(function(track){
 track.stop();
 });
 
-
-/*
- Start QR scanner
-*/
-
 scanner=
-new Html5Qrcode(
-"qr-reader"
-);
-
+new Html5Qrcode("qr-reader");
 
 await scanner.start(
 
@@ -866,61 +487,37 @@ await scanner.start(
 
 {
 fps:10,
-
 qrbox:{
 width:250,
 height:250
 }
-
 },
 
 async function(decodedText){
 
-if(processingScan){
-
-return;
-
-}
+if(processingScan)return;
 
 processingScan=true;
 
 const registrationID=
-String(
-decodedText||""
-).trim();
-
+String(decodedText||"").trim();
 
 if(!registrationID){
 
 processingScan=false;
-
 return;
 
 }
-
 
 console.log(
 "Food QR detected:",
 registrationID
 );
 
-
-status.innerText=
-"QR detected: "+
-registrationID+
-"\nProcessing food request...";
-
-
-/*
- Stop camera after scan
-*/
-
 try{
 
 if(scanner){
-
 await scanner.stop();
-
 }
 
 }catch(error){
@@ -932,13 +529,10 @@ error
 
 }
 
-
 try{
 
 if(scanner){
-
 await scanner.clear();
-
 }
 
 }catch(error){
@@ -950,48 +544,21 @@ error
 
 }
 
-
 scanner=null;
-
 scannerRunning=false;
-
 startButton.disabled=false;
 
-
-/*
- Process food
-*/
-
-processFoodScan(
-registrationID
-);
+processFoodScan(registrationID);
 
 },
 
-function(errorMessage){
-
-/*
- Normal scanner errors ignored.
- */
-
-}
+function(errorMessage){}
 
 );
-
 
 scannerRunning=true;
 
-status.innerHTML=
-"<strong>Camera active.</strong><br>"+
-"Point the camera at the guest QR code.";
-
-console.log(
-"Food camera started successfully."
-);
-
-}
-
-catch(error){
+}catch(error){
 
 console.error(
 "Camera start error:",
@@ -999,11 +566,8 @@ error
 );
 
 scanner=null;
-
 scannerRunning=false;
-
 processingScan=false;
-
 startButton.disabled=false;
 
 const cameraError=
@@ -1011,68 +575,42 @@ error&&error.message
 ?error.message
 :String(error);
 
-status.innerHTML=
-"<strong>Camera could not be started.</strong><br><br>"+
-escapeHtml(cameraError)
-.replace(/\n/g,"<br>")+
-"<br><br>"+
-"If the browser asks for camera permission, "+
-"<strong>press Allow</strong>.<br>"+
-"If permission was previously blocked, "+
-"open the browser site settings and allow Camera, "+
-"then press Start Scanner again.";
+document.getElementById("scanResult")
+.innerHTML=
+"<div class='scan-invalid'>"+
+"<h2>✕ Camera Error</h2>"+
+"<p>"+
+escapeHtml(cameraError)+
+"</p>"+
+"<p>Please allow camera access and try again.</p>"+
+"</div>";
+
+document.getElementById("scanResult")
+.style.display="block";
 
 }
 
 }
 
 
-/* =====================================================
-   PROCESS FOOD SCAN
-===================================================== */
+/* PROCESS FOOD SCAN */
 
-function processFoodScan(
-registrationID
-){
+function processFoodScan(registrationID){
 
-const status=
-document.getElementById(
-"scannerStatus"
-);
-
-status.innerText=
-"QR detected: "+
-registrationID+
-"\n\nVerifying food eligibility...";
-
-
-sendFoodScanToAppsScript(
-registrationID
-);
+sendFoodScanToAppsScript(registrationID);
 
 }
 
 
-/* =====================================================
-   SEND FOOD SCAN TO APPS SCRIPT
-===================================================== */
+/* SEND FOOD SCAN */
 
-function sendFoodScanToAppsScript(
-registrationID
-){
-
-const scannerName=
-currentScannerName||
-"";
-
+function sendFoodScanToAppsScript(registrationID){
 
 apiRequest({
 
 action:"scanFood",
-
 registrationId:registrationID,
-
-scannedBy:scannerName
+scannedBy:currentScannerName||""
 
 },function(result){
 
@@ -1081,9 +619,7 @@ console.log(
 result
 );
 
-showFoodScanResult(
-result
-);
+showFoodScanResult(result);
 
 processingScan=false;
 
@@ -1092,44 +628,23 @@ processingScan=false;
 }
 
 
-/* =====================================================
-   SHOW FOOD RESULT
-===================================================== */
+/* SHOW FOOD RESULT */
 
-function showFoodScanResult(
-result
-){
+function showFoodScanResult(result){
 
 const box=
-document.getElementById(
-"scanResult"
-);
-
-const status=
-document.getElementById(
-"scannerStatus"
-);
-
+document.getElementById("scanResult");
 
 box.style.display="block";
-
-box.className=
-"scan-result";
-
+box.className="scan-result";
 
 if(!result){
 
-box.classList.add(
-"scan-invalid"
-);
+box.classList.add("scan-invalid");
 
 box.innerHTML=
 "<h2>✕ Food Scan Error</h2>"+
 "<p>Unable to process this QR code.</p>";
-
-status.innerHTML=
-"Scan could not be processed.<br>"+
-"You may scan the next guest.";
 
 box.scrollIntoView({
 behavior:"smooth",
@@ -1141,18 +656,14 @@ return;
 }
 
 
-/*
- SUCCESS
-*/
+/* SUCCESS */
 
 if(
 result.status==="success"||
 result.result==="SUCCESS"
 ){
 
-box.classList.add(
-"scan-accepted"
-);
+box.classList.add("scan-accepted");
 
 box.innerHTML=
 
@@ -1215,18 +726,6 @@ currentScannerName||
 )+
 "</p>";
 
-
-status.innerHTML=
-"Food issued successfully.<br>"+
-"Click <strong>Start Scanner</strong> "+
-"for the next guest.";
-
-document
-.getElementById(
-"manualRegistrationID"
-)
-.value="";
-
 box.scrollIntoView({
 behavior:"smooth",
 block:"start"
@@ -1237,18 +736,14 @@ return;
 }
 
 
-/*
- FAILED
-*/
+/* FAILED */
 
 if(
 result.status==="error"||
 result.result==="FAILED"
 ){
 
-box.classList.add(
-"scan-duplicate"
-);
+box.classList.add("scan-duplicate");
 
 box.innerHTML=
 
@@ -1264,29 +759,25 @@ result.registrationID||
 
 "<p><b>Name:</b> "+
 escapeHtml(
-result.name||
-""
+result.name||""
 )+
 "</p>"+
 
 "<p><b>Email:</b> "+
 escapeHtml(
-result.email||
-""
+result.email||""
 )+
 "</p>"+
 
 "<p><b>Institute:</b> "+
 escapeHtml(
-result.institute||
-""
+result.institute||""
 )+
 "</p>"+
 
 "<p><b>Meal:</b> "+
 escapeHtml(
-result.meal||
-""
+result.meal||""
 )+
 "</p>"+
 
@@ -1306,11 +797,6 @@ currentScannerName||
 )+
 "</p>";
 
-
-status.innerHTML=
-"Food was not issued.<br>"+
-"You may scan the next guest.";
-
 box.scrollIntoView({
 behavior:"smooth",
 block:"start"
@@ -1321,18 +807,12 @@ return;
 }
 
 
-/*
- UNKNOWN RESPONSE
-*/
+/* UNKNOWN */
 
-box.classList.add(
-"scan-invalid"
-);
+box.classList.add("scan-invalid");
 
 box.innerHTML=
-
 "<h2>✕ Scan Error</h2>"+
-
 "<p>"+
 escapeHtml(
 result.message||
@@ -1340,10 +820,6 @@ result.message||
 )+
 "</p>";
 
-status.innerHTML=
-"An unexpected response was received.<br>"+
-"You may scan the next guest.";
-
 box.scrollIntoView({
 behavior:"smooth",
 block:"start"
@@ -1352,65 +828,7 @@ block:"start"
 }
 
 
-/* =====================================================
-   MANUAL REGISTRATION ID
-===================================================== */
-
-function manualScan(){
-
-if(processingScan){
-
-return;
-
-}
-
-const input=
-document.getElementById(
-"manualRegistrationID"
-);
-
-const registrationID=
-input.value.trim();
-
-
-if(!registrationID){
-
-alert(
-"Please enter a Registration ID."
-);
-
-return;
-
-}
-
-
-document
-.getElementById("scanResult")
-.style
-.display="none";
-
-
-processingScan=true;
-
-
-document
-.getElementById("scannerStatus")
-.innerText=
-"Testing Registration ID:\n"+
-registrationID+
-"\n\nVerifying food eligibility...";
-
-
-sendFoodScanToAppsScript(
-registrationID
-);
-
-}
-
-
-/* =====================================================
-   STOP QR SCANNER
-===================================================== */
+/* STOP SCANNER */
 
 async function stopQRScanner(){
 
@@ -1418,25 +836,15 @@ processingScan=false;
 
 if(!scanner){
 
-document
-.getElementById(
-"scannerStatus"
-)
-.innerText=
-"Scanner stopped.";
-
-document
-.getElementById(
+document.getElementById(
 "startScannerButton"
-)
-.disabled=false;
+).disabled=false;
 
 scannerRunning=false;
 
 return;
 
 }
-
 
 try{
 
@@ -1451,7 +859,6 @@ error
 
 }
 
-
 try{
 
 await scanner.clear();
@@ -1465,48 +872,27 @@ error
 
 }
 
-
 scanner=null;
-
 scannerRunning=false;
 
-
-document
-.getElementById(
+document.getElementById(
 "qr-reader"
-)
-.innerHTML="";
+).innerHTML="";
 
-
-document
-.getElementById(
+document.getElementById(
 "startScannerButton"
-)
-.disabled=false;
-
-
-document
-.getElementById(
-"scannerStatus"
-)
-.innerText=
-"Scanner stopped.";
+).disabled=false;
 
 }
 
 
-/* =====================================================
-   LOGOUT
-===================================================== */
+/* LOGOUT */
 
 async function logoutFoodScanner(){
 
 try{
-
 await stopQRScanner();
-
 }catch(error){}
-
 
 currentScannerName="";
 
@@ -1514,106 +900,46 @@ sessionStorage.removeItem(
 "icemdFoodScanner"
 );
 
-
-document
-.getElementById(
+document.getElementById(
 "scannerName"
-)
-.value="";
+).value="";
 
-
-document
-.getElementById(
+document.getElementById(
 "scannerPassword"
-)
-.value="";
+).value="";
 
-
-document
-.getElementById(
+document.getElementById(
 "foodScannerPage"
-)
-.classList
-.add("hidden");
+).classList.add("hidden");
 
-
-document
-.getElementById(
+document.getElementById(
 "foodLoginPage"
-)
-.classList
-.remove("hidden");
+).classList.remove("hidden");
 
-
-document
-.getElementById(
+document.getElementById(
 "scanResult"
-)
-.style
-.display="none";
+).style.display="none";
 
-
-document
-.getElementById(
+document.getElementById(
 "scanResult"
-)
-.innerHTML="";
+).innerHTML="";
 
-
-document
-.getElementById(
+document.getElementById(
 "loginMessage"
-)
-.className="message";
+).className="message";
 
-
-document
-.getElementById(
+document.getElementById(
 "loginMessage"
-)
-.innerText="";
-
-
-document
-.getElementById(
-"manualRegistrationID"
-)
-.value="";
-
+).innerText="";
 
 processingScan=false;
-
 scannerRunning=false;
-
 scanner=null;
 
 }
 
 
-/* =====================================================
-   ENTER KEY FOR MANUAL ID
-===================================================== */
-
-document
-.getElementById(
-"manualRegistrationID"
-)
-.addEventListener(
-"keydown",
-function(event){
-
-if(event.key==="Enter"){
-
-manualScan();
-
-}
-
-});
-
-
-/* =====================================================
-   PAGE LOAD
-===================================================== */
+/* PAGE LOAD */
 
 window.addEventListener(
 "load",
@@ -1626,30 +952,21 @@ sessionStorage.getItem(
 
 if(savedScanner){
 
-currentScannerName=
-savedScanner;
+currentScannerName=savedScanner;
 
-document
-.getElementById(
+document.getElementById(
 "foodWelcome"
-)
-.innerText=
+).innerText=
 "Welcome, "+
 currentScannerName;
 
-document
-.getElementById(
+document.getElementById(
 "foodLoginPage"
-)
-.classList
-.add("hidden");
+).classList.add("hidden");
 
-document
-.getElementById(
+document.getElementById(
 "foodScannerPage"
-)
-.classList
-.remove("hidden");
+).classList.remove("hidden");
 
 loadFoodService();
 
