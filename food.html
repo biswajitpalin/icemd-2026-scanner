@@ -1013,7 +1013,6 @@ null,
 "info"
 );
 
-
 apiRequest(
 {
 action:"scanFood",
@@ -1021,6 +1020,8 @@ registrationId:registrationId,
 scannedBy:foodScannerName
 },
 function(result){
+
+console.log("Food scan response:",result);
 
 if(
 !result||
@@ -1043,7 +1044,6 @@ showSuccessfulFoodResult(result);
 );
 
 }
-
 
 /* =====================================================
    SUCCESS RESULT
@@ -1087,59 +1087,32 @@ document.getElementById(
    FAILED RESULT
 ===================================================== */
 
-function showFailedFoodResult(result){
+function showSuccessfulFoodResult(result){
 
-const area=
-document.getElementById("resultArea");
-
-const reason=
-result.message||
-"Food request was not accepted.";
+const area=document.getElementById("resultArea");
 
 area.innerHTML=
 '<div class="result-card">'+
 
-'<div class="status-error">'+
-'Food Not Issued'+
+'<div class="status-success">'+
+'Food Issued Successfully'+
 '</div>'+
 
 '<div class="result-title" style="margin-top:15px;">'+
-'Reason'+
+'Guest Details'+
 '</div>'+
 
-'<div style="text-align:center;color:#c62828;font-size:15px;line-height:1.5;">'+
-escapeHTML(reason)+
-'</div>'+
-
-(
-result.registrationId
-?
-'<div style="margin-top:12px;">'+
+resultRow("Name",result.name||"Not available")+
+resultRow("Email",result.email||"Not available")+
+resultRow("Institute",result.institute||"Not available")+
+resultRow("Registration ID",result.registrationId||"Not available")+
+resultRow("Meal",result.meal||"Not available")+
 resultRow(
-"Registration ID",
-result.registrationId
+"Date",
+result.activeDate||result.date||"Not available"
 )+
-'</div>'
-:""
-)+
-
-(
-result.name
-?resultRow("Name",result.name)
-:""
-)+
-
-(
-result.email
-?resultRow("Email",result.email)
-:""
-)+
-
-(
-result.institute
-?resultRow("Institute",result.institute)
-:""
-)+
+resultRow("Time",result.time||"Not available")+
+resultRow("Scanned By",result.scannedBy||"Not available")+
 
 '</div>';
 
