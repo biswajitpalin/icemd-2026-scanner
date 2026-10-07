@@ -1,14 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1.0"
+>
+
 <title>ICEMD-2026 Food Scanner</title>
 
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script
+src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"
+></script>
+
 
 <style>
-*{box-sizing:border-box}
+
+*{
+box-sizing:border-box
+}
 
 body{
 margin:0;
@@ -224,24 +237,34 @@ word-break:break-word
 .hidden{
 display:none!important
 }
+
 </style>
+
 </head>
+
 
 <body>
 
+
 <div class="container">
+
 
 <!-- =====================================================
      FOOD LOGIN
-===================================================== -->
+====================================================== -->
 
-<div id="foodLoginPage" class="card">
+<div
+id="foodLoginPage"
+class="card"
+>
 
 <h1>ICEMD-2026</h1>
 
 <h2>Food Service Scanner</h2>
 
-<p class="subtitle">Food Distribution</p>
+<p class="subtitle">
+Food Distribution
+</p>
 
 
 <form
@@ -250,39 +273,45 @@ onsubmit="foodLogin(event)"
 autocomplete="on"
 >
 
+
 <label for="scannerName">
 Counter
 </label>
 
-<select
+
+<!--
+     Username field intentionally uses a text input.
+     This allows Chrome/Edge password managers to
+     recognize it as the username for the saved
+     password.
+-->
+
+<input
+type="text"
 id="scannerName"
 name="username"
+list="scannerOptions"
+placeholder="Select Counter"
 autocomplete="username"
 required
 >
 
-<option value="">
-Select Counter
-</option>
+
+<datalist id="scannerOptions">
 
 <option value="Food Counter 1">
-Food Counter 1
-</option>
 
 <option value="Food Counter 2">
-Food Counter 2
-</option>
 
 <option value="Food Counter 3">
-Food Counter 3
-</option>
 
-</select>
+</datalist>
 
 
 <label for="scannerPassword">
 Password
 </label>
+
 
 <input
 type="password"
@@ -302,10 +331,12 @@ class="button"
 Login
 </button>
 
+
 </form>
 
 
 <!-- BACK BUTTON -->
+
 <button
 type="button"
 class="button secondary"
@@ -315,22 +346,32 @@ Back
 </button>
 
 
-<div id="loginMessage" class="message"></div>
+<div
+id="loginMessage"
+class="message"
+></div>
 
 </div>
 
 
+
 <!-- =====================================================
      FOOD SCANNER
-===================================================== -->
+====================================================== -->
 
-<div id="foodScannerPage" class="card hidden">
+<div
+id="foodScannerPage"
+class="card hidden"
+>
 
 <h1>ICEMD-2026</h1>
 
 <h2>Food QR Scanner</h2>
 
-<p id="foodWelcome" class="welcome"></p>
+<p
+id="foodWelcome"
+class="welcome"
+></p>
 
 
 <div class="food-info">
@@ -346,6 +387,7 @@ Checking Admin setting...
 </div>
 
 
+
 <!-- CAMERA -->
 
 <div class="scanner-box">
@@ -355,12 +397,14 @@ Checking Admin setting...
 </div>
 
 
+
 <!-- RESULT -->
 
 <div
 id="scanResult"
 class="scan-result"
 ></div>
+
 
 
 <!-- START -->
@@ -372,6 +416,7 @@ onclick="startScanner()"
 >
 Start Scanner
 </button>
+
 
 
 <!-- LOGOUT -->
@@ -389,7 +434,9 @@ Logout
 </div>
 
 
+
 <script>
+
 
 /* =====================================================
    APPS SCRIPT URL
@@ -399,14 +446,19 @@ const APPS_SCRIPT_URL=
 "https://script.google.com/macros/s/AKfycbxD0VHRLp17LUYiPlYzxPRWwsZUagkVZycolhHfn6Nyt6XN-N2bQD0_uekzWlZc3iOgrA/exec";
 
 
+
 /* =====================================================
    GLOBAL VARIABLES
 ===================================================== */
 
 let currentScannerName="";
+
 let scanner=null;
+
 let scannerRunning=false;
+
 let processingScan=false;
+
 
 
 /* =====================================================
@@ -423,6 +475,7 @@ return String(value??"")
 .replace(/'/g,"&#039;");
 
 }
+
 
 
 /* =====================================================
@@ -443,6 +496,7 @@ box.className=
 }
 
 
+
 /* =====================================================
    HOME / BACK
 ===================================================== */
@@ -452,6 +506,7 @@ function goHome(){
 window.location.href="index.html";
 
 }
+
 
 
 /* =====================================================
@@ -465,7 +520,8 @@ const callbackName=
 Date.now()+"_"+
 Math.floor(Math.random()*100000);
 
-const script=document.createElement("script");
+const script=
+document.createElement("script");
 
 let finished=false;
 
@@ -477,12 +533,18 @@ if(finished)return;
 finished=true;
 
 try{
+
 delete window[callbackName];
+
 }catch(error){}
 
+
 if(script.parentNode){
+
 script.parentNode.removeChild(script);
+
 }
+
 
 callback(data);
 
@@ -507,16 +569,26 @@ if(finished)return;
 finished=true;
 
 try{
+
 delete window[callbackName];
+
 }catch(error){}
 
+
 if(script.parentNode){
+
 script.parentNode.removeChild(script);
+
 }
 
+
 callback({
+
 status:"error",
-message:"Unable to connect to the attendance server."
+
+message:
+"Unable to connect to the attendance server."
+
 });
 
 };
@@ -527,6 +599,7 @@ document.body.appendChild(script);
 }
 
 
+
 /* =====================================================
    FOOD LOGIN
 ===================================================== */
@@ -535,13 +608,17 @@ function foodLogin(event){
 
 /*
  Prevent normal form submission.
- The form itself is deliberately kept as a real
- username/password form so Chrome/Edge can recognize
- the credentials and offer to save the password.
+
+ The form is deliberately kept as a real
+ username/password form so Chrome/Edge can
+ recognize the credentials and offer to
+ save the password.
 */
 
 if(event){
+
 event.preventDefault();
+
 }
 
 
@@ -553,7 +630,8 @@ document.getElementById("scannerName")
 
 /*
  Do NOT trim the password.
- Passwords should be sent exactly as entered.
+
+ The password is sent exactly as entered.
 */
 
 const password=
@@ -577,6 +655,7 @@ const button=
 document.getElementById("loginButton");
 
 button.disabled=true;
+
 button.innerText="Checking...";
 
 
@@ -589,7 +668,9 @@ showLoginMessage(
 apiRequest({
 
 action:"foodLogin",
+
 name:scannerName,
+
 password:password
 
 },function(result){
@@ -601,6 +682,7 @@ result
 
 
 button.disabled=false;
+
 button.innerText="Login";
 
 
@@ -608,6 +690,7 @@ if(
 result&&
 result.status==="success"
 ){
+
 
 currentScannerName=
 result.scanner||
@@ -617,6 +700,7 @@ scannerName;
 
 /*
  Keep the logged-in counter in session.
+
  This does NOT store the password.
 */
 
@@ -654,7 +738,9 @@ document.getElementById(
 
 
 processingScan=false;
+
 scannerRunning=false;
+
 scanner=null;
 
 
@@ -663,11 +749,17 @@ loadFoodService();
 
 }else{
 
+
 showLoginMessage(
+
 result&&result.message
-?result.message
-:"Invalid scanner login.",
+?
+result.message
+:
+"Invalid scanner login.",
+
 "error"
+
 );
 
 }
@@ -675,6 +767,7 @@ result&&result.message
 });
 
 }
+
 
 
 /* =====================================================
@@ -687,6 +780,7 @@ const serviceText=
 document.getElementById(
 "foodServiceText"
 );
+
 
 serviceText.innerText=
 "Checking Admin setting...";
@@ -732,6 +826,7 @@ serviceText.innerHTML=
 }
 
 
+
 /* =====================================================
    START QR SCANNER
 ===================================================== */
@@ -749,6 +844,7 @@ document.getElementById(
 "startScannerButton"
 );
 
+
 const resultBox=
 document.getElementById(
 "scanResult"
@@ -756,7 +852,9 @@ document.getElementById(
 
 
 resultBox.style.display="none";
+
 resultBox.innerHTML="";
+
 resultBox.className="scan-result";
 
 
@@ -764,6 +862,7 @@ startButton.disabled=true;
 
 
 try{
+
 
 /* =====================================================
    CAMERA PERMISSION
@@ -798,8 +897,11 @@ audio:false
 permissionStream
 .getTracks()
 .forEach(function(track){
+
 track.stop();
+
 });
+
 
 
 /* =====================================================
@@ -808,6 +910,7 @@ track.stop();
 
 scanner=
 new Html5Qrcode("qr-reader");
+
 
 
 /* =====================================================
@@ -820,10 +923,12 @@ await scanner.start(
 
 {
 fps:10,
+
 qrbox:{
 width:250,
 height:250
 }
+
 },
 
 
@@ -853,6 +958,7 @@ registrationID
 );
 
 
+
 /* =====================================================
    SHOW VERIFYING STATE
 ===================================================== */
@@ -867,6 +973,7 @@ resultBox.innerHTML=
 "<p>Please wait while the food record is being checked.</p>";
 
 
+
 /* =====================================================
    STOP CAMERA IMMEDIATELY
 ===================================================== */
@@ -874,7 +981,9 @@ resultBox.innerHTML=
 try{
 
 if(scanner){
+
 await scanner.stop();
+
 }
 
 }catch(error){
@@ -890,7 +999,9 @@ error
 try{
 
 if(scanner){
+
 await scanner.clear();
+
 }
 
 }catch(error){
@@ -904,7 +1015,9 @@ error
 
 
 scanner=null;
+
 scannerRunning=false;
+
 startButton.disabled=false;
 
 
@@ -936,15 +1049,20 @@ error
 
 
 scanner=null;
+
 scannerRunning=false;
+
 processingScan=false;
+
 startButton.disabled=false;
 
 
 const cameraError=
 error&&error.message
-?error.message
-:String(error);
+?
+error.message
+:
+String(error);
 
 
 document.getElementById(
@@ -968,6 +1086,7 @@ document.getElementById(
 }
 
 
+
 /* =====================================================
    PROCESS FOOD SCAN
 ===================================================== */
@@ -979,6 +1098,7 @@ registrationID
 );
 
 }
+
 
 
 /* =====================================================
@@ -1016,6 +1136,7 @@ processingScan=false;
 }
 
 
+
 /* =====================================================
    SHOW FOOD RESULT
 ===================================================== */
@@ -1027,7 +1148,9 @@ document.getElementById(
 "scanResult"
 );
 
+
 box.style.display="block";
+
 box.className="scan-result";
 
 
@@ -1041,14 +1164,20 @@ box.innerHTML=
 "<h2>✕ Food Scan Error</h2>"+
 "<p>Unable to process this QR code.</p>";
 
+
 box.scrollIntoView({
+
 behavior:"smooth",
+
 block:"start"
+
 });
+
 
 return;
 
 }
+
 
 
 /* =====================================================
@@ -1063,6 +1192,7 @@ result.result==="SUCCESS"
 box.classList.add(
 "scan-accepted"
 );
+
 
 box.innerHTML=
 
@@ -1130,13 +1260,18 @@ currentScannerName||
 
 
 box.scrollIntoView({
+
 behavior:"smooth",
+
 block:"start"
+
 });
+
 
 return;
 
 }
+
 
 
 /* =====================================================
@@ -1151,6 +1286,7 @@ result.result==="FAILED"
 box.classList.add(
 "scan-duplicate"
 );
+
 
 box.innerHTML=
 
@@ -1210,13 +1346,18 @@ currentScannerName||
 
 
 box.scrollIntoView({
+
 behavior:"smooth",
+
 block:"start"
+
 });
+
 
 return;
 
 }
+
 
 
 /* =====================================================
@@ -1227,6 +1368,7 @@ box.classList.add(
 "scan-invalid"
 );
 
+
 box.innerHTML=
 "<h2>✕ Scan Error</h2>"+
 "<p>"+
@@ -1236,12 +1378,17 @@ result.message||
 )+
 "</p>";
 
+
 box.scrollIntoView({
+
 behavior:"smooth",
+
 block:"start"
+
 });
 
 }
+
 
 
 /* =====================================================
@@ -1255,11 +1402,16 @@ try{
 if(scanner){
 
 try{
+
 await scanner.stop();
+
 }catch(error){}
 
+
 try{
+
 await scanner.clear();
+
 }catch(error){}
 
 }
@@ -1268,8 +1420,11 @@ await scanner.clear();
 
 
 scanner=null;
+
 scannerRunning=false;
+
 processingScan=false;
+
 
 currentScannerName="";
 
@@ -1286,6 +1441,7 @@ document.getElementById(
 
 /*
  Clear the password field on logout.
+
  The browser password manager can still
  retain its saved credential independently.
 */
@@ -1325,6 +1481,7 @@ document.getElementById(
 ).innerText="";
 
 }
+
 
 
 /* =====================================================
@@ -1370,7 +1527,10 @@ loadFoodService();
 
 });
 
+
 </script>
 
+
 </body>
+
 </html>
