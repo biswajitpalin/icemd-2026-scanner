@@ -4,44 +4,226 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>ICEMD-2026 Food Scanner</title>
+
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;padding:20px;font-family:Arial,sans-serif;background:#f5f5f5;color:#222}
-.container{max-width:500px;margin:0 auto}
-.card{background:white;padding:22px;border-radius:12px;box-shadow:0 3px 12px rgba(0,0,0,.08)}
-h1{text-align:center;font-size:24px;margin-top:0;margin-bottom:5px}
-h2{text-align:center;font-size:20px;margin-top:10px}
-h3{text-align:center;color:#17365d}
-.subtitle{text-align:center;color:#666;margin-bottom:25px}
-label{display:block;margin-top:15px;margin-bottom:6px;font-weight:bold}
-input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;background:white}
-input:focus,select:focus{outline:none;border-color:#17365d}
-button{width:100%;padding:14px;margin-top:15px;border:none;border-radius:8px;font-size:16px;cursor:pointer}
-button:disabled{background:#999!important;cursor:not-allowed}
-.button{background:#17365d;color:white}
-.button:hover{opacity:.92}
-.success-button{background:#198754;color:white}
-.secondary{background:#666;color:white}
-.danger{background:#b02a37;color:white}
-.message{margin-top:15px;padding:12px;border-radius:7px;text-align:center;line-height:1.5;display:none}
-.message.success{display:block;background:#d4edda;color:#155724;border:1px solid #b8dfc1}
-.message.error{display:block;background:#f8d7da;color:#721c24;border:1px solid #f1bfc4}
-.welcome{text-align:center;font-weight:bold;font-size:18px;color:#17365d;margin-bottom:15px}
-.food-info{background:#eef3f8;border-radius:8px;padding:15px;margin-top:15px;font-size:15px;line-height:1.6;text-align:center}
-.food-info strong{color:#17365d}
-.scanner-box{width:100%;margin-top:20px}
-#qr-reader{width:100%}
-#qr-reader video{width:100%!important;height:auto!important;border-radius:8px}
-.scan-result{display:none;margin-top:20px;padding:20px;border-radius:10px}
-.scan-accepted{display:block;background:#d4edda;color:#155724;border:1px solid #b8dfc1}
-.scan-duplicate{display:block;background:#f8d7da;color:#721c24;border:1px solid #f1bfc4}
-.scan-invalid{display:block;background:#f8d7da;color:#721c24;border:1px solid #f1bfc4}
-.scan-processing{display:block;background:#eef3f8;color:#17365d;border:1px solid #c9d5e2}
-.scan-result h2{margin-top:0;text-align:center}
-.scan-result p{margin:8px 0;font-size:14px;line-height:1.5;word-break:break-word}
-.hidden{display:none!important}
+
+body{
+margin:0;
+padding:20px;
+font-family:Arial,sans-serif;
+background:#f5f5f5;
+color:#222
+}
+
+.container{
+max-width:500px;
+margin:0 auto
+}
+
+.card{
+background:white;
+padding:22px;
+border-radius:12px;
+box-shadow:0 3px 12px rgba(0,0,0,.08)
+}
+
+h1{
+text-align:center;
+font-size:24px;
+margin-top:0;
+margin-bottom:5px
+}
+
+h2{
+text-align:center;
+font-size:20px;
+margin-top:10px
+}
+
+h3{
+text-align:center;
+color:#17365d
+}
+
+.subtitle{
+text-align:center;
+color:#666;
+margin-bottom:25px
+}
+
+label{
+display:block;
+margin-top:15px;
+margin-bottom:6px;
+font-weight:bold
+}
+
+input,select{
+width:100%;
+padding:12px;
+border:1px solid #ccc;
+border-radius:7px;
+font-size:16px;
+background:white
+}
+
+input:focus,select:focus{
+outline:none;
+border-color:#17365d
+}
+
+button{
+width:100%;
+padding:14px;
+margin-top:15px;
+border:none;
+border-radius:8px;
+font-size:16px;
+cursor:pointer
+}
+
+button:disabled{
+background:#999!important;
+cursor:not-allowed
+}
+
+.button{
+background:#17365d;
+color:white
+}
+
+.button:hover{
+opacity:.92
+}
+
+.success-button{
+background:#198754;
+color:white
+}
+
+.secondary{
+background:#666;
+color:white
+}
+
+.danger{
+background:#b02a37;
+color:white
+}
+
+.message{
+margin-top:15px;
+padding:12px;
+border-radius:7px;
+text-align:center;
+line-height:1.5;
+display:none
+}
+
+.message.success{
+display:block;
+background:#d4edda;
+color:#155724;
+border:1px solid #b8dfc1
+}
+
+.message.error{
+display:block;
+background:#f8d7da;
+color:#721c24;
+border:1px solid #f1bfc4
+}
+
+.welcome{
+text-align:center;
+font-weight:bold;
+font-size:18px;
+color:#17365d;
+margin-bottom:15px
+}
+
+.food-info{
+background:#eef3f8;
+border-radius:8px;
+padding:15px;
+margin-top:15px;
+font-size:15px;
+line-height:1.6;
+text-align:center
+}
+
+.food-info strong{
+color:#17365d
+}
+
+.scanner-box{
+width:100%;
+margin-top:20px
+}
+
+#qr-reader{
+width:100%
+}
+
+#qr-reader video{
+width:100%!important;
+height:auto!important;
+border-radius:8px
+}
+
+.scan-result{
+display:none;
+margin-top:20px;
+padding:20px;
+border-radius:10px
+}
+
+.scan-accepted{
+display:block;
+background:#d4edda;
+color:#155724;
+border:1px solid #b8dfc1
+}
+
+.scan-duplicate{
+display:block;
+background:#f8d7da;
+color:#721c24;
+border:1px solid #f1bfc4
+}
+
+.scan-invalid{
+display:block;
+background:#f8d7da;
+color:#721c24;
+border:1px solid #f1bfc4
+}
+
+.scan-processing{
+display:block;
+background:#eef3f8;
+color:#17365d;
+border:1px solid #c9d5e2
+}
+
+.scan-result h2{
+margin-top:0;
+text-align:center
+}
+
+.scan-result p{
+margin:8px 0;
+font-size:14px;
+line-height:1.5;
+word-break:break-word
+}
+
+.hidden{
+display:none!important
+}
 </style>
 </head>
 
@@ -49,7 +231,9 @@ button:disabled{background:#999!important;cursor:not-allowed}
 
 <div class="container">
 
-<!-- FOOD LOGIN -->
+<!-- =====================================================
+     FOOD LOGIN
+===================================================== -->
 
 <div id="foodLoginPage" class="card">
 
@@ -59,45 +243,86 @@ button:disabled{background:#999!important;cursor:not-allowed}
 
 <p class="subtitle">Food Distribution</p>
 
-<label for="scannerName">Counter</label>
 
-<select id="scannerName">
-<option value="">Select Counter</option>
-<option value="Food Counter 1">Food Counter 1</option>
-<option value="Food Counter 2">Food Counter 2</option>
-<option value="Food Counter 3">Food Counter 3</option>
+<form
+id="foodLoginForm"
+onsubmit="foodLogin(event)"
+autocomplete="on"
+>
+
+<label for="scannerName">
+Counter
+</label>
+
+<select
+id="scannerName"
+name="username"
+autocomplete="username"
+required
+>
+
+<option value="">
+Select Counter
+</option>
+
+<option value="Food Counter 1">
+Food Counter 1
+</option>
+
+<option value="Food Counter 2">
+Food Counter 2
+</option>
+
+<option value="Food Counter 3">
+Food Counter 3
+</option>
+
 </select>
 
-<label for="scannerPassword">Password</label>
+
+<label for="scannerPassword">
+Password
+</label>
 
 <input
 type="password"
 id="scannerPassword"
+name="password"
 placeholder="Enter scanner password"
 autocomplete="current-password"
+required
 >
+
 
 <button
 id="loginButton"
+type="submit"
 class="button"
-onclick="foodLogin()"
 >
 Login
 </button>
 
+</form>
+
+
+<!-- BACK BUTTON -->
 <button
+type="button"
 class="button secondary"
 onclick="goHome()"
 >
 Back
 </button>
 
+
 <div id="loginMessage" class="message"></div>
 
 </div>
 
 
-<!-- FOOD SCANNER -->
+<!-- =====================================================
+     FOOD SCANNER
+===================================================== -->
 
 <div id="foodScannerPage" class="card hidden">
 
@@ -107,9 +332,12 @@ Back
 
 <p id="foodWelcome" class="welcome"></p>
 
+
 <div class="food-info">
 
-<div><strong>Active Food Service</strong></div>
+<div>
+<strong>Active Food Service</strong>
+</div>
 
 <div id="foodServiceText">
 Checking Admin setting...
@@ -149,6 +377,7 @@ Start Scanner
 <!-- LOGOUT -->
 
 <button
+type="button"
 class="button danger"
 onclick="logoutFoodScanner()"
 >
@@ -162,13 +391,17 @@ Logout
 
 <script>
 
-/* APPS SCRIPT URL */
+/* =====================================================
+   APPS SCRIPT URL
+===================================================== */
 
 const APPS_SCRIPT_URL=
 "https://script.google.com/macros/s/AKfycbxD0VHRLp17LUYiPlYzxPRWwsZUagkVZycolhHfn6Nyt6XN-N2bQD0_uekzWlZc3iOgrA/exec";
 
 
-/* GLOBAL VARIABLES */
+/* =====================================================
+   GLOBAL VARIABLES
+===================================================== */
 
 let currentScannerName="";
 let scanner=null;
@@ -176,7 +409,9 @@ let scannerRunning=false;
 let processingScan=false;
 
 
-/* ESCAPE HTML */
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
 
 function escapeHtml(value){
 
@@ -190,11 +425,14 @@ return String(value??"")
 }
 
 
-/* LOGIN MESSAGE */
+/* =====================================================
+   LOGIN MESSAGE
+===================================================== */
 
 function showLoginMessage(message,type){
 
-const box=document.getElementById("loginMessage");
+const box=
+document.getElementById("loginMessage");
 
 box.innerText=message;
 
@@ -205,7 +443,9 @@ box.className=
 }
 
 
-/* HOME */
+/* =====================================================
+   HOME / BACK
+===================================================== */
 
 function goHome(){
 
@@ -214,7 +454,9 @@ window.location.href="index.html";
 }
 
 
-/* API REQUEST */
+/* =====================================================
+   API REQUEST
+===================================================== */
 
 function apiRequest(params,callback){
 
@@ -226,6 +468,7 @@ Math.floor(Math.random()*100000);
 const script=document.createElement("script");
 
 let finished=false;
+
 
 window[callbackName]=function(data){
 
@@ -245,14 +488,17 @@ callback(data);
 
 };
 
+
 params.callback=callbackName;
 
-const query=new URLSearchParams(params);
+const query=
+new URLSearchParams(params);
 
 script.src=
 APPS_SCRIPT_URL+
 "?"+
 query.toString();
+
 
 script.onerror=function(){
 
@@ -275,27 +521,50 @@ message:"Unable to connect to the attendance server."
 
 };
 
+
 document.body.appendChild(script);
 
 }
 
 
-/* FOOD LOGIN */
+/* =====================================================
+   FOOD LOGIN
+===================================================== */
 
-function foodLogin(){
+function foodLogin(event){
+
+/*
+ Prevent normal form submission.
+ The form itself is deliberately kept as a real
+ username/password form so Chrome/Edge can recognize
+ the credentials and offer to save the password.
+*/
+
+if(event){
+event.preventDefault();
+}
+
 
 const scannerName=
 document.getElementById("scannerName")
-.value.trim();
+.value
+.trim();
+
+
+/*
+ Do NOT trim the password.
+ Passwords should be sent exactly as entered.
+*/
 
 const password=
 document.getElementById("scannerPassword")
-.value.trim();
+.value;
+
 
 if(!scannerName||!password){
 
 showLoginMessage(
-"Please select Scanner and enter password.",
+"Please select Counter and enter password.",
 "error"
 );
 
@@ -303,16 +572,19 @@ return;
 
 }
 
+
 const button=
 document.getElementById("loginButton");
 
 button.disabled=true;
 button.innerText="Checking...";
 
+
 showLoginMessage(
 "Checking scanner login...",
 "success"
 );
+
 
 apiRequest({
 
@@ -322,43 +594,72 @@ password:password
 
 },function(result){
 
-console.log("Food login response:",result);
+console.log(
+"Food login response:",
+result
+);
+
 
 button.disabled=false;
 button.innerText="Login";
 
-if(result&&result.status==="success"){
+
+if(
+result&&
+result.status==="success"
+){
 
 currentScannerName=
-result.scanner||scannerName;
+result.scanner||
+result.name||
+scannerName;
+
+
+/*
+ Keep the logged-in counter in session.
+ This does NOT store the password.
+*/
 
 sessionStorage.setItem(
 "icemdFoodScanner",
 currentScannerName
 );
 
-document.getElementById("foodWelcome")
-.innerText=
+
+document.getElementById(
+"foodWelcome"
+).innerText=
 "Welcome, "+
 currentScannerName;
 
-document.getElementById("foodLoginPage")
-.classList.add("hidden");
 
-document.getElementById("foodScannerPage")
-.classList.remove("hidden");
+document.getElementById(
+"foodLoginPage"
+).classList.add("hidden");
 
-document.getElementById("scanResult")
-.style.display="none";
 
-document.getElementById("scanResult")
-.innerHTML="";
+document.getElementById(
+"foodScannerPage"
+).classList.remove("hidden");
+
+
+document.getElementById(
+"scanResult"
+).style.display="none";
+
+
+document.getElementById(
+"scanResult"
+).innerHTML="";
+
 
 processingScan=false;
 scannerRunning=false;
 scanner=null;
 
+
 loadFoodService();
+
 
 }else{
 
@@ -376,15 +677,20 @@ result&&result.message
 }
 
 
-/* LOAD ADMIN FOOD SERVICE */
+/* =====================================================
+   LOAD ADMIN FOOD SERVICE
+===================================================== */
 
 function loadFoodService(){
 
 const serviceText=
-document.getElementById("foodServiceText");
+document.getElementById(
+"foodServiceText"
+);
 
 serviceText.innerText=
 "Checking Admin setting...";
+
 
 apiRequest({
 
@@ -392,7 +698,11 @@ action:"getActiveFoodService"
 
 },function(result){
 
-console.log("Food service response:",result);
+console.log(
+"Food service response:",
+result
+);
+
 
 if(
 result&&
@@ -422,25 +732,42 @@ serviceText.innerHTML=
 }
 
 
-/* START QR SCANNER */
+/* =====================================================
+   START QR SCANNER
+===================================================== */
 
 async function startScanner(){
 
-if(scannerRunning||processingScan)return;
+if(
+scannerRunning||
+processingScan
+)return;
+
 
 const startButton=
-document.getElementById("startScannerButton");
+document.getElementById(
+"startScannerButton"
+);
 
 const resultBox=
-document.getElementById("scanResult");
+document.getElementById(
+"scanResult"
+);
+
 
 resultBox.style.display="none";
 resultBox.innerHTML="";
 resultBox.className="scan-result";
 
+
 startButton.disabled=true;
 
+
 try{
+
+/* =====================================================
+   CAMERA PERMISSION
+===================================================== */
 
 if(
 !navigator.mediaDevices||
@@ -452,6 +779,7 @@ throw new Error(
 );
 
 }
+
 
 const permissionStream=
 await navigator.mediaDevices.getUserMedia({
@@ -466,14 +794,25 @@ audio:false
 
 });
 
+
 permissionStream
 .getTracks()
 .forEach(function(track){
 track.stop();
 });
 
+
+/* =====================================================
+   CREATE SCANNER
+===================================================== */
+
 scanner=
 new Html5Qrcode("qr-reader");
+
+
+/* =====================================================
+   START SCANNER
+===================================================== */
 
 await scanner.start(
 
@@ -487,21 +826,26 @@ height:250
 }
 },
 
+
 async function(decodedText){
 
 if(processingScan)return;
 
 processingScan=true;
 
+
 const registrationID=
 String(decodedText||"").trim();
+
 
 if(!registrationID){
 
 processingScan=false;
+
 return;
 
 }
+
 
 console.log(
 "Food QR detected:",
@@ -509,16 +853,23 @@ registrationID
 );
 
 
-/* SHOW PROCESSING STATE IMMEDIATELY */
+/* =====================================================
+   SHOW VERIFYING STATE
+===================================================== */
 
-resultBox.className="scan-result scan-processing";
+resultBox.className=
+"scan-result scan-processing";
+
 resultBox.style.display="block";
+
 resultBox.innerHTML=
 "<h2>Verifying QR...</h2>"+
 "<p>Please wait while the food record is being checked.</p>";
 
 
-/* STOP CAMERA IMMEDIATELY AFTER QR CAPTURE */
+/* =====================================================
+   STOP CAMERA IMMEDIATELY
+===================================================== */
 
 try{
 
@@ -535,6 +886,7 @@ error
 
 }
 
+
 try{
 
 if(scanner){
@@ -550,19 +902,30 @@ error
 
 }
 
+
 scanner=null;
 scannerRunning=false;
 startButton.disabled=false;
+
 
 processFoodScan(registrationID);
 
 },
 
-function(errorMessage){}
+
+function(errorMessage){
+
+/*
+ QR scanning continues silently.
+*/
+
+}
 
 );
 
+
 scannerRunning=true;
+
 
 }catch(error){
 
@@ -571,18 +934,22 @@ console.error(
 error
 );
 
+
 scanner=null;
 scannerRunning=false;
 processingScan=false;
 startButton.disabled=false;
+
 
 const cameraError=
 error&&error.message
 ?error.message
 :String(error);
 
-document.getElementById("scanResult")
-.innerHTML=
+
+document.getElementById(
+"scanResult"
+).innerHTML=
 "<div class='scan-invalid'>"+
 "<h2>✕ Camera Error</h2>"+
 "<p>"+
@@ -591,32 +958,46 @@ escapeHtml(cameraError)+
 "<p>Please allow camera access and try again.</p>"+
 "</div>";
 
-document.getElementById("scanResult")
-.style.display="block";
+
+document.getElementById(
+"scanResult"
+).style.display="block";
 
 }
 
 }
 
 
-/* PROCESS FOOD SCAN */
+/* =====================================================
+   PROCESS FOOD SCAN
+===================================================== */
 
 function processFoodScan(registrationID){
 
-sendFoodScanToAppsScript(registrationID);
+sendFoodScanToAppsScript(
+registrationID
+);
 
 }
 
 
-/* SEND FOOD SCAN */
+/* =====================================================
+   SEND FOOD SCAN
+===================================================== */
 
-function sendFoodScanToAppsScript(registrationID){
+function sendFoodScanToAppsScript(
+registrationID
+){
 
 apiRequest({
 
 action:"scanFood",
-registrationId:registrationID,
-scannedBy:currentScannerName||""
+
+registrationId:
+registrationID,
+
+scannedBy:
+currentScannerName||""
 
 },function(result){
 
@@ -624,6 +1005,7 @@ console.log(
 "Food Apps Script response:",
 result
 );
+
 
 showFoodScanResult(result);
 
@@ -634,19 +1016,26 @@ processingScan=false;
 }
 
 
-/* SHOW FOOD RESULT */
+/* =====================================================
+   SHOW FOOD RESULT
+===================================================== */
 
 function showFoodScanResult(result){
 
 const box=
-document.getElementById("scanResult");
+document.getElementById(
+"scanResult"
+);
 
 box.style.display="block";
 box.className="scan-result";
 
+
 if(!result){
 
-box.classList.add("scan-invalid");
+box.classList.add(
+"scan-invalid"
+);
 
 box.innerHTML=
 "<h2>✕ Food Scan Error</h2>"+
@@ -662,14 +1051,18 @@ return;
 }
 
 
-/* SUCCESS */
+/* =====================================================
+   SUCCESS
+===================================================== */
 
 if(
 result.status==="success"||
 result.result==="SUCCESS"
 ){
 
-box.classList.add("scan-accepted");
+box.classList.add(
+"scan-accepted"
+);
 
 box.innerHTML=
 
@@ -677,19 +1070,22 @@ box.innerHTML=
 
 "<p><b>Name:</b> "+
 escapeHtml(
-result.name||"Not available"
+result.name||
+"Not available"
 )+
 "</p>"+
 
 "<p><b>Email:</b> "+
 escapeHtml(
-result.email||"Not available"
+result.email||
+"Not available"
 )+
 "</p>"+
 
 "<p><b>Institute:</b> "+
 escapeHtml(
-result.institute||"Not available"
+result.institute||
+"Not available"
 )+
 "</p>"+
 
@@ -732,6 +1128,7 @@ currentScannerName||
 )+
 "</p>";
 
+
 box.scrollIntoView({
 behavior:"smooth",
 block:"start"
@@ -742,14 +1139,18 @@ return;
 }
 
 
-/* FAILED */
+/* =====================================================
+   FAILED / DUPLICATE
+===================================================== */
 
 if(
 result.status==="error"||
 result.result==="FAILED"
 ){
 
-box.classList.add("scan-duplicate");
+box.classList.add(
+"scan-duplicate"
+);
 
 box.innerHTML=
 
@@ -807,6 +1208,7 @@ currentScannerName||
 )+
 "</p>";
 
+
 box.scrollIntoView({
 behavior:"smooth",
 block:"start"
@@ -817,9 +1219,13 @@ return;
 }
 
 
-/* UNKNOWN */
+/* =====================================================
+   UNKNOWN RESPONSE
+===================================================== */
 
-box.classList.add("scan-invalid");
+box.classList.add(
+"scan-invalid"
+);
 
 box.innerHTML=
 "<h2>✕ Scan Error</h2>"+
@@ -838,7 +1244,9 @@ block:"start"
 }
 
 
-/* LOGOUT */
+/* =====================================================
+   LOGOUT
+===================================================== */
 
 async function logoutFoodScanner(){
 
@@ -858,43 +1266,59 @@ await scanner.clear();
 
 }catch(error){}
 
+
 scanner=null;
 scannerRunning=false;
 processingScan=false;
 
 currentScannerName="";
 
+
 sessionStorage.removeItem(
 "icemdFoodScanner"
 );
+
 
 document.getElementById(
 "scannerName"
 ).value="";
 
+
+/*
+ Clear the password field on logout.
+ The browser password manager can still
+ retain its saved credential independently.
+*/
+
 document.getElementById(
 "scannerPassword"
 ).value="";
+
 
 document.getElementById(
 "foodScannerPage"
 ).classList.add("hidden");
 
+
 document.getElementById(
 "foodLoginPage"
 ).classList.remove("hidden");
+
 
 document.getElementById(
 "scanResult"
 ).style.display="none";
 
+
 document.getElementById(
 "scanResult"
 ).innerHTML="";
 
+
 document.getElementById(
 "loginMessage"
 ).className="message";
+
 
 document.getElementById(
 "loginMessage"
@@ -903,7 +1327,9 @@ document.getElementById(
 }
 
 
-/* PAGE LOAD */
+/* =====================================================
+   PAGE LOAD
+===================================================== */
 
 window.addEventListener(
 "load",
@@ -914,9 +1340,12 @@ sessionStorage.getItem(
 "icemdFoodScanner"
 );
 
+
 if(savedScanner){
 
-currentScannerName=savedScanner;
+currentScannerName=
+savedScanner;
+
 
 document.getElementById(
 "foodWelcome"
@@ -924,13 +1353,16 @@ document.getElementById(
 "Welcome, "+
 currentScannerName;
 
+
 document.getElementById(
 "foodLoginPage"
 ).classList.add("hidden");
 
+
 document.getElementById(
 "foodScannerPage"
 ).classList.remove("hidden");
+
 
 loadFoodService();
 
