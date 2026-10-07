@@ -7,7 +7,6 @@
 
 <style>
 *{box-sizing:border-box}
-
 body{
 margin:0;
 padding:20px;
@@ -15,63 +14,34 @@ font-family:Arial,sans-serif;
 background:#f5f5f5;
 color:#222
 }
-
-.container{
-max-width:500px;
-margin:0 auto
-}
-
+.container{max-width:500px;margin:0 auto}
 .card{
 background:#fff;
 padding:22px;
 border-radius:12px;
 box-shadow:0 3px 12px rgba(0,0,0,.08)
 }
+h1{text-align:center;font-size:24px;margin:0 0 5px}
+h2{text-align:center;font-size:20px;color:#17365d;margin:10px 0}
+.subtitle{text-align:center;color:#666;margin-bottom:25px;font-size:18px}
 
-h1{
-text-align:center;
-font-size:24px;
-margin:0 0 5px
-}
-
-h2{
-text-align:center;
-font-size:20px;
-color:#17365d;
-margin:10px 0
-}
-
-.subtitle{
-text-align:center;
-color:#666;
-margin-bottom:25px;
-font-size:18px
-}
-
-.input-group{
-margin-top:15px
-}
-
+.input-group{margin-top:15px}
 .input-group label{
 display:block;
 font-size:14px;
 color:#444;
 margin-bottom:6px
 }
-
-input{
+input,select{
 width:100%;
 padding:13px;
 border:1px solid #ccc;
 border-radius:7px;
 font-family:Arial,sans-serif;
-font-size:16px
+font-size:16px;
+background:#fff
 }
-
-input:focus{
-outline:none;
-border-color:#17365d
-}
+input:focus,select:focus{outline:none;border-color:#17365d}
 
 .option{
 display:block;
@@ -86,30 +56,12 @@ font-family:Arial,sans-serif;
 font-size:17px;
 cursor:pointer
 }
-
-.option:hover{
-background:#214a7a
-}
-
-.option:active{
-transform:scale(.99)
-}
-
-.back-button{
-background:#666
-}
-
-.back-button:hover{
-background:#555
-}
-
-.logout-button{
-background:#8b0000
-}
-
-.logout-button:hover{
-background:#a00000
-}
+.option:hover{background:#214a7a}
+.option:active{transform:scale(.99)}
+.back-button{background:#666}
+.back-button:hover{background:#555}
+.logout-button{background:#8b0000}
+.logout-button:hover{background:#a00000}
 
 .message{
 display:none;
@@ -120,36 +72,10 @@ text-align:center;
 font-size:14px;
 line-height:1.5
 }
-
-.success{
-display:block;
-background:#e8f5e9;
-color:#2e7d32
-}
-
-.error{
-display:block;
-background:#ffebee;
-color:#c62828
-}
-
-.info{
-display:block;
-background:#eaf2f8;
-color:#17365d
-}
-
-.hidden{
-display:none!important
-}
-
-.otp-note{
-text-align:center;
-color:#666;
-font-size:13px;
-margin-top:10px;
-line-height:1.5
-}
+.success{display:block;background:#e8f5e9;color:#2e7d32}
+.error{display:block;background:#ffebee;color:#c62828}
+.info{display:block;background:#eaf2f8;color:#17365d}
+.hidden{display:none!important}
 
 .active-meal{
 margin-top:18px;
@@ -159,17 +85,8 @@ background:#eaf2f8;
 color:#17365d;
 text-align:center
 }
-
-.active-date{
-font-size:13px;
-color:#666;
-margin-bottom:5px
-}
-
-.meal-name{
-font-size:22px;
-font-weight:bold
-}
+.active-date{font-size:13px;color:#666;margin-bottom:5px}
+.meal-name{font-size:22px;font-weight:bold}
 
 .scanner-box{
 margin-top:18px;
@@ -178,12 +95,7 @@ border-radius:10px;
 padding:12px;
 background:#fff
 }
-
-#reader{
-width:100%;
-overflow:hidden;
-border-radius:8px
-}
+#reader{width:100%;overflow:hidden;border-radius:8px}
 
 .manual-box{
 margin-top:18px;
@@ -198,7 +110,6 @@ border-radius:10px;
 padding:15px;
 background:#fff
 }
-
 .result-title{
 font-size:18px;
 font-weight:bold;
@@ -206,7 +117,6 @@ color:#17365d;
 text-align:center;
 margin-bottom:12px
 }
-
 .result-row{
 display:flex;
 gap:8px;
@@ -214,20 +124,9 @@ padding:7px 0;
 border-bottom:1px solid #eee;
 font-size:14px
 }
-
-.result-row:last-child{
-border-bottom:none
-}
-
-.result-label{
-font-weight:bold;
-width:115px;
-flex-shrink:0
-}
-
-.result-value{
-word-break:break-word
-}
+.result-row:last-child{border-bottom:none}
+.result-label{font-weight:bold;width:115px;flex-shrink:0}
+.result-value{word-break:break-word}
 
 .status-success{
 background:#e8f5e9;
@@ -237,7 +136,6 @@ border-radius:8px;
 text-align:center;
 font-weight:bold
 }
-
 .status-error{
 background:#ffebee;
 color:#c62828;
@@ -246,14 +144,12 @@ border-radius:8px;
 text-align:center;
 font-weight:bold
 }
-
 .camera-note{
 text-align:center;
 font-size:13px;
 color:#666;
 margin:10px 0
 }
-
 .footer{
 text-align:center;
 color:#666;
@@ -261,12 +157,7 @@ margin-top:25px;
 font-size:14px;
 line-height:1.5
 }
-
-.loading{
-text-align:center;
-color:#666;
-padding:15px
-}
+.loading{text-align:center;color:#666;padding:15px}
 </style>
 </head>
 
@@ -286,27 +177,29 @@ padding:15px
 <form id="foodLoginForm" onsubmit="foodLogin(event)">
 
 <div class="input-group">
-<label for="foodUserName">Name</label>
-<input
-type="text"
-id="foodUserName"
-placeholder="Enter your full name"
-autocomplete="name"
-required>
+<label for="foodScannerName">Scanner</label>
+<select id="foodScannerName" required>
+<option value="">Select Scanner</option>
+<option value="Scanner 1">Scanner 1</option>
+<option value="Scanner 2">Scanner 2</option>
+<option value="Scanner 3">Scanner 3</option>
+<option value="Scanner 4">Scanner 4</option>
+<option value="Scanner 5">Scanner 5</option>
+</select>
 </div>
 
 <div class="input-group">
-<label for="foodUserEmail">Email</label>
+<label for="foodScannerPassword">Password</label>
 <input
-type="email"
-id="foodUserEmail"
-placeholder="Enter your email"
-autocomplete="email"
+type="password"
+id="foodScannerPassword"
+placeholder="Enter scanner password"
+autocomplete="current-password"
 required>
 </div>
 
 <button type="submit" class="option">
-Send OTP
+Login
 </button>
 
 </form>
@@ -323,61 +216,6 @@ Back
 </div>
 
 
-<!-- OTP -->
-
-<div id="otpSection" class="hidden">
-
-<h1>ICEMD-2026</h1>
-<h2>IIT Jodhpur, India</h2>
-<p class="subtitle">Verify Food Service User</p>
-
-<div
-style="
-text-align:center;
-color:#666;
-font-size:14px;
-margin-bottom:15px;
-"
-id="otpEmailDisplay">
-</div>
-
-<form id="otpForm" onsubmit="verifyFoodOTP(event)">
-
-<div class="input-group">
-
-<label for="foodOTP">
-OTP
-</label>
-
-<input
-type="text"
-id="foodOTP"
-placeholder="Enter OTP"
-inputmode="numeric"
-autocomplete="one-time-code"
-maxlength="6"
-required>
-
-</div>
-
-<button type="submit" class="option">
-Verify OTP
-</button>
-
-</form>
-
-<div id="otpMessage" class="message"></div>
-
-<button
-type="button"
-class="option back-button"
-onclick="backToFoodLogin()">
-Back
-</button>
-
-</div>
-
-
 <!-- FOOD SCANNER -->
 
 <div id="scannerSection" class="hidden">
@@ -386,14 +224,12 @@ Back
 <h2>IIT Jodhpur, India</h2>
 <p class="subtitle">Food Service</p>
 
-<div
-style="
+<div style="
 text-align:center;
 font-size:14px;
 color:#666;
 margin-bottom:15px;
-"
->
+">
 Welcome, <span id="loggedFoodUser"></span>
 </div>
 
@@ -401,11 +237,9 @@ Welcome, <span id="loggedFoodUser"></span>
 <!-- ACTIVE FOOD -->
 
 <div id="activeMealBox" class="active-meal">
-
 <div class="loading">
-Checking today's food service...
+Checking active food service...
 </div>
-
 </div>
 
 
@@ -413,15 +247,13 @@ Checking today's food service...
 
 <div class="scanner-box">
 
-<div
-style="
+<div style="
 text-align:center;
 font-size:17px;
 font-weight:bold;
 color:#17365d;
 margin-bottom:10px;
-"
->
+">
 Scan Guest QR Code
 </div>
 
@@ -447,6 +279,42 @@ Stop Camera
 
 </div>
 
+
+<!-- MANUAL ENTRY -->
+
+<div class="manual-box">
+
+<div style="
+text-align:center;
+font-size:16px;
+font-weight:bold;
+color:#17365d;
+margin-bottom:10px;
+">
+Manual Registration ID
+</div>
+
+<input
+type="text"
+id="manualRegistrationId"
+placeholder="Example: ICEMD2026-0001"
+autocomplete="off">
+
+<button
+type="button"
+class="option"
+onclick="submitManualFood()">
+Issue Food
+</button>
+
+</div>
+
+
+<!-- RESULT -->
+
+<div id="resultArea"></div>
+
+
 <button
 type="button"
 class="option logout-button"
@@ -467,8 +335,8 @@ target="_blank">
 ICEMD-2026
 </a>
 
+<br>
 IITJ | December 21-23<br>
-
 Designed and managed by Biswajit Pal
 
 </div>
@@ -491,8 +359,7 @@ const APPS_SCRIPT_URL=
    GLOBAL VARIABLES
 ===================================================== */
 
-let foodUserName="";
-let foodUserEmail="";
+let foodScannerName="";
 let html5QrCode=null;
 let scannerRunning=false;
 
@@ -502,9 +369,7 @@ let scannerRunning=false;
 ===================================================== */
 
 function goHome(){
-
 window.location.href="index.html";
-
 }
 
 
@@ -524,21 +389,16 @@ params.callback=callbackName;
 const query=
 Object.keys(params)
 .map(function(key){
-
-return encodeURIComponent(key)+
-"="+
+return encodeURIComponent(key)+"="+
 encodeURIComponent(params[key]);
-
 })
 .join("&");
 
-const script=
-document.createElement("script");
+const script=document.createElement("script");
 
 let finished=false;
 
-const timeout=
-setTimeout(function(){
+const timeout=setTimeout(function(){
 
 if(finished)return;
 
@@ -553,14 +413,13 @@ script.parentNode.removeChild(script);
 
 callback({
 status:"error",
-message:
-"Unable to connect to the server."
+message:"Unable to connect to the server."
 });
 
 },15000);
 
-window[callbackName]=
-function(data){
+
+window[callbackName]=function(data){
 
 if(finished)return;
 
@@ -579,13 +438,13 @@ callback(data);
 
 };
 
+
 script.src=
 APPS_SCRIPT_URL+
 "?"+
 query;
 
-script.onerror=
-function(){
+script.onerror=function(){
 
 if(finished)return;
 
@@ -602,8 +461,7 @@ script.parentNode.removeChild(script);
 
 callback({
 status:"error",
-message:
-"Unable to connect to the server."
+message:"Unable to connect to the server."
 });
 
 };
@@ -641,178 +499,66 @@ function foodLogin(event){
 
 event.preventDefault();
 
-foodUserName=
+foodScannerName=
 document
-.getElementById("foodUserName")
+.getElementById("foodScannerName")
 .value
 .trim();
 
-foodUserEmail=
+const password=
 document
-.getElementById("foodUserEmail")
-.value
-.trim()
-.toLowerCase();
+.getElementById("foodScannerPassword")
+.value;
 
 const message=
-document.getElementById(
-"loginMessage"
-);
+document.getElementById("loginMessage");
 
 message.className="message";
 message.textContent="";
 
-if(!foodUserName){
+if(!foodScannerName){
 
-message.className=
-"message error";
-
-message.textContent=
-"Please enter your full name.";
-
+message.className="message error";
+message.textContent="Please select a scanner.";
 return;
 
 }
 
-const emailPattern=
-/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+if(!password){
 
-if(!emailPattern.test(foodUserEmail)){
-
-message.className=
-"message error";
-
-message.textContent=
-"Please enter a valid email address.";
-
+message.className="message error";
+message.textContent="Please enter the password.";
 return;
 
 }
 
-message.className=
-"message info";
+message.className="message info";
+message.textContent="Checking scanner login...";
 
-message.textContent=
-"Sending OTP...";
 
 apiRequest(
 {
-action:"requestAssistantOTP",
-name:foodUserName,
-email:foodUserEmail
+action:"foodLogin",
+name:foodScannerName,
+password:password
 },
 function(result){
 
 if(!result||result.status!=="success"){
 
-message.className=
-"message error";
+message.className="message error";
 
 message.textContent=
 result&&result.message
 ?result.message
-:"Unable to send OTP.";
+:"Invalid scanner name or password.";
 
 return;
 
 }
 
-document.getElementById(
-"loginSection"
-).classList.add("hidden");
 
-document.getElementById(
-"otpSection"
-).classList.remove("hidden");
-
-document.getElementById(
-"otpEmailDisplay"
-).textContent=
-"OTP sent to "+
-foodUserEmail;
-
-const otpMessage=
-document.getElementById(
-"otpMessage"
-);
-
-otpMessage.className=
-"message success";
-
-otpMessage.textContent=
-"OTP sent successfully. Please check your email.";
-
-document.getElementById(
-"foodOTP"
-).focus();
-
-});
-
-}
-
-
-/* =====================================================
-   VERIFY OTP
-===================================================== */
-
-function verifyFoodOTP(event){
-
-event.preventDefault();
-
-const otp=
-document
-.getElementById("foodOTP")
-.value
-.trim();
-
-const message=
-document.getElementById(
-"otpMessage"
-);
-
-message.className="message";
-message.textContent="";
-
-if(!otp){
-
-message.className=
-"message error";
-
-message.textContent=
-"Please enter the OTP.";
-
-return;
-
-}
-
-message.className=
-"message info";
-
-message.textContent=
-"Verifying OTP...";
-
-apiRequest(
-{
-action:"verifyAssistantOTP",
-name:foodUserName,
-email:foodUserEmail,
-otp:otp
-},
-function(result){
-
-if(!result||result.status!=="success"){
-
-message.className=
-"message error";
-
-message.textContent=
-result&&result.message
-?result.message
-:"Invalid or expired OTP.";
-
-return;
-
-}
+/* LOGIN SUCCESS */
 
 sessionStorage.setItem(
 "icemdFoodLoggedIn",
@@ -820,17 +566,12 @@ sessionStorage.setItem(
 );
 
 sessionStorage.setItem(
-"icemdFoodUserName",
-foodUserName
-);
-
-sessionStorage.setItem(
-"icemdFoodUserEmail",
-foodUserEmail
+"icemdFoodScanner",
+foodScannerName
 );
 
 document.getElementById(
-"otpSection"
+"loginSection"
 ).classList.add("hidden");
 
 document.getElementById(
@@ -840,40 +581,16 @@ document.getElementById(
 document.getElementById(
 "loggedFoodUser"
 ).textContent=
-foodUserName;
+foodScannerName;
+
+document.getElementById(
+"foodScannerPassword"
+).value="";
 
 loadActiveFood();
 
-});
-
 }
-
-
-/* =====================================================
-   BACK TO LOGIN
-===================================================== */
-
-function backToFoodLogin(){
-
-document.getElementById(
-"otpSection"
-).classList.add("hidden");
-
-document.getElementById(
-"loginSection"
-).classList.remove("hidden");
-
-document.getElementById(
-"foodOTP"
-).value="";
-
-const message=
-document.getElementById(
-"otpMessage"
 );
-
-message.className="message";
-message.textContent="";
 
 }
 
@@ -891,18 +608,13 @@ sessionStorage.removeItem(
 );
 
 sessionStorage.removeItem(
-"icemdFoodUserName"
+"icemdFoodScanner"
 );
 
-sessionStorage.removeItem(
-"icemdFoodUserEmail"
-);
-
-foodUserName="";
-foodUserEmail="";
+foodScannerName="";
 
 document.getElementById(
-"foodOTP"
+"foodScannerPassword"
 ).value="";
 
 document.getElementById(
@@ -914,33 +626,37 @@ document.getElementById(
 ).innerHTML="";
 
 document.getElementById(
-"scannerSection"
-).classList.add("hidden");
+"activeMealBox"
+).innerHTML=
+'<div class="loading">Checking active food service...</div>';
 
 document.getElementById(
-"otpSection"
+"scannerSection"
 ).classList.add("hidden");
 
 document.getElementById(
 "loginSection"
 ).classList.remove("hidden");
 
+document.getElementById(
+"foodScannerName"
+).value="";
+
 }
 
 
 /* =====================================================
-   LOAD ACTIVE FOOD
+   LOAD ACTIVE FOOD SERVICE
 ===================================================== */
 
 function loadActiveFood(){
 
 const box=
-document.getElementById(
-"activeMealBox"
-);
+document.getElementById("activeMealBox");
 
 box.innerHTML=
-'<div class="loading">Checking today\'s food service...</div>';
+'<div class="loading">Checking active food service...</div>';
+
 
 apiRequest(
 {
@@ -963,13 +679,21 @@ return;
 
 }
 
+
+/*
+   IMPORTANT:
+   No real-world/current date is checked here.
+   The backend returns the conference date/meal
+   currently enabled by Admin.
+*/
+
 if(!result.active){
 
 box.innerHTML=
 '<div class="status-error">'+
 'Food service is currently OFF.'+
 '<br><span style="font-weight:normal;font-size:13px;">'+
-'No meal is available for scanning at this time.'+
+'No meal is enabled by Admin.'+
 '</span>'+
 '</div>';
 
@@ -977,9 +701,11 @@ return;
 
 }
 
+
 box.innerHTML=
 '<div class="active-date">'+
-'Today • '+escapeHTML(result.date)+
+'Conference Date • '+
+escapeHTML(result.date)+
 '</div>'+
 '<div class="meal-name">'+
 escapeHTML(result.meal)+
@@ -988,7 +714,8 @@ escapeHTML(result.meal)+
 'Active food service'+
 '</div>';
 
-});
+}
+);
 
 }
 
@@ -1038,10 +765,11 @@ async function startScanner(){
 try{
 
 if(scannerRunning){
-
 return;
-
 }
+
+
+/* CHECK ACTIVE FOOD */
 
 const activeResult=
 await apiRequestPromise({
@@ -1054,7 +782,7 @@ activeResult.status!=="success"
 ){
 
 showResult(
-"Unable to check today's food service.",
+"Unable to check food service.",
 null,
 "error"
 );
@@ -1076,9 +804,7 @@ return;
 }
 
 
-/* ---------------------------------------------
-   Force camera permission request
---------------------------------------------- */
+/* FORCE CAMERA PERMISSION */
 
 try{
 
@@ -1102,9 +828,7 @@ return;
 }
 
 
-/* ---------------------------------------------
-   Load Html5Qrcode dynamically
---------------------------------------------- */
+/* LOAD QR LIBRARY */
 
 if(
 typeof Html5Qrcode==="undefined"
@@ -1115,9 +839,7 @@ await loadQRLibrary();
 }
 
 
-/* ---------------------------------------------
-   Create scanner
---------------------------------------------- */
+/* CREATE SCANNER */
 
 if(!html5QrCode){
 
@@ -1150,7 +872,7 @@ handleFoodQR(decodedText);
 },
 
 function(errorMessage){
-
+// Ignore continuous scan errors
 }
 
 );
@@ -1186,7 +908,6 @@ return new Promise(function(resolve,reject){
 if(typeof Html5Qrcode!=="undefined"){
 
 resolve();
-
 return;
 
 }
@@ -1197,18 +918,18 @@ document.createElement("script");
 script.src=
 "https://unpkg.com/html5-qrcode";
 
-script.onload=
-function(){
+script.onload=function(){
 resolve();
 };
 
-script.onerror=
-function(){
+script.onerror=function(){
+
 reject(
 new Error(
 "Unable to load QR scanner library."
 )
 );
+
 };
 
 document.head.appendChild(script);
@@ -1261,9 +982,7 @@ const registrationId=
 String(decodedText||"").trim();
 
 if(!registrationId){
-
 return;
-
 }
 
 stopScanner();
@@ -1283,9 +1002,7 @@ function submitManualFood(){
 
 const registrationId=
 document
-.getElementById(
-"manualRegistrationId"
-)
+.getElementById("manualRegistrationId")
 .value
 .trim();
 
@@ -1314,10 +1031,10 @@ registrationId
 
 function processFoodScan(registrationId){
 
-if(!foodUserName){
+if(!foodScannerName){
 
 showResult(
-"Food service user session is not available. Please login again.",
+"Food scanner session is not available. Please login again.",
 null,
 "error"
 );
@@ -1332,11 +1049,12 @@ null,
 "info"
 );
 
+
 apiRequest(
 {
 action:"scanFood",
 registrationId:registrationId,
-scannedBy:foodUserName
+scannedBy:foodScannerName
 },
 function(result){
 
@@ -1347,8 +1065,7 @@ result.status!=="success"
 
 showFailedFoodResult(
 result||{
-message:
-"Food request was not accepted."
+message:"Food request was not accepted."
 }
 );
 
@@ -1356,11 +1073,10 @@ return;
 
 }
 
-showSuccessfulFoodResult(
-result
-);
+showSuccessfulFoodResult(result);
 
-});
+}
+);
 
 }
 
@@ -1372,9 +1088,7 @@ result
 function showSuccessfulFoodResult(result){
 
 const area=
-document.getElementById(
-"resultArea"
-);
+document.getElementById("resultArea");
 
 area.innerHTML=
 '<div class="result-card">'+
@@ -1387,45 +1101,14 @@ area.innerHTML=
 'Guest Details'+
 '</div>'+
 
-resultRow(
-"Name",
-result.name
-)+
-
-resultRow(
-"Email",
-result.email
-)+
-
-resultRow(
-"Institute",
-result.institute
-)+
-
-resultRow(
-"Registration ID",
-result.registrationId
-)+
-
-resultRow(
-"Meal",
-result.meal
-)+
-
-resultRow(
-"Date",
-result.date
-)+
-
-resultRow(
-"Time",
-result.time
-)+
-
-resultRow(
-"Scanned By",
-result.scannedBy
-)+
+resultRow("Name",result.name)+
+resultRow("Email",result.email)+
+resultRow("Institute",result.institute)+
+resultRow("Registration ID",result.registrationId)+
+resultRow("Meal",result.meal)+
+resultRow("Date",result.activeDate||result.date)+
+resultRow("Time",result.time)+
+resultRow("Scanned By",result.scannedBy)+
 
 '</div>';
 
@@ -1443,9 +1126,7 @@ document.getElementById(
 function showFailedFoodResult(result){
 
 const area=
-document.getElementById(
-"resultArea"
-);
+document.getElementById("resultArea");
 
 const reason=
 result.message||
@@ -1508,9 +1189,7 @@ result.institute
 function showResult(message,result,type){
 
 const area=
-document.getElementById(
-"resultArea"
-);
+document.getElementById("resultArea");
 
 let html=
 '<div class="result-card">';
@@ -1595,23 +1274,6 @@ escapeHTML(value||"")+
 
 
 /* =====================================================
-   CLEAR RESULT
-===================================================== */
-
-function clearFoodResult(){
-
-document.getElementById(
-"resultArea"
-).innerHTML="";
-
-document.getElementById(
-"manualRegistrationId"
-).value="";
-
-}
-
-
-/* =====================================================
    ESCAPE HTML
 ===================================================== */
 
@@ -1638,32 +1300,21 @@ sessionStorage.getItem(
 "icemdFoodLoggedIn"
 );
 
-const savedName=
+const savedScanner=
 sessionStorage.getItem(
-"icemdFoodUserName"
-);
-
-const savedEmail=
-sessionStorage.getItem(
-"icemdFoodUserEmail"
+"icemdFoodScanner"
 );
 
 if(
 loggedIn==="true"&&
-savedName&&
-savedEmail
+savedScanner
 ){
 
-foodUserName=savedName;
-foodUserEmail=savedEmail;
+foodScannerName=savedScanner;
 
 document.getElementById(
-"foodUserName"
-).value=savedName;
-
-document.getElementById(
-"foodUserEmail"
-).value=savedEmail;
+"foodScannerName"
+).value=savedScanner;
 
 document.getElementById(
 "loginSection"
@@ -1676,7 +1327,7 @@ document.getElementById(
 document.getElementById(
 "loggedFoodUser"
 ).textContent=
-savedName;
+savedScanner;
 
 loadActiveFood();
 
