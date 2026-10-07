@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
 <head>
 
   <meta charset="UTF-8">
@@ -1610,12 +1612,537 @@ function deleteExistingUser(
 
 function uploadGuestExcel() {
 
-  alert(
-    "Guest Excel upload will be added next."
-  );
+  const input = document.createElement("input");
+
+  input.type = "file";
+  input.accept = ".xlsx,.xls";
+
+  input.onchange = async function (event) {
+
+    const file = event.target.files[0];
+
+    if (!file) {
+      return;
+    }
+
+    try {
+
+      // -------------------------------------------------------
+      // Read Excel file
+      // -------------------------------------------------------
+
+      const arrayBuffer = await file.arrayBuffer();
+
+      const workbook = XLSX.read(arrayBuffer, {
+        type: "array"
+      });
+
+      if (!workbook.SheetNames.length) {
+        alert("The Excel file does not contain any worksheet.");
+        return;
+      }
+
+      const worksheet =
+        workbook.Sheets[workbook.SheetNames[0]];
+
+      const rawRows = XLSX.utils.sheet_to_json(
+        worksheet,
+        {
+          defval: ""
+        }
+      );
+
+      if (!rawRows.length) {
+        alert("The Excel file is empty.");
+        return;
+      }
+
+      // -------------------------------------------------------
+      // Validate Excel columns
+      // -------------------------------------------------------
+
+      const firstRow = rawRows[0];
+
+      const columns = Object.keys(firstRow);
+
+      const requiredColumns = [
+        "Name",
+        "Email",
+        "Institute"
+      ];
+
+      const missingColumns =
+        requiredColumns.filter(function (column) {
+
+          return !columns.some(function (existingColumn) {
+
+            return String(existingColumn)
+              .trim()
+              .toLowerCase() ===
+              column.toLowerCase();
+
+          });
+
+        });
+
+      if (missingColumns.length > 0) {
+
+        alert(
+          "Invalid Excel format.\n\n" +
+          "Missing column(s): " +
+          missingColumns.join(", ") +
+          "\n\nRequired columns are:\n" +
+          "Name\n" +
+          "Email\n" +
+          "Institute"
+        );
+
+        return;
+      }
+
+      // -------------------------------------------------------
+      // Convert column names safely
+      // -------------------------------------------------------
+
+      const guests = rawRows.map(function (row) {
+
+        let name = "";
+        let email = "";
+        let institute = "";
+
+        Object.keys(row).forEach(function (key) {
+
+          const normalizedKey =
+            String(key).trim().toLowerCase();
+
+          if (normalizedKey === "name") {
+            name = String(row[key] || "").trim();
+          }
+
+          if (normalizedKey === "email") {
+            email = String(row[key] || "").trim();
+          }
+
+          if (normalizedKey === "institute") {
+            institute = String(row[key] || "").trim();
+          }
+
+        });
+
+        return {
+          Name: name,
+          Email: email,
+          Institute: institute
+        };
+
+      });
+
+      // -------------------------------------------------------
+      // Basic client-side validation
+      // -------------------------------------------------------
+
+      const invalidRows = [];
+
+      guests.forEach(function (guest, index) {
+
+        if (!guest.Name || !guest.Email) {
+
+          invalidRows.push(index + 2);
+
+        }
+
+      });
+
+      if (invalidRows.length > 0) {
+
+        alert(
+          "Some Excel rows are missing Name or Email.\n\n" +
+          "Invalid row(s): " +
+          invalidRows.join(", ")
+        );
+
+        return;
+      }
+
+      // -------------------------------------------------------
+      // Confirm upload
+      // -------------------------------------------------------
+
+      const confirmed = confirm(
+        "Excel file loaded successfully.\n\n" +
+        "Total records: " + guests.length +
+        "\n\n" +
+        "Do you want to upload these registrations?"
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      // -------------------------------------------------------
+      // Upload in small batches
+      // -------------------------------------------------------
+
+      const BATCH_SIZE = 20;
+
+      let totalRecords = guests.length;
+      let newRegistrations = 0;
+      let skippedDuplicates = 0;
+      let errors = 0;
+
+      const allErrors = [];
+
+      // -------------------------------------------------------
+      // Progress overlay
+      // -------------------------------------------------------
+
+      showGuestUploadProgress(
+        0,
+        Math.ceil(guests.length / BATCH_SIZE),
+        totalRecords
+      );
+
+      const totalBatches =
+        Math.ceil(guests.length / BATCH_SIZE);
+
+      for (
+        let start = 0;
+        start < guests.length;
+        start += BATCH_SIZE
+      ) {
+
+        const batch =
+          guests.slice(start, start + BATCH_SIZE);
+
+        const batchNumber =
+          Math.floor(start / BATCH_SIZE) + 1;
+
+        showGuestUploadProgress(
+          batchNumber,
+          totalBatches,
+          totalRecords
+        );
+
+        const result = await apiRequestPromise({
+
+          action: "importGuests",
+
+          rows: JSON.stringify(batch)
+
+        });
+
+        if (!result) {
+
+          errors += batch.length;
+
+          allErrors.push({
+            batch: batchNumber,
+            reason: "No response received from server."
+          });
+
+          continue;
+        }
+
+        if (result.status !== "success") {
+
+          errors += batch.length;
+
+          allErrors.push({
+            batch: batchNumber,
+            reason:
+              result.message ||
+              "Unknown server error."
+          });
+
+          continue;
+        }
+
+        newRegistrations +=
+          Number(result.newRegistrations || 0);
+
+        skippedDuplicates +=
+          Number(result.skippedDuplicates || 0);
+
+        errors +=
+          Number(result.errors || 0);
+
+        if (
+          Array.isArray(result.errorDetails) &&
+          result.errorDetails.length
+        ) {
+
+          result.errorDetails.forEach(function (error) {
+
+            allErrors.push(error);
+
+          });
+
+        }
+
+      }
+
+      hideGuestUploadProgress();
+
+      // -------------------------------------------------------
+      // Final result
+      // -------------------------------------------------------
+
+      let message =
+        "Upload completed successfully.\n\n" +
+
+        "Total Excel records: " +
+        totalRecords +
+
+        "\nNew registrations: " +
+        newRegistrations +
+
+        "\nSkipped duplicates: " +
+        skippedDuplicates +
+
+        "\nErrors: " +
+        errors;
+
+      if (allErrors.length > 0) {
+
+        message +=
+          "\n\nError details:";
+
+        allErrors.slice(0, 10).forEach(function (error) {
+
+          if (error.row) {
+
+            message +=
+              "\nRow " +
+              error.row +
+              ": " +
+              error.reason;
+
+          } else if (error.batch) {
+
+            message +=
+              "\nBatch " +
+              error.batch +
+              ": " +
+              error.reason;
+
+          } else {
+
+            message +=
+              "\n" +
+              (error.reason || "Unknown error.");
+
+          }
+
+        });
+
+        if (allErrors.length > 10) {
+
+          message +=
+            "\n...and " +
+            (allErrors.length - 10) +
+            " more error(s).";
+
+        }
+
+      }
+
+      alert(message);
+
+    } catch (error) {
+
+      hideGuestUploadProgress();
+
+      console.error(
+        "Guest Excel upload error:",
+        error
+      );
+
+      alert(
+        "Unable to process the Excel file.\n\n" +
+        error.message
+      );
+
+    }
+
+  };
+
+  input.click();
+}
+
+
+function apiRequestPromise(params) {
+
+  return new Promise(function (resolve) {
+
+    apiRequest(params, function (result) {
+
+      resolve(result);
+
+    });
+
+  });
 
 }
 
+
+  function showGuestUploadProgress(
+  currentBatch,
+  totalBatches,
+  totalRecords
+) {
+
+  let overlay =
+    document.getElementById(
+      "guestUploadProgress"
+    );
+
+  if (!overlay) {
+
+    overlay =
+      document.createElement("div");
+
+    overlay.id =
+      "guestUploadProgress";
+
+    overlay.style.position =
+      "fixed";
+
+    overlay.style.left =
+      "0";
+
+    overlay.style.top =
+      "0";
+
+    overlay.style.width =
+      "100%";
+
+    overlay.style.height =
+      "100%";
+
+    overlay.style.background =
+      "rgba(0,0,0,0.45)";
+
+    overlay.style.display =
+      "flex";
+
+    overlay.style.alignItems =
+      "center";
+
+    overlay.style.justifyContent =
+      "center";
+
+    overlay.style.zIndex =
+      "99999";
+
+    overlay.innerHTML =
+
+      '<div style="' +
+
+      'background:#fff;' +
+      'padding:25px;' +
+      'border-radius:12px;' +
+      'width:320px;' +
+      'max-width:85%;' +
+      'text-align:center;' +
+      'box-shadow:0 5px 25px rgba(0,0,0,0.25);' +
+
+      '">' +
+
+      '<div style="' +
+      'font-size:20px;' +
+      'font-weight:bold;' +
+      'color:#17365d;' +
+      'margin-bottom:12px;' +
+      '">' +
+
+      'Uploading Guests' +
+
+      '</div>' +
+
+      '<div id="guestUploadProgressText" ' +
+      'style="font-size:15px;color:#555;">' +
+
+      '</div>' +
+
+      '<div style="' +
+      'margin-top:15px;' +
+      'height:8px;' +
+      'background:#e5e5e5;' +
+      'border-radius:5px;' +
+      'overflow:hidden;' +
+      '">' +
+
+      '<div id="guestUploadProgressBar" ' +
+      'style="' +
+      'height:100%;' +
+      'width:0%;' +
+      'background:#17365d;' +
+      'transition:width 0.2s ease;' +
+      '">' +
+
+      '</div>' +
+
+      '</div>' +
+
+      '</div>';
+
+    document.body.appendChild(overlay);
+
+  }
+
+  const percentage =
+    totalBatches > 0
+      ? Math.round(
+          (currentBatch / totalBatches) * 100
+        )
+      : 0;
+
+  const text =
+    document.getElementById(
+      "guestUploadProgressText"
+    );
+
+  const bar =
+    document.getElementById(
+      "guestUploadProgressBar"
+    );
+
+  if (text) {
+
+    text.textContent =
+      "Uploading batch " +
+      currentBatch +
+      " of " +
+      totalBatches +
+      " (" +
+      percentage +
+      "%)";
+
+  }
+
+  if (bar) {
+
+    bar.style.width =
+      percentage + "%";
+
+  }
+
+}
+
+function hideGuestUploadProgress() {
+
+  const overlay =
+    document.getElementById(
+      "guestUploadProgress"
+    );
+
+  if (overlay) {
+
+    overlay.remove();
+
+  }
+
+}
 
 function generateQRCodes() {
 
