@@ -1,1567 +1,615 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-
 <title>ICEMD-2026 IIT Jodhpur - Admin</title>
-
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <style>
-
 *{box-sizing:border-box}
-
-body{
-margin:0;
-padding:20px;
-font-family:Arial,sans-serif;
-background:#f5f5f5;
-color:#222
-}
-
-.container{
-max-width:500px;
-margin:0 auto
-}
-
-.card{
-background:white;
-padding:22px;
-border-radius:12px;
-box-shadow:0 3px 12px rgba(0,0,0,.08)
-}
-
-h1{
-text-align:center;
-font-size:24px;
-margin-top:0;
-margin-bottom:5px
-}
-
-h2{
-text-align:center;
-font-size:20px;
-color:#17365d;
-margin-top:10px;
-margin-bottom:10px
-}
-
-.subtitle{
-text-align:center;
-color:#666;
-margin-bottom:25px;
-font-size:18px
-}
-
-.option{
-display:block;
-width:100%;
-padding:16px;
-margin-top:15px;
-background:#17365d;
-color:white;
-border:none;
-text-decoration:none;
-text-align:center;
-border-radius:8px;
-font-family:Arial,sans-serif;
-font-size:17px;
-font-weight:normal;
-cursor:pointer;
-transition:background .15s ease,transform .1s ease
-}
-
-.option:hover{background:#214a7a}
-
-.option:active{transform:scale(.99)}
-
-.option-title{font-size:18px}
-
-.back-button{background:#666}
-
-.back-button:hover{background:#555}
-
-.logout-button{background:#8b0000}
-
-.logout-button:hover{background:#a00000}
-
-.input-group{margin-top:15px}
-
-.input-group label{
-display:block;
-font-size:14px;
-color:#444;
-margin-bottom:6px
-}
-
-input,select{
-width:100%;
-padding:13px;
-border:1px solid #ccc;
-border-radius:7px;
-font-family:Arial,sans-serif;
-font-size:16px;
-background:white
-}
-
-input:focus,select:focus{
-outline:none;
-border-color:#17365d
-}
-
-.message{
-display:none;
-margin-top:15px;
-padding:11px;
-border-radius:7px;
-text-align:center;
-font-size:14px
-}
-
-.success{
-display:block;
-background:#e8f5e9;
-color:#2e7d32
-}
-
-.error{
-display:block;
-background:#ffebee;
-color:#c62828
-}
-
-.info{
-display:block;
-background:#eaf2f8;
-color:#17365d
-}
-
-.summary{
-display:flex;
-gap:10px;
-margin-top:18px;
-margin-bottom:20px
-}
-
-.summary-box{
-flex:1;
-background:#f5f5f5;
-border-radius:8px;
-padding:12px 5px;
-text-align:center
-}
-
-.summary-number{
-font-size:22px;
-font-weight:bold;
-color:#17365d
-}
-
-.summary-label{
-font-size:12px;
-color:#666;
-margin-top:3px
-}
-
-.user-list{margin-top:20px}
-
-.user-item{
-border:1px solid #ddd;
-border-radius:8px;
-padding:13px;
-margin-top:10px;
-background:#fff
-}
-
-.user-name{
-font-size:16px;
-font-weight:bold;
-color:#17365d
-}
-
-.user-email{
-font-size:14px;
-color:#666;
-margin-top:4px;
-word-break:break-word
-}
-
-.user-status{
-font-size:13px;
-margin-top:7px
-}
-
-.status-active{
-color:#2e7d32;
-font-weight:bold
-}
-
-.status-inactive{
-color:#c62828;
-font-weight:bold
-}
-
-.user-actions{
-display:flex;
-gap:8px;
-margin-top:10px
-}
-
-.small-button{
-flex:1;
-padding:9px 5px;
-border:none;
-border-radius:6px;
-font-family:Arial,sans-serif;
-font-size:13px;
-cursor:pointer;
-color:white;
-background:#17365d
-}
-
-.small-button:hover{background:#214a7a}
-
-.small-button.delete{background:#8b0000}
-
-.small-button.delete:hover{background:#a00000}
-
-.section-title{
-text-align:center;
-color:#17365d;
-font-size:20px;
-margin-top:5px;
-margin-bottom:5px
-}
-
-.section-subtitle{
-text-align:center;
-color:#666;
-font-size:14px;
-margin-bottom:20px
-}
-
-.loading{
-text-align:center;
-color:#666;
-padding:20px 5px;
-font-size:14px
-}
-
-.empty{
-text-align:center;
-color:#666;
-padding:20px 5px;
-font-size:14px
-}
-
-.footer{
-text-align:center;
-color:#666;
-margin-top:25px;
-font-size:14px;
-line-height:1.5
-}
-
+body{margin:0;padding:20px;font-family:Arial,sans-serif;background:#f5f5f5;color:#222}
+.container{max-width:500px;margin:0 auto}
+.card{background:#fff;padding:22px;border-radius:12px;box-shadow:0 3px 12px rgba(0,0,0,.08)}
+h1{text-align:center;font-size:24px;margin:0 0 5px}
+h2{text-align:center;font-size:20px;color:#17365d;margin:10px 0}
+.subtitle{text-align:center;color:#666;margin-bottom:25px;font-size:18px}
+.option{display:block;width:100%;padding:16px;margin-top:15px;background:#17365d;color:#fff;border:none;text-decoration:none;text-align:center;border-radius:8px;font-family:Arial,sans-serif;font-size:17px;font-weight:normal;cursor:pointer;transition:background .15s ease,transform .1s ease}
+.option:hover{background:#214a7a}.option:active{transform:scale(.99)}
+.option-title{font-size:18px}.back-button{background:#666}.back-button:hover{background:#555}
+.logout-button{background:#8b0000}.logout-button:hover{background:#a00000}
+.input-group{margin-top:15px}.input-group label{display:block;font-size:14px;color:#444;margin-bottom:6px}
+input,select{width:100%;padding:13px;border:1px solid #ccc;border-radius:7px;font-family:Arial,sans-serif;font-size:16px;background:#fff}
+input:focus,select:focus{outline:none;border-color:#17365d}
+.message{display:none;margin-top:15px;padding:11px;border-radius:7px;text-align:center;font-size:14px}
+.success{display:block;background:#e8f5e9;color:#2e7d32}.error{display:block;background:#ffebee;color:#c62828}.info{display:block;background:#eaf2f8;color:#17365d}
+.summary{display:flex;gap:10px;margin-top:18px;margin-bottom:20px}
+.summary-box{flex:1;background:#f5f5f5;border-radius:8px;padding:12px 5px;text-align:center}
+.summary-number{font-size:22px;font-weight:bold;color:#17365d}.summary-label{font-size:12px;color:#666;margin-top:3px}
+.user-list{margin-top:20px}.user-item{border:1px solid #ddd;border-radius:8px;padding:13px;margin-top:10px;background:#fff}
+.user-name{font-size:16px;font-weight:bold;color:#17365d}.user-email{font-size:14px;color:#666;margin-top:4px;word-break:break-word}
+.user-status{font-size:13px;margin-top:7px}.status-active{color:#2e7d32;font-weight:bold}.status-inactive{color:#c62828;font-weight:bold}
+.user-actions{display:flex;gap:8px;margin-top:10px}
+.small-button{flex:1;padding:9px 5px;border:none;border-radius:6px;font-family:Arial,sans-serif;font-size:13px;cursor:pointer;color:#fff;background:#17365d}
+.small-button:hover{background:#214a7a}.small-button:disabled{opacity:.65;cursor:wait}
+.small-button.delete{background:#8b0000}.small-button.delete:hover{background:#a00000}
+.section-title{text-align:center;color:#17365d;font-size:20px;margin:5px 0}
+.section-subtitle{text-align:center;color:#666;font-size:14px;margin-bottom:20px}
+.loading{text-align:center;color:#666;padding:20px 5px;font-size:14px}
+.empty{text-align:center;color:#666;padding:20px 5px;font-size:14px}
+.footer{text-align:center;color:#666;margin-top:25px;font-size:14px;line-height:1.5}
 .hidden{display:none!important}
-
-/* FOOD SERVICE */
-
-.food-day{
-border:1px solid #ddd;
-border-radius:10px;
-padding:15px;
-margin-top:12px;
-background:#fff
-}
-
-.food-day-title{
-font-size:16px;
-font-weight:bold;
-color:#17365d;
-margin-bottom:10px
-}
-
-.food-current{
-font-size:13px;
-color:#666;
-margin-top:7px
-}
-
-.food-save{
-margin-top:10px;
-padding:10px;
-width:100%;
-border:none;
-border-radius:7px;
-background:#17365d;
-color:#fff;
-font-size:14px;
-cursor:pointer
-}
-
-.food-save:hover{background:#214a7a}
-
-.food-status{
-margin-top:15px
-}
-
+.food-day{border:1px solid #ddd;border-radius:10px;padding:15px;margin-top:12px;background:#fff}
+.food-day-title{font-size:16px;font-weight:bold;color:#17365d;margin-bottom:10px}
+.food-current{font-size:13px;color:#666;margin-top:7px}
+.food-save{margin-top:10px;padding:10px;width:100%;border:none;border-radius:7px;background:#17365d;color:#fff;font-size:14px;cursor:pointer}
+.food-save:hover{background:#214a7a}.food-status{margin-top:15px}
 </style>
-
 </head>
-
 <body>
-
 <div class="container">
-
 <div class="card">
 
-<!-- LOGIN -->
-
 <div id="loginSection">
-
 <h1>ICEMD-2026</h1>
-
 <h2>IIT Jodhpur, India</h2>
-
 <p class="subtitle">Admin Console</p>
-
 <form id="adminLoginForm" onsubmit="adminLogin(event)" autocomplete="on">
-
 <div class="input-group">
-
 <label for="adminEmail">Email</label>
-
-<input
-type="text"
-id="adminEmail"
-value="pal.17@iitj.ac.in"
-readonly
-autocomplete="username">
-
+<input type="text" id="adminEmail" value="pal.17@iitj.ac.in" readonly autocomplete="username">
 </div>
-
 <div class="input-group">
-
 <label for="adminPassword">Password</label>
-
-<input
-type="password"
-id="adminPassword"
-placeholder="Enter password"
-autocomplete="current-password"
-required>
-
+<input type="password" id="adminPassword" placeholder="Enter password" autocomplete="current-password" required>
 </div>
-
-<button type="submit" class="option">
-Login
-</button>
-
+<button type="submit" class="option">Login</button>
 </form>
-
-<button
-type="button"
-class="option back-button"
-onclick="goHome()">
-Back
-</button>
-
+<button type="button" class="option back-button" onclick="goHome()">Back</button>
 <div id="loginMessage" class="message"></div>
-
 </div>
-
-
-<!-- DASHBOARD -->
 
 <div id="dashboardSection" class="hidden">
-
 <h1>ICEMD-2026</h1>
-
 <h2>IIT Jodhpur, India</h2>
-
 <p class="subtitle">Admin Dashboard</p>
+<div style="text-align:center;color:#666;font-size:15px;margin-bottom:20px">Welcome, Biswajit Pal</div>
 
-<div style="text-align:center;color:#666;font-size:15px;margin-bottom:20px">
-Welcome, Biswajit Pal
+<button type="button" class="option" onclick="openUsers()"><div class="option-title">Manage Users</div></button>
+<button type="button" class="option" onclick="openFoodService()"><div class="option-title">Manage Food Service</div></button>
+<button type="button" class="option" onclick="uploadGuestExcel()"><div class="option-title">Upload Guest Excel</div></button>
+<button type="button" class="option" onclick="generateQRCodes()"><div class="option-title">Generate QR Codes</div></button>
+<button type="button" class="option" onclick="downloadQRPDF()"><div class="option-title">Download QR PDF</div></button>
+<button type="button" class="option logout-button" onclick="adminLogout()"><div class="option-title">Logout</div></button>
+<button type="button" class="option back-button" onclick="goHome()">Back</button>
 </div>
-
-<button
-type="button"
-class="option"
-onclick="openUsers()">
-
-<div class="option-title">
-Manage Users
-</div>
-
-</button>
-
-<button
-type="button"
-class="option"
-onclick="openFoodService()">
-
-<div class="option-title">
-Manage Food Service
-</div>
-
-</button>
-
-<button
-type="button"
-class="option"
-onclick="uploadGuestExcel()">
-
-<div class="option-title">
-Upload Guest Excel
-</div>
-
-</button>
-
-<button
-type="button"
-class="option"
-onclick="generateQRCodes()">
-
-<div class="option-title">
-Generate QR Codes
-</div>
-
-</button>
-
-<button
-type="button"
-class="option"
-onclick="downloadQRPDF()">
-
-<div class="option-title">
-Download QR PDF
-</div>
-
-</button>
-
-<button
-type="button"
-class="option logout-button"
-onclick="adminLogout()">
-
-<div class="option-title">
-Logout
-</div>
-
-</button>
-
-<button
-type="button"
-class="option back-button"
-onclick="goHome()">
-
-Back
-
-</button>
-
-</div>
-
-
-<!-- MANAGE USERS -->
 
 <div id="usersSection" class="hidden">
-
 <h1>ICEMD-2026</h1>
-
 <h2>IIT Jodhpur, India</h2>
-
-<div class="section-title">
-Manage Users
-</div>
-
-<div class="section-subtitle">
-Registration Desk Users
-</div>
+<div class="section-title">Manage Users</div>
+<div class="section-subtitle">Registration Desk Users</div>
 
 <div class="summary">
-
-<div class="summary-box">
-
-<div id="totalUsers" class="summary-number">
-0
+<div class="summary-box"><div id="totalUsers" class="summary-number">0</div><div class="summary-label">Total</div></div>
+<div class="summary-box"><div id="activeUsers" class="summary-number">0</div><div class="summary-label">Active</div></div>
+<div class="summary-box"><div id="userLimit" class="summary-number">30</div><div class="summary-label">Limit</div></div>
 </div>
-
-<div class="summary-label">
-Total
-</div>
-
-</div>
-
-<div class="summary-box">
-
-<div id="activeUsers" class="summary-number">
-0
-</div>
-
-<div class="summary-label">
-Active
-</div>
-
-</div>
-
-<div class="summary-box">
-
-<div id="userLimit" class="summary-number">
-30
-</div>
-
-<div class="summary-label">
-Limit
-</div>
-
-</div>
-
-</div>
-
 
 <div style="border-top:1px solid #ddd;padding-top:18px">
-
-<div style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:5px">
-Add New User
-</div>
-
-<div style="color:#666;font-size:13px;margin-bottom:15px">
-Any valid email address can be used.
-</div>
+<div style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:5px">Add New User</div>
+<div style="color:#666;font-size:13px;margin-bottom:15px">Any valid email address can be used.</div>
 
 <form id="addUserForm" onsubmit="addNewUser(event)">
-
 <div class="input-group">
-
-<label for="newUserName">
-Name
-</label>
-
-<input
-type="text"
-id="newUserName"
-placeholder="Enter name"
-required>
-
+<label for="newUserName">Name</label>
+<input type="text" id="newUserName" placeholder="Enter name" required>
 </div>
-
 <div class="input-group">
-
-<label for="newUserEmail">
-Email
-</label>
-
-<input
-type="email"
-id="newUserEmail"
-placeholder="Enter email address"
-autocomplete="email"
-required>
-
+<label for="newUserEmail">Email</label>
+<input type="email" id="newUserEmail" placeholder="Enter email address" autocomplete="email" required>
 </div>
-
-<button type="submit" class="option">
-Add User
-</button>
-
+<button type="submit" class="option">Add User</button>
 </form>
-
 <div id="userMessage" class="message"></div>
-
 </div>
-
 
 <div class="user-list">
-
-<div style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:8px">
-Current Users
+<div style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:8px">Current Users</div>
+<div id="usersList" class="loading">Loading users...</div>
 </div>
 
-<div id="usersList" class="loading">
-Loading users...
+<button type="button" class="option back-button" onclick="closeUsers()">Back</button>
 </div>
-
-</div>
-
-<button
-type="button"
-class="option back-button"
-onclick="closeUsers()">
-
-Back
-
-</button>
-
-</div>
-
-
-<!-- MANAGE FOOD SERVICE -->
 
 <div id="foodSection" class="hidden">
-
 <h1>ICEMD-2026</h1>
-
 <h2>IIT Jodhpur, India</h2>
+<div class="section-title">Manage Food Service</div>
+<div class="section-subtitle">Set the meal available on each conference day</div>
 
-<div class="section-title">
-Manage Food Service
-</div>
-
-<div class="section-subtitle">
-Set the meal available on each conference day
-</div>
-
-<div
-style="
-background:#eaf2f8;
-color:#17365d;
-padding:12px;
-border-radius:8px;
-font-size:13px;
-line-height:1.5;
-margin-bottom:15px;
-text-align:center;
-">
-
+<div style="background:#eaf2f8;color:#17365d;padding:12px;border-radius:8px;font-size:13px;line-height:1.5;margin-bottom:15px;text-align:center">
 The caterer does not select the meal during scanning.
 The system automatically determines the active meal from these settings.
-
-</div>
-   
-<div id="foodSettingsContainer">
-
-<div class="loading">
-Loading food settings...
 </div>
 
-</div>
-
-
+<div id="foodSettingsContainer"><div class="loading">Loading food settings...</div></div>
 <div id="foodMessage" class="message"></div>
-
-
-<button
-type="button"
-class="option back-button"
-onclick="closeFoodService()">
-
-Back
-
-</button>
-
+<button type="button" class="option back-button" onclick="closeFoodService()">Back</button>
 </div>
 
 </div>
-
 </div>
-
-</div>
-
 
 <script>
+const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbxD0VHRLp17LUYiPlYzxPRWwsZUagkVZycolhHfn6Nyt6XN-N2bQD0_uekzWlZc3iOgrA/exec";
+const FIXED_EMAIL="pal.17@iitj.ac.in";
+const FIXED_PASSWORD="icemd@20260317";
 
-/* =====================================================
-   APPS SCRIPT BACKEND
-===================================================== */
-
-const APPS_SCRIPT_URL =
-"https://script.google.com/macros/s/AKfycbxD0VHRLp17LUYiPlYzxPRWwsZUagkVZycolhHfn6Nyt6XN-N2bQD0_uekzWlZc3iOgrA/exec";
-
-
-/* =====================================================
-   ADMIN CREDENTIALS
-===================================================== */
-
-const FIXED_EMAIL =
-"pal.17@iitj.ac.in";
-
-const FIXED_PASSWORD =
-"icemd@20260317";
-
-
-/* =====================================================
-   LOGIN
-===================================================== */
-
+/* LOGIN */
 function adminLogin(event){
-
 event.preventDefault();
-
-const email=
-document.getElementById("adminEmail").value.trim();
-
-const password=
-document.getElementById("adminPassword").value;
-
-const message=
-document.getElementById("loginMessage");
+const email=document.getElementById("adminEmail").value.trim();
+const password=document.getElementById("adminPassword").value;
+const message=document.getElementById("loginMessage");
 
 if(email===FIXED_EMAIL&&password===FIXED_PASSWORD){
-
-sessionStorage.setItem(
-"icemdAdminLoggedIn",
-"true"
-);
-
-document
-.getElementById("loginSection")
-.classList.add("hidden");
-
-document
-.getElementById("dashboardSection")
-.classList.remove("hidden");
-
+sessionStorage.setItem("icemdAdminLoggedIn","true");
+document.getElementById("loginSection").classList.add("hidden");
+document.getElementById("dashboardSection").classList.remove("hidden");
 message.className="message";
 message.textContent="";
-
 }else{
-
 message.className="message error";
-
-message.textContent=
-"Invalid admin password.";
-
+message.textContent="Invalid admin password.";
+}
 }
 
-}
-
-
-/* =====================================================
-   LOGOUT
-===================================================== */
-
+/* LOGOUT */
 function adminLogout(){
-
-sessionStorage.removeItem(
-"icemdAdminLoggedIn"
-);
-
-document.getElementById(
-"adminPassword"
-).value="";
-
-document
-.getElementById("dashboardSection")
-.classList.add("hidden");
-
-document
-.getElementById("usersSection")
-.classList.add("hidden");
-
-document
-.getElementById("foodSection")
-.classList.add("hidden");
-
-document
-.getElementById("loginSection")
-.classList.remove("hidden");
-
+sessionStorage.removeItem("icemdAdminLoggedIn");
+document.getElementById("adminPassword").value="";
+document.getElementById("dashboardSection").classList.add("hidden");
+document.getElementById("usersSection").classList.add("hidden");
+document.getElementById("foodSection").classList.add("hidden");
+document.getElementById("loginSection").classList.remove("hidden");
 }
 
+/* HOME */
+function goHome(){window.location.href="index.html";}
 
-/* =====================================================
-   HOME
-===================================================== */
-
-function goHome(){
-
-window.location.href="index.html";
-
-}
-
-
-/* =====================================================
-   OPEN USERS
-===================================================== */
-
+/* OPEN/CLOSE USERS */
 function openUsers(){
-
-document
-.getElementById("dashboardSection")
-.classList.add("hidden");
-
-document
-.getElementById("foodSection")
-.classList.add("hidden");
-
-document
-.getElementById("usersSection")
-.classList.remove("hidden");
-
+document.getElementById("dashboardSection").classList.add("hidden");
+document.getElementById("foodSection").classList.add("hidden");
+document.getElementById("usersSection").classList.remove("hidden");
 loadUsers();
-
 }
-
-
-/* =====================================================
-   CLOSE USERS
-===================================================== */
 
 function closeUsers(){
-
-document
-.getElementById("usersSection")
-.classList.add("hidden");
-
-document
-.getElementById("dashboardSection")
-.classList.remove("hidden");
-
+document.getElementById("usersSection").classList.add("hidden");
+document.getElementById("dashboardSection").classList.remove("hidden");
 }
 
-
-/* =====================================================
-   OPEN FOOD SERVICE
-===================================================== */
-
+/* OPEN/CLOSE FOOD */
 function openFoodService(){
-
-document
-.getElementById("dashboardSection")
-.classList.add("hidden");
-
-document
-.getElementById("usersSection")
-.classList.add("hidden");
-
-document
-.getElementById("foodSection")
-.classList.remove("hidden");
-
+document.getElementById("dashboardSection").classList.add("hidden");
+document.getElementById("usersSection").classList.add("hidden");
+document.getElementById("foodSection").classList.remove("hidden");
 loadFoodSettings();
-
 }
-
-
-/* =====================================================
-   CLOSE FOOD SERVICE
-===================================================== */
 
 function closeFoodService(){
-
-document
-.getElementById("foodSection")
-.classList.add("hidden");
-
-document
-.getElementById("dashboardSection")
-.classList.remove("hidden");
-
+document.getElementById("foodSection").classList.add("hidden");
+document.getElementById("dashboardSection").classList.remove("hidden");
 }
 
-
-/* =====================================================
-   JSONP API REQUEST
-===================================================== */
-
+/* JSONP API */
 function apiRequest(params,callback){
-
-const callbackName=
-"icemdCallback_"+
-Date.now()+"_"+
-Math.floor(Math.random()*10000);
-
+const callbackName="icemdCallback_"+Date.now()+"_"+Math.floor(Math.random()*10000);
 params.callback=callbackName;
 
-const query=
-Object.keys(params)
-.map(function(key){
+const query=Object.keys(params).map(function(key){
+return encodeURIComponent(key)+"="+encodeURIComponent(params[key]);
+}).join("&");
 
-return encodeURIComponent(key)+
-"="+
-encodeURIComponent(params[key]);
-
-})
-.join("&");
-
-const script=
-document.createElement("script");
-
+const script=document.createElement("script");
 let finished=false;
 
 const timeout=setTimeout(function(){
-
 if(finished)return;
-
 finished=true;
-
-try{
-delete window[callbackName];
-}catch(e){}
-
-if(script.parentNode)
-script.parentNode.removeChild(script);
-
-callback({
-status:"error",
-message:"Unable to connect to the server."
-});
-
+try{delete window[callbackName]}catch(e){}
+if(script.parentNode)script.parentNode.removeChild(script);
+callback({status:"error",message:"Unable to connect to the server."});
 },15000);
 
 window[callbackName]=function(data){
-
 if(finished)return;
-
 finished=true;
-
 clearTimeout(timeout);
-
-try{
-delete window[callbackName];
-}catch(e){}
-
-if(script.parentNode)
-script.parentNode.removeChild(script);
-
+try{delete window[callbackName]}catch(e){}
+if(script.parentNode)script.parentNode.removeChild(script);
 callback(data);
-
 };
 
-script.src=
-APPS_SCRIPT_URL+
-"?"+
-query;
+script.src=APPS_SCRIPT_URL+"?"+query;
 
 script.onerror=function(){
-
 if(finished)return;
-
 finished=true;
-
 clearTimeout(timeout);
-
-try{
-delete window[callbackName];
-}catch(e){}
-
-if(script.parentNode)
-script.parentNode.removeChild(script);
-
-callback({
-status:"error",
-message:"Unable to connect to the server."
-});
-
+try{delete window[callbackName]}catch(e){}
+if(script.parentNode)script.parentNode.removeChild(script);
+callback({status:"error",message:"Unable to connect to the server."});
 };
 
 document.body.appendChild(script);
-
 }
 
-
-/* =====================================================
-   LOAD USERS
-===================================================== */
-
+/* LOAD USERS */
 function loadUsers(){
-
-const list=
-document.getElementById("usersList");
-
+const list=document.getElementById("usersList");
 list.className="loading";
-
 list.innerHTML="Loading users...";
 
-apiRequest(
-{action:"users"},
-function(result){
+apiRequest({action:"users",_cache:Date.now()},function(result){
 
 if(!result||result.status!=="success"){
-
 list.className="message error";
-
-list.textContent=
-result&&result.message
-?result.message
-:"Unable to load users.";
-
+list.textContent=result&&result.message?result.message:"Unable to load users.";
 return;
-
 }
 
-const users=
-Array.isArray(result.data)
-?result.data
-:[];
-
+const users=Array.isArray(result.data)?result.data:[];
 renderUsers(users);
 
-apiRequest(
-{action:"settings"},
-function(settingsResult){
-
+apiRequest({action:"settings",_cache:Date.now()},function(settingsResult){
 let limit=30;
-
-if(
-settingsResult&&
-settingsResult.status==="success"
-){
-
-const settings=
-settingsResult.settings||{};
-
-limit=
-Number(
-settings["Assistant Limit"]||30
-);
-
+if(settingsResult&&settingsResult.status==="success"){
+const settings=settingsResult.settings||{};
+limit=Number(settings["Assistant Limit"]||30);
 }
-
 updateUserSummary(users,limit);
-
 });
 
 });
-
 }
 
-
-/* =====================================================
-   USER SUMMARY
-===================================================== */
-
+/* SUMMARY */
 function updateUserSummary(users,limit){
-
 const total=users.length;
-
-const active=
-users.filter(function(user){
-
-return String(user["Status"]||"")
-.toUpperCase()==="ACTIVE";
-
+const active=users.filter(function(user){
+return String(user["Status"]||"").toUpperCase()==="ACTIVE";
 }).length;
 
-document.getElementById(
-"totalUsers"
-).textContent=total;
-
-document.getElementById(
-"activeUsers"
-).textContent=active;
-
-document.getElementById(
-"userLimit"
-).textContent=limit;
-
+document.getElementById("totalUsers").textContent=total;
+document.getElementById("activeUsers").textContent=active;
+document.getElementById("userLimit").textContent=limit;
 }
 
-
-/* =====================================================
-   RENDER USERS
-===================================================== */
-
+/* RENDER USERS */
 function renderUsers(users){
-
-const list=
-document.getElementById("usersList");
+const list=document.getElementById("usersList");
 
 if(!users.length){
-
 list.className="empty";
-
-list.textContent=
-"No users have been added yet.";
-
+list.textContent="No users have been added yet.";
 return;
-
 }
 
 list.className="user-list";
-
 list.innerHTML="";
 
 users.forEach(function(user){
 
-const name=
-user["Name"]||"";
+const name=user["Name"]||"";
+const email=String(user["Email ID"]||"").trim();
+const userStatus=String(user["Status"]||"").toUpperCase();
+const isActive=userStatus==="ACTIVE";
 
-const email=
-user["Email ID"]||"";
-
-const userStatus=
-String(user["Status"]||"")
-.toUpperCase();
-
-const isActive=
-userStatus==="ACTIVE";
-
-const item=
-document.createElement("div");
-
+const item=document.createElement("div");
 item.className="user-item";
 
-const nameElement=
-document.createElement("div");
-
+const nameElement=document.createElement("div");
 nameElement.className="user-name";
-
 nameElement.textContent=name;
 
-const emailElement=
-document.createElement("div");
-
+const emailElement=document.createElement("div");
 emailElement.className="user-email";
-
 emailElement.textContent=email;
 
-const statusElement=
-document.createElement("div");
+const statusElement=document.createElement("div");
+statusElement.className="user-status "+(isActive?"status-active":"status-inactive");
+statusElement.textContent="Status: "+(isActive?"ACTIVE":"INACTIVE");
 
-statusElement.className=
-"user-status "+
-(
-isActive
-?"status-active"
-:"status-inactive"
-);
-
-statusElement.textContent=
-"Status: "+
-(
-isActive
-?"ACTIVE"
-:"INACTIVE"
-);
-
-const actions=
-document.createElement("div");
-
+const actions=document.createElement("div");
 actions.className="user-actions";
 
-const statusButton=
-document.createElement("button");
-
+const statusButton=document.createElement("button");
 statusButton.type="button";
-
 statusButton.className="small-button";
-
-statusButton.textContent=
-isActive
-?"Deactivate"
-:"Activate";
+statusButton.textContent=isActive?"Deactivate":"Activate";
 
 statusButton.onclick=function(){
-
-changeUserStatus(
-email,
-isActive
-?"INACTIVE"
-:"ACTIVE"
-);
-
+const newStatus=isActive?"INACTIVE":"ACTIVE";
+changeUserStatus(email,newStatus,statusButton);
 };
 
-const deleteButton=
-document.createElement("button");
-
+const deleteButton=document.createElement("button");
 deleteButton.type="button";
-
-deleteButton.className=
-"small-button delete";
-
+deleteButton.className="small-button delete";
 deleteButton.textContent="Delete";
 
 deleteButton.onclick=function(){
-
-deleteExistingUser(email);
-
+deleteExistingUser(email,deleteButton);
 };
 
 actions.appendChild(statusButton);
-
 actions.appendChild(deleteButton);
 
 item.appendChild(nameElement);
-
 item.appendChild(emailElement);
-
 item.appendChild(statusElement);
-
 item.appendChild(actions);
 
 list.appendChild(item);
-
 });
-
 }
 
-
-/* =====================================================
-   ADD NEW USER
-===================================================== */
-
+/* ADD USER */
 function addNewUser(event){
-
 event.preventDefault();
 
-const name=
-document
-.getElementById("newUserName")
-.value.trim();
-
-const email=
-document
-.getElementById("newUserEmail")
-.value.trim()
-.toLowerCase();
+const name=document.getElementById("newUserName").value.trim();
+const email=document.getElementById("newUserEmail").value.trim().toLowerCase();
 
 if(!name){
-
-showUserMessage(
-"Please enter the user's name.",
-"error"
-);
-
+showUserMessage("Please enter the user's name.","error");
 return;
-
 }
 
-const emailPattern=
-/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 if(!emailPattern.test(email)){
-
-showUserMessage(
-"Please enter a valid email address.",
-"error"
-);
-
+showUserMessage("Please enter a valid email address.","error");
 return;
+}
 
+showUserMessage("Adding user...","info");
+
+apiRequest({
+action:"addUser",
+name:name,
+email:email,
+_cache:Date.now()
+},function(result){
+
+if(!result||result.status!=="success"){
+showUserMessage(result&&result.message?result.message:"Unable to add user.","error");
+return;
+}
+
+showUserMessage("User added successfully.","success");
+document.getElementById("addUserForm").reset();
+loadUsers();
+});
+}
+
+/* USER MESSAGE */
+function showUserMessage(text,type){
+const message=document.getElementById("userMessage");
+message.className="message "+type;
+message.textContent=text;
+}
+
+/* =====================================================
+   ACTIVATE / DEACTIVATE USER
+===================================================== */
+function changeUserStatus(email,status,button){
+
+email=String(email||"").trim().toLowerCase();
+status=String(status||"").trim().toUpperCase();
+
+if(!email){
+showUserMessage("User email is missing.","error");
+return;
+}
+
+if(status!=="ACTIVE"&&status!=="INACTIVE"){
+showUserMessage("Invalid user status.","error");
+return;
+}
+
+const actionText=status==="ACTIVE"?"activate":"deactivate";
+
+if(!confirm("Are you sure you want to "+actionText+" this user?\n\n"+email)){
+return;
+}
+
+if(button){
+button.disabled=true;
+button.textContent=status==="ACTIVE"?"Activating...":"Deactivating...";
 }
 
 showUserMessage(
-"Adding user...",
+status==="ACTIVE"?"Activating user...":"Deactivating user...",
 "info"
 );
 
-apiRequest(
-{
-action:"addUser",
-name:name,
-email:email
-},
-function(result){
-
-if(!result||result.status!=="success"){
-
-showUserMessage(
-result&&result.message
-?result.message
-:"Unable to add user.",
-"error"
-);
-
-return;
-
-}
-
-showUserMessage(
-"User added successfully.",
-"success"
-);
-
-document
-.getElementById("addUserForm")
-.reset();
-
-loadUsers();
-
-});
-
-}
-
-
-/* =====================================================
-   USER MESSAGE
-===================================================== */
-
-function showUserMessage(text,type){
-
-const message=
-document.getElementById("userMessage");
-
-message.className=
-"message "+type;
-
-message.textContent=text;
-
-}
-
-
-/* =====================================================
-   CHANGE USER STATUS
-===================================================== */
-
-function changeUserStatus(email,status){
-
-const actionText=
-status==="ACTIVE"
-?"activate"
-:"deactivate";
-
-if(!confirm(
-"Are you sure you want to "+
-actionText+
-" this user?"
-))return;
-
-apiRequest(
-{
+apiRequest({
 action:"updateUser",
 email:email,
-status:status
-},
-function(result){
+status:status,
+_cache:Date.now()
+},function(result){
 
 if(!result||result.status!=="success"){
 
+if(button){
+button.disabled=false;
+button.textContent=status==="ACTIVE"?"Activate":"Deactivate";
+}
+
 showUserMessage(
-result&&result.message
-?result.message
-:"Unable to update user.",
+result&&result.message?result.message:"Unable to update user.",
 "error"
 );
 
 return;
-
 }
 
 showUserMessage(
-"User status updated.",
+status==="ACTIVE"
+?"User activated successfully."
+:"User deactivated successfully.",
 "success"
 );
 
+/* Reload actual Sheet data */
+setTimeout(function(){
 loadUsers();
+},300);
 
 });
-
 }
-
 
 /* =====================================================
    DELETE USER
 ===================================================== */
+function deleteExistingUser(email,button){
 
-function deleteExistingUser(email){
+email=String(email||"").trim().toLowerCase();
+
+if(!email){
+showUserMessage("User email is missing.","error");
+return;
+}
 
 if(!confirm(
-"Are you sure you want to delete this user?"
-))return;
+"Are you sure you want to permanently delete this user?\n\n"+
+email+
+"\n\nThis action cannot be undone."
+)){
+return;
+}
 
-apiRequest(
-{
+if(button){
+button.disabled=true;
+button.textContent="Deleting...";
+}
+
+showUserMessage("Deleting user...","info");
+
+apiRequest({
 action:"deleteUser",
-email:email
-},
-function(result){
+email:email,
+_cache:Date.now()
+},function(result){
 
 if(!result||result.status!=="success"){
 
+if(button){
+button.disabled=false;
+button.textContent="Delete";
+}
+
 showUserMessage(
-result&&result.message
-?result.message
-:"Unable to delete user.",
+result&&result.message?result.message:"Unable to delete user.",
 "error"
 );
 
 return;
-
 }
 
-showUserMessage(
-"User deleted successfully.",
-"success"
-);
+showUserMessage("User deleted successfully.","success");
 
+setTimeout(function(){
 loadUsers();
+},300);
 
 });
-
 }
 
-
-/* =====================================================
-   FOOD SERVICE SETTINGS
-===================================================== */
-
+/* FOOD SERVICE */
 function loadFoodSettings(){
 
-const container=
-document.getElementById(
-"foodSettingsContainer"
-);
+const container=document.getElementById("foodSettingsContainer");
+container.innerHTML='<div class="loading">Loading food settings...</div>';
 
-container.innerHTML=
-'<div class="loading">Loading food settings...</div>';
-
-apiRequest(
-{
-action:"foodSettings"
-},
-function(result){
+apiRequest({action:"foodSettings",_cache:Date.now()},function(result){
 
 if(!result||result.status!=="success"){
-
-container.innerHTML=
-'<div class="message error">'+
-escapeHTML(
-result&&result.message
-?result.message
-:"Unable to load food settings."
-)+
+container.innerHTML='<div class="message error">'+
+escapeHTML(result&&result.message?result.message:"Unable to load food settings.")+
 '</div>';
-
 return;
-
 }
 
-const dates=
-result.dates||{};
-
-renderFoodSettings(dates);
-
+renderFoodSettings(result.dates||{});
 });
-
 }
-
-
-/* =====================================================
-   RENDER FOOD SETTINGS
-===================================================== */
 
 function renderFoodSettings(dates){
 
-const container=
-document.getElementById(
-"foodSettingsContainer"
-);
-
+const container=document.getElementById("foodSettingsContainer");
 container.innerHTML="";
 
-const days=[
-"21",
-"22",
-"23"
-];
+["21","22","23"].forEach(function(day){
 
-days.forEach(function(day){
+const current=dates[day]||"OFF";
 
-const current=
-dates[day]||"OFF";
-
-const box=
-document.createElement("div");
-
+const box=document.createElement("div");
 box.className="food-day";
 
-const title=
-document.createElement("div");
-
+const title=document.createElement("div");
 title.className="food-day-title";
+title.textContent="December "+day+", 2026";
 
-title.textContent=
-"December "+day+", 2026";
+const select=document.createElement("select");
+select.id="foodSelect_"+day;
 
-const select=
-document.createElement("select");
+["OFF","Breakfast","Lunch","Dinner"].forEach(function(meal){
 
-select.id=
-"foodSelect_"+day;
-
-const options=[
-"OFF",
-"Breakfast",
-"Lunch",
-"Dinner"
-];
-
-options.forEach(function(meal){
-
-const option=
-document.createElement("option");
-
+const option=document.createElement("option");
 option.value=meal;
-
 option.textContent=meal;
 
-if(meal.toLowerCase()===
-String(current).toLowerCase()){
-
+if(meal.toLowerCase()===String(current).toLowerCase()){
 option.selected=true;
-
 }
 
 select.appendChild(option);
-
 });
 
-const currentText=
-document.createElement("div");
-
+const currentText=document.createElement("div");
 currentText.className="food-current";
+currentText.id="foodCurrent_"+day;
+currentText.textContent="Current setting: "+current;
 
-currentText.id=
-"foodCurrent_"+day;
-
-currentText.textContent=
-"Current setting: "+current;
-
-const button=
-document.createElement("button");
-
+const button=document.createElement("button");
 button.type="button";
-
 button.className="food-save";
-
-button.textContent=
-"Save "+day+" December";
+button.textContent="Save "+day+" December;
 
 button.onclick=function(){
-
-saveFoodSetting(
-day,
-select.value,
-button
-);
-
+saveFoodSetting(day,select.value,button);
 };
 
 box.appendChild(title);
-
 box.appendChild(select);
-
 box.appendChild(currentText);
-
 box.appendChild(button);
-
 container.appendChild(box);
-
 });
-
 }
-
-
-/* =====================================================
-   SAVE FOOD SETTING
-===================================================== */
 
 function saveFoodSetting(day,meal,button){
 
-const message=
-document.getElementById("foodMessage");
+const message=document.getElementById("foodMessage");
 
 if(button){
-
 button.disabled=true;
 button.textContent="Saving...";
 }
@@ -1569,161 +617,88 @@ button.textContent="Saving...";
 message.className="message";
 message.textContent="";
 
-apiRequest(
-{
+apiRequest({
 action:"updateFoodSetting",
 day:day,
-meal:meal
-},
-function(result){
+meal:meal,
+_cache:Date.now()
+},function(result){
 
 if(button){
-
 button.disabled=false;
-button.textContent=
-"Save "+day+" December";
-
+button.textContent="Save "+day+" December";
 }
 
 if(!result||result.status!=="success"){
-
-message.className=
-"message error";
-
-message.textContent=
-result&&result.message
-?result.message
-:"Unable to update food setting.";
-
+message.className="message error";
+message.textContent=result&&result.message?result.message:"Unable to update food setting.";
 return;
-
 }
 
-const current=
-document.getElementById(
-"foodCurrent_"+day
-);
+const current=document.getElementById("foodCurrent_"+day);
 
 if(current){
-
-current.textContent=
-"Current setting: "+meal;
-
+current.textContent="Current setting: "+meal;
 }
 
-message.className=
-"message success";
-
-message.textContent=
-"Food service updated successfully for December "+
-day+".";
-
+message.className="message success";
+message.textContent="Food service updated successfully for December "+day+".";
 });
-
 }
 
-
-/* =====================================================
-   ESCAPE HTML
-===================================================== */
-
+/* ESCAPE */
 function escapeHTML(value){
-
 return String(value||"")
 .replace(/&/g,"&amp;")
 .replace(/</g,"&lt;")
 .replace(/>/g,"&gt;")
 .replace(/"/g,"&quot;")
 .replace(/'/g,"&#039;");
-
 }
 
-
-/* =====================================================
-   EXCEL UPLOAD
-===================================================== */
-
+/* EXCEL UPLOAD */
 function uploadGuestExcel(){
 
-const input=
-document.createElement("input");
-
+const input=document.createElement("input");
 input.type="file";
-
 input.accept=".xlsx,.xls";
 
 input.onchange=async function(event){
 
-const file=
-event.target.files[0];
-
+const file=event.target.files[0];
 if(!file)return;
 
 try{
 
-const arrayBuffer=
-await file.arrayBuffer();
-
-const workbook=
-XLSX.read(
-arrayBuffer,
-{type:"array"}
-);
+const arrayBuffer=await file.arrayBuffer();
+const workbook=XLSX.read(arrayBuffer,{type:"array"});
 
 if(!workbook.SheetNames.length){
-
-alert(
-"The Excel file does not contain any worksheet."
-);
-
+alert("The Excel file does not contain any worksheet.");
 return;
-
 }
 
-const worksheet=
-workbook.Sheets[
-workbook.SheetNames[0]
-];
+const worksheet=workbook.Sheets[workbook.SheetNames[0]];
 
-const rawRows=
-XLSX.utils.sheet_to_json(
+const rawRows=XLSX.utils.sheet_to_json(
 worksheet,
 {defval:""}
 );
 
 if(!rawRows.length){
-
-alert(
-"The Excel file is empty."
-);
-
+alert("The Excel file is empty.");
 return;
-
 }
 
 const firstRow=rawRows[0];
+const columns=Object.keys(firstRow);
 
-const columns=
-Object.keys(firstRow);
+const requiredColumns=["Name","Email","Institute"];
 
-const requiredColumns=[
-"Name",
-"Email",
-"Institute"
-];
-
-const missingColumns=
-requiredColumns.filter(function(column){
-
+const missingColumns=requiredColumns.filter(function(column){
 return !columns.some(function(existingColumn){
-
-return String(existingColumn)
-.trim()
-.toLowerCase()===
-column.toLowerCase();
-
+return String(existingColumn).trim().toLowerCase()===column.toLowerCase();
 });
-
 });
 
 if(missingColumns.length>0){
@@ -1737,11 +712,9 @@ missingColumns.join(", ")+
 );
 
 return;
-
 }
 
-const guests=
-rawRows.map(function(row){
+const guests=rawRows.map(function(row){
 
 let name="";
 let email="";
@@ -1749,19 +722,11 @@ let institute="";
 
 Object.keys(row).forEach(function(key){
 
-const normalizedKey=
-String(key)
-.trim()
-.toLowerCase();
+const normalizedKey=String(key).trim().toLowerCase();
 
-if(normalizedKey==="name")
-name=String(row[key]||"").trim();
-
-if(normalizedKey==="email")
-email=String(row[key]||"").trim();
-
-if(normalizedKey==="institute")
-institute=String(row[key]||"").trim();
+if(normalizedKey==="name")name=String(row[key]||"").trim();
+if(normalizedKey==="email")email=String(row[key]||"").trim();
+if(normalizedKey==="institute")institute=String(row[key]||"").trim();
 
 });
 
@@ -1770,16 +735,12 @@ Name:name,
 Email:email,
 Institute:institute
 };
-
 });
 
 const invalidRows=[];
 
 guests.forEach(function(guest,index){
-
-if(!guest.Name||!guest.Email)
-invalidRows.push(index+2);
-
+if(!guest.Name||!guest.Email)invalidRows.push(index+2);
 });
 
 if(invalidRows.length>0){
@@ -1791,67 +752,38 @@ invalidRows.join(", ")
 );
 
 return;
-
 }
 
-const confirmed=
-confirm(
+const confirmed=confirm(
 "Excel file loaded successfully.\n\n"+
 "Total records: "+guests.length+
-"\n\n"+
-"Do you want to upload these registrations?"
+"\n\nDo you want to upload these registrations?"
 );
 
 if(!confirmed)return;
 
 const BATCH_SIZE=20;
-
 let totalRecords=guests.length;
 let newRegistrations=0;
 let skippedDuplicates=0;
 let errors=0;
-
 const allErrors=[];
 
-const totalBatches=
-Math.ceil(
-guests.length/BATCH_SIZE
-);
+const totalBatches=Math.ceil(guests.length/BATCH_SIZE);
 
-showGuestUploadProgress(
-0,
-totalBatches,
-totalRecords
-);
+showGuestUploadProgress(0,totalBatches,totalRecords);
 
-for(
-let start=0;
-start<guests.length;
-start+=BATCH_SIZE
-){
+for(let start=0;start<guests.length;start+=BATCH_SIZE){
 
-const batch=
-guests.slice(
-start,
-start+BATCH_SIZE
-);
+const batch=guests.slice(start,start+BATCH_SIZE);
+const batchNumber=Math.floor(start/BATCH_SIZE)+1;
 
-const batchNumber=
-Math.floor(start/BATCH_SIZE)+1;
+showGuestUploadProgress(batchNumber,totalBatches,totalRecords);
 
-showGuestUploadProgress(
-batchNumber,
-totalBatches,
-totalRecords
-);
-
-const result=
-await apiRequestPromise({
-
+const result=await apiRequestPromise({
 action:"importGuests",
-
-rows:JSON.stringify(batch)
-
+rows:JSON.stringify(batch),
+_cache:Date.now()
 });
 
 if(!result){
@@ -1860,12 +792,10 @@ errors+=batch.length;
 
 allErrors.push({
 batch:batchNumber,
-reason:
-"No response received from server."
+reason:"No response received from server."
 });
 
 continue;
-
 }
 
 if(result.status!=="success"){
@@ -1874,102 +804,51 @@ errors+=batch.length;
 
 allErrors.push({
 batch:batchNumber,
-reason:
-result.message||
-"Unknown server error."
+reason:result.message||"Unknown server error."
 });
 
 continue;
-
 }
 
-newRegistrations+=
-Number(
-result.newRegistrations||0
-);
+newRegistrations+=Number(result.newRegistrations||0);
+skippedDuplicates+=Number(result.skippedDuplicates||0);
+errors+=Number(result.errors||0);
 
-skippedDuplicates+=
-Number(
-result.skippedDuplicates||0
-);
-
-errors+=
-Number(
-result.errors||0
-);
-
-if(
-Array.isArray(result.errorDetails)&&
-result.errorDetails.length
-){
-
+if(Array.isArray(result.errorDetails)&&result.errorDetails.length){
 result.errorDetails.forEach(function(error){
-
 allErrors.push(error);
-
 });
-
 }
-
 }
 
 hideGuestUploadProgress();
 
 let message=
 "Upload completed successfully.\n\n"+
-"Total Excel records: "+
-totalRecords+
-"\nNew registrations: "+
-newRegistrations+
-"\nSkipped duplicates: "+
-skippedDuplicates+
-"\nErrors: "+
-errors;
+"Total Excel records: "+totalRecords+
+"\nNew registrations: "+newRegistrations+
+"\nSkipped duplicates: "+skippedDuplicates+
+"\nErrors: "+errors;
 
 if(allErrors.length>0){
 
-message+=
-"\n\nError details:";
+message+="\n\nError details:";
 
-allErrors.slice(0,10)
-.forEach(function(error){
+allErrors.slice(0,10).forEach(function(error){
 
 if(error.row){
-
-message+=
-"\nRow "+
-error.row+
-": "+
-error.reason;
-
+message+="\nRow "+error.row+": "+error.reason;
 }else if(error.batch){
-
-message+=
-"\nBatch "+
-error.batch+
-": "+
-error.reason;
-
+message+="\nBatch "+error.batch+": "+error.reason;
 }else{
-
-message+=
-"\n"+
-(error.reason||
-"Unknown error.");
-
+message+="\n"+(error.reason||"Unknown error.");
 }
 
 });
 
 if(allErrors.length>10){
-
-message+=
-"\n...and "+
-(allErrors.length-10)+
-" more error(s).";
-
+message+="\n...and "+(allErrors.length-10)+" more error(s).";
 }
-
 }
 
 alert(message);
@@ -1978,69 +857,36 @@ alert(message);
 
 hideGuestUploadProgress();
 
-console.error(
-"Guest Excel upload error:",
-error
-);
+console.error("Guest Excel upload error:",error);
 
 alert(
 "Unable to process the Excel file.\n\n"+
 error.message
 );
-
 }
-
 };
 
 input.click();
-
 }
 
-
-/* =====================================================
-   API PROMISE
-===================================================== */
-
+/* API PROMISE */
 function apiRequestPromise(params){
-
 return new Promise(function(resolve){
-
-apiRequest(
-params,
-function(result){
-
+apiRequest(params,function(result){
 resolve(result);
-
-}
-);
-
 });
-
+});
 }
 
+/* UPLOAD PROGRESS */
+function showGuestUploadProgress(currentBatch,totalBatches,totalRecords){
 
-/* =====================================================
-   UPLOAD PROGRESS
-===================================================== */
-
-function showGuestUploadProgress(
-currentBatch,
-totalBatches,
-totalRecords
-){
-
-let overlay=
-document.getElementById(
-"guestUploadProgress"
-);
+let overlay=document.getElementById("guestUploadProgress");
 
 if(!overlay){
 
-overlay=
-document.createElement("div");
-
-overlay.id=
-"guestUploadProgress";
+overlay=document.createElement("div");
+overlay.id="guestUploadProgress";
 
 overlay.style.position="fixed";
 overlay.style.left="0";
@@ -2054,210 +900,99 @@ overlay.style.justifyContent="center";
 overlay.style.zIndex="99999";
 
 overlay.innerHTML=
-'<div style="'+
-'background:#fff;'+
-'padding:25px;'+
-'border-radius:12px;'+
-'width:320px;'+
-'max-width:85%;'+
-'text-align:center;'+
-'box-shadow:0 5px 25px rgba(0,0,0,.25);'+
-'">'+
-
-'<div style="'+
-'font-size:20px;'+
-'font-weight:bold;'+
-'color:#17365d;'+
-'margin-bottom:12px;'+
-'">'+
-'Uploading Guests'+
-'</div>'+
-
-'<div id="guestUploadProgressText" '+
-'style="font-size:15px;color:#555;">'+
-'</div>'+
-
-'<div style="'+
-'margin-top:15px;'+
-'height:8px;'+
-'background:#e5e5e5;'+
-'border-radius:5px;'+
-'overflow:hidden;'+
-'">'+
-
-'<div id="guestUploadProgressBar" '+
-'style="'+
-'height:100%;'+
-'width:0%;'+
-'background:#17365d;'+
-'transition:width .2s ease;'+
-'">'+
-'</div>'+
-
+'<div style="background:#fff;padding:25px;border-radius:12px;width:320px;max-width:85%;text-align:center;box-shadow:0 5px 25px rgba(0,0,0,.25);">'+
+'<div style="font-size:20px;font-weight:bold;color:#17365d;margin-bottom:12px;">Uploading Guests</div>'+
+'<div id="guestUploadProgressText" style="font-size:15px;color:#555;"></div>'+
+'<div style="margin-top:15px;height:8px;background:#e5e5e5;border-radius:5px;overflow:hidden;">'+
+'<div id="guestUploadProgressBar" style="height:100%;width:0%;background:#17365d;transition:width .2s ease;"></div>'+
 '</div></div>';
 
 document.body.appendChild(overlay);
-
 }
 
-const percentage=
-totalBatches>0
-?Math.round(
-(currentBatch/totalBatches)*100
-)
-:0;
+const percentage=totalBatches>0?Math.round((currentBatch/totalBatches)*100):0;
 
-const text=
-document.getElementById(
-"guestUploadProgressText"
-);
-
-const bar=
-document.getElementById(
-"guestUploadProgressBar"
-);
+const text=document.getElementById("guestUploadProgressText");
+const bar=document.getElementById("guestUploadProgressBar");
 
 if(text){
-
 text.textContent=
-"Uploading batch "+
-currentBatch+
-" of "+
-totalBatches+
-" ("+
-percentage+
-"%)";
-
+"Uploading batch "+currentBatch+
+" of "+totalBatches+
+" ("+percentage+"%)";
 }
 
-if(bar)
-bar.style.width=
-percentage+"%";
-
+if(bar)bar.style.width=percentage+"%";
 }
 
 function hideGuestUploadProgress(){
-
-const overlay=
-document.getElementById(
-"guestUploadProgress"
-);
-
-if(overlay)
-overlay.remove();
-
+const overlay=document.getElementById("guestUploadProgress");
+if(overlay)overlay.remove();
 }
 
-
-/* =====================================================
-   GENERATE QR CODES
-===================================================== */
-
+/* GENERATE QR */
 async function generateQRCodes(){
 
 try{
 
-const result=
-await apiRequestPromise({
-action:"guests"
+const result=await apiRequestPromise({
+action:"guests",
+_cache:Date.now()
 });
 
 if(!result){
-
-alert(
-"Unable to connect to the server."
-);
-
+alert("Unable to connect to the server.");
 return;
-
 }
 
 if(result.status!=="success"){
-
-alert(
-result.message||
-"Unable to load guest records."
-);
-
+alert(result.message||"Unable to load guest records.");
 return;
-
 }
 
-const guests=
-Array.isArray(result.data)
-?result.data
-:[];
+const guests=Array.isArray(result.data)?result.data:[];
 
 if(guests.length===0){
-
 alert(
 "No guest registrations are available.\n\n"+
 "Please upload the Guest Excel file first."
 );
-
 return;
-
 }
 
-const invalidGuests=
-guests.filter(function(guest){
-
-return !String(
-guest["Registration ID"]||""
-).trim();
-
+const invalidGuests=guests.filter(function(guest){
+return !String(guest["Registration ID"]||"").trim();
 });
 
 if(invalidGuests.length>0){
-
 alert(
 "Some guest records do not have a Registration ID.\n\n"+
 "QR generation cannot continue."
 );
-
 return;
-
 }
 
 showQRGenerationPanel(guests);
 
 }catch(error){
 
-console.error(
-"QR generation error:",
-error
-);
+console.error("QR generation error:",error);
 
 alert(
 "Unable to generate QR codes.\n\n"+
 error.message
 );
-
+}
 }
 
-}
-
-
-/* =====================================================
-   QR GENERATION PANEL
-===================================================== */
-
+/* QR PANEL */
 function showQRGenerationPanel(guests){
 
-const oldPanel=
-document.getElementById(
-"qrGenerationPanel"
-);
+const oldPanel=document.getElementById("qrGenerationPanel");
+if(oldPanel)oldPanel.remove();
 
-if(oldPanel)
-oldPanel.remove();
-
-const overlay=
-document.createElement("div");
-
-overlay.id=
-"qrGenerationPanel";
-
+const overlay=document.createElement("div");
+overlay.id="qrGenerationPanel";
 overlay.style.position="fixed";
 overlay.style.left="0";
 overlay.style.top="0";
@@ -2267,17 +1002,13 @@ overlay.style.background="#f5f5f5";
 overlay.style.zIndex="99998";
 overlay.style.overflowY="auto";
 
-const container=
-document.createElement("div");
-
+const container=document.createElement("div");
 container.style.maxWidth="900px";
 container.style.margin="0 auto";
 container.style.padding="20px";
 container.style.boxSizing="border-box";
 
-const header=
-document.createElement("div");
-
+const header=document.createElement("div");
 header.style.background="#fff";
 header.style.borderRadius="12px";
 header.style.padding="20px";
@@ -2285,29 +1016,14 @@ header.style.marginBottom="15px";
 header.style.boxShadow="0 2px 10px rgba(0,0,0,.08)";
 
 header.innerHTML=
-'<h2 style="'+
-'margin:0 0 8px 0;'+
-'text-align:center;'+
-'color:#17365d;'+
-'font-size:22px;'+
-'">'+
-'ICEMD-2026 QR Codes'+
-'</h2>'+
-
-'<p style="'+
-'margin:0;'+
-'text-align:center;'+
-'color:#666;'+
-'font-size:14px;'+
-'">'+
-guests.length+
-' guest registration(s)'+
+'<h2 style="margin:0 0 8px;text-align:center;color:#17365d;font-size:22px;">ICEMD-2026 QR Codes</h2>'+
+'<p style="margin:0;text-align:center;color:#666;font-size:14px;">'+
+guests.length+' guest registration(s)'+
 '</p>';
 
 container.appendChild(header);
 
-const actions=
-document.createElement("div");
+const actions=document.createElement("div");
 
 actions.style.background="#fff";
 actions.style.padding="15px";
@@ -2320,226 +1036,115 @@ actions.style.flexWrap="wrap";
 actions.style.justifyContent="center";
 
 actions.innerHTML=
-'<button id="qrDownloadButton" '+
-'style="'+
-'background:#17365d;'+
-'color:white;'+
-'border:none;'+
-'padding:12px 20px;'+
-'border-radius:8px;'+
-'font-size:15px;'+
-'cursor:pointer;'+
-'">'+
-'Download QR PDF'+
-'</button>'+
-
-'<button id="qrCloseButton" '+
-'style="'+
-'background:#777;'+
-'color:white;'+
-'border:none;'+
-'padding:12px 20px;'+
-'border-radius:8px;'+
-'font-size:15px;'+
-'cursor:pointer;'+
-'">'+
-'Close'+
-'</button>';
+'<button id="qrDownloadButton" style="background:#17365d;color:white;border:none;padding:12px 20px;border-radius:8px;font-size:15px;cursor:pointer;">Download QR PDF</button>'+
+'<button id="qrCloseButton" style="background:#777;color:white;border:none;padding:12px 20px;border-radius:8px;font-size:15px;cursor:pointer;">Close</button>';
 
 container.appendChild(actions);
 
-const grid=
-document.createElement("div");
-
+const grid=document.createElement("div");
 grid.id="qrPreviewGrid";
-
 grid.style.display="grid";
-
-grid.style.gridTemplateColumns=
-"repeat(auto-fit,minmax(220px,1fr))";
-
+grid.style.gridTemplateColumns="repeat(auto-fit,minmax(220px,1fr))";
 grid.style.gap="15px";
 
 container.appendChild(grid);
-
 overlay.appendChild(container);
-
 document.body.appendChild(overlay);
 
 guests.forEach(function(guest){
 
-const registrationId=
-String(
-guest["Registration ID"]||""
-).trim();
+const registrationId=String(guest["Registration ID"]||"").trim();
+const name=String(guest["Name"]||"").trim();
+const institute=String(guest["Institute"]||"").trim();
 
-const name=
-String(
-guest["Name"]||""
-).trim();
-
-const institute=
-String(
-guest["Institute"]||""
-).trim();
-
-const card=
-document.createElement("div");
-
-card.className=
-"icemd-qr-card";
-
-card.dataset.registrationId=
-registrationId;
-
+const card=document.createElement("div");
+card.className="icemd-qr-card";
+card.dataset.registrationId=registrationId;
 card.dataset.name=name;
-
-card.dataset.institute=
-institute;
+card.dataset.institute=institute;
 
 card.style.background="#fff";
 card.style.borderRadius="12px";
 card.style.padding="18px";
 card.style.textAlign="center";
-card.style.boxShadow=
-"0 2px 8px rgba(0,0,0,.08)";
+card.style.boxShadow="0 2px 8px rgba(0,0,0,.08)";
 
-const idElement=
-document.createElement("div");
-
+const idElement=document.createElement("div");
 idElement.style.fontWeight="bold";
 idElement.style.color="#17365d";
 idElement.style.fontSize="16px";
 idElement.style.marginBottom="10px";
-
-idElement.textContent=
-registrationId;
+idElement.textContent=registrationId;
 
 card.appendChild(idElement);
 
-const qrContainer=
-document.createElement("div");
-
-qrContainer.className=
-"icemd-qr-code";
-
+const qrContainer=document.createElement("div");
+qrContainer.className="icemd-qr-code";
 qrContainer.style.width="180px";
 qrContainer.style.height="180px";
-qrContainer.style.margin="0 auto 12px auto";
+qrContainer.style.margin="0 auto 12px";
 
 card.appendChild(qrContainer);
 
-const nameElement=
-document.createElement("div");
-
+const nameElement=document.createElement("div");
 nameElement.style.fontWeight="bold";
 nameElement.style.fontSize="15px";
 nameElement.style.marginBottom="4px";
-
 nameElement.textContent=name;
-
 card.appendChild(nameElement);
 
-const instituteElement=
-document.createElement("div");
-
+const instituteElement=document.createElement("div");
 instituteElement.style.fontSize="13px";
 instituteElement.style.color="#666";
-
-instituteElement.textContent=
-institute;
-
+instituteElement.textContent=institute;
 card.appendChild(instituteElement);
 
 grid.appendChild(card);
 
-new QRCode(
-qrContainer,
-{
+new QRCode(qrContainer,{
 text:registrationId,
 width:180,
 height:180,
-correctLevel:
-QRCode.CorrectLevel.H
-}
-);
+correctLevel:QRCode.CorrectLevel.H
+});
 
 });
 
-document
-.getElementById("qrCloseButton")
-.addEventListener(
-"click",
-function(){
+document.getElementById("qrCloseButton").addEventListener("click",function(){
 overlay.remove();
-}
-);
+});
 
-document
-.getElementById("qrDownloadButton")
-.addEventListener(
-"click",
-downloadQRPDF
-);
-
+document.getElementById("qrDownloadButton").addEventListener("click",downloadQRPDF);
 }
 
-
-/* =====================================================
-   DOWNLOAD QR PDF
-===================================================== */
-
+/* QR PDF */
 async function downloadQRPDF(){
 
-const qrCards=
-Array.from(
-document.querySelectorAll(
-".icemd-qr-card"
-)
-);
+const qrCards=Array.from(document.querySelectorAll(".icemd-qr-card"));
 
 if(!qrCards.length){
-
-alert(
-'Please click "Generate QR Codes" first.'
-);
-
+alert('Please click "Generate QR Codes" first.');
 return;
-
 }
 
-const button=
-document.getElementById(
-"qrDownloadButton"
-);
+const button=document.getElementById("qrDownloadButton");
 
 if(button){
-
 button.disabled=true;
 button.textContent="Preparing PDF...";
 button.style.opacity=".7";
 button.style.cursor="wait";
-
 }
 
 try{
 
-if(
-!window.jspdf||
-!window.jspdf.jsPDF
-){
-
-throw new Error(
-"PDF library could not be loaded. Please refresh the page and try again."
-);
-
+if(!window.jspdf||!window.jspdf.jsPDF){
+throw new Error("PDF library could not be loaded. Please refresh the page and try again.");
 }
 
-const jsPDF=
-window.jspdf.jsPDF;
+const jsPDF=window.jspdf.jsPDF;
 
-const pdf=
-new jsPDF({
+const pdf=new jsPDF({
 orientation:"portrait",
 unit:"mm",
 format:"a4",
@@ -2548,7 +1153,6 @@ compress:true
 
 const pageWidth=210;
 const pageHeight=297;
-
 const marginLeft=10;
 const marginRight=10;
 const marginTop=10;
@@ -2558,114 +1162,52 @@ const columns=2;
 const rows=3;
 const cardsPerPage=6;
 
-const usableWidth=
-pageWidth-
-marginLeft-
-marginRight;
+const usableWidth=pageWidth-marginLeft-marginRight;
+const usableHeight=pageHeight-marginTop-marginBottom;
 
-const usableHeight=
-pageHeight-
-marginTop-
-marginBottom;
-
-const cellWidth=
-usableWidth/columns;
-
-const cellHeight=
-usableHeight/rows;
-
+const cellWidth=usableWidth/columns;
+const cellHeight=usableHeight/rows;
 const qrSize=55;
 
-for(
-let i=0;
-i<qrCards.length;
-i++
-){
+for(let i=0;i<qrCards.length;i++){
 
-const card=
-qrCards[i];
+const card=qrCards[i];
 
-const registrationId=
-String(
-card.dataset.registrationId||""
-).trim();
+const registrationId=String(card.dataset.registrationId||"").trim();
+const name=String(card.dataset.name||"").trim();
+const institute=String(card.dataset.institute||"").trim();
 
-const name=
-String(
-card.dataset.name||""
-).trim();
+if(!registrationId)continue;
 
-const institute=
-String(
-card.dataset.institute||""
-).trim();
-
-if(!registrationId)
-continue;
-
-const qrCanvas=
-card.querySelector("canvas");
-
-const qrImage=
-card.querySelector("img");
+const qrCanvas=card.querySelector("canvas");
+const qrImage=card.querySelector("img");
 
 let qrDataURL="";
 
 if(qrCanvas){
-
-qrDataURL=
-qrCanvas.toDataURL("image/png");
-
+qrDataURL=qrCanvas.toDataURL("image/png");
 }else if(qrImage){
-
-qrDataURL=
-qrImage.src;
-
+qrDataURL=qrImage.src;
 }
 
 if(!qrDataURL){
-
-console.warn(
-"QR image not found:",
-registrationId
-);
-
+console.warn("QR image not found:",registrationId);
 continue;
-
 }
 
-if(
-i>0&&
-i%cardsPerPage===0
-){
-
+if(i>0&&i%cardsPerPage===0){
 pdf.addPage();
-
 }
 
-const position=
-i%cardsPerPage;
+const position=i%cardsPerPage;
+const column=position%columns;
+const row=Math.floor(position/columns);
 
-const column=
-position%columns;
-
-const row=
-Math.floor(position/columns);
-
-const cellX=
-marginLeft+
-column*cellWidth;
-
-const cellY=
-marginTop+
-row*cellHeight;
-
+const cellX=marginLeft+column*cellWidth;
+const cellY=marginTop+row*cellHeight;
 const cardMargin=2;
 
-pdf.setDrawColor(
-210,210,210
-);
-
+pdf.setDrawColor(210,210,210);
 pdf.setLineWidth(.3);
 
 pdf.roundedRect(
@@ -2676,16 +1218,9 @@ cellHeight-cardMargin*2,
 2,2,"S"
 );
 
-pdf.setFont(
-"helvetica",
-"bold"
-);
-
+pdf.setFont("helvetica","bold");
 pdf.setFontSize(11);
-
-pdf.setTextColor(
-23,54,93
-);
+pdf.setTextColor(23,54,93);
 
 pdf.text(
 registrationId,
@@ -2694,12 +1229,8 @@ cellY+10,
 {align:"center"}
 );
 
-const qrX=
-cellX+
-(cellWidth-qrSize)/2;
-
-const qrY=
-cellY+15;
+const qrX=cellX+(cellWidth-qrSize)/2;
+const qrY=cellY+15;
 
 pdf.addImage(
 qrDataURL,
@@ -2710,22 +1241,13 @@ qrSize,
 qrSize
 );
 
-pdf.setFont(
-"helvetica",
-"bold"
-);
-
+pdf.setFont("helvetica","bold");
 pdf.setFontSize(9);
+pdf.setTextColor(30,30,30);
 
-pdf.setTextColor(
-30,30,30
-);
+const textWidth=cellWidth-10;
 
-const textWidth=
-cellWidth-10;
-
-const nameLines=
-pdf.splitTextToSize(
+const nameLines=pdf.splitTextToSize(
 name,
 textWidth
 );
@@ -2737,19 +1259,11 @@ cellY+76,
 {align:"center"}
 );
 
-pdf.setFont(
-"helvetica",
-"normal"
-);
-
+pdf.setFont("helvetica","normal");
 pdf.setFontSize(7.5);
+pdf.setTextColor(90,90,90);
 
-pdf.setTextColor(
-90,90,90
-);
-
-const instituteLines=
-pdf.splitTextToSize(
+const instituteLines=pdf.splitTextToSize(
 institute,
 textWidth
 );
@@ -2760,19 +1274,13 @@ cellX+cellWidth/2,
 cellY+84,
 {align:"center"}
 );
-
 }
 
-pdf.save(
-"ICEMD-2026-Guest-QR-Codes.pdf"
-);
+pdf.save("ICEMD-2026-Guest-QR-Codes.pdf");
 
 }catch(error){
 
-console.error(
-"QR PDF generation error:",
-error
-);
+console.error("QR PDF generation error:",error);
 
 alert(
 "Unable to generate the QR PDF.\n\n"+
@@ -2782,47 +1290,25 @@ error.message
 }finally{
 
 if(button){
-
 button.disabled=false;
-button.textContent=
-"Download QR PDF";
+button.textContent="Download QR PDF";
 button.style.opacity="1";
 button.style.cursor="pointer";
-
+}
+}
 }
 
-}
-
-}
-
-
-/* =====================================================
-   SESSION CHECK
-===================================================== */
-
+/* SESSION */
 (function(){
 
-const loggedIn=
-sessionStorage.getItem(
-"icemdAdminLoggedIn"
-);
+const loggedIn=sessionStorage.getItem("icemdAdminLoggedIn");
 
 if(loggedIn==="true"){
-
-document
-.getElementById("loginSection")
-.classList.add("hidden");
-
-document
-.getElementById("dashboardSection")
-.classList.remove("hidden");
-
+document.getElementById("loginSection").classList.add("hidden");
+document.getElementById("dashboardSection").classList.remove("hidden");
 }
 
 })();
-
 </script>
-
 </body>
-
 </html>
