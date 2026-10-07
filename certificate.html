@@ -1,1 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ICEMD-2026 Certificate Distribution</title>
 
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+margin:0;
+padding:20px;
+font-family:Arial,sans-serif;
+background:#f5f5f5;
+color:#222
+}
+
+.container{
+max-width:500px;
+margin:0 auto
+}
+
+.card{
+background:white;
+padding:22px;
+border-radius:12px;
+box-shadow:0 3px 12px rgba(0,0,0,.08)
+}
+
+h1{
+text-align:center;
+font-size:24px;
+margin-top:0;
+margin-bottom:5px
+}
+
+h2{
+text-align:center;
+font-size:20px;
+margin-top:10px
+}
+
+.subtitle{
+text-align:center;
+color:#666;
+margin-bottom:25px
+}
+
+label{
+display:block;
+margin-top:15px;
+margin-bottom:6px;
+font-weight:bold
+}
+
+input{
+width:100%;
+padding:12px;
+border:1px solid #ccc;
+border-radius:7px;
+font-size:16px
+}
+
+input:focus{
+outline:none;
+border-color:#17365d
+}
+
+button{
+width:100%;
+padding:14px;
+margin-top:15px;
+border:none;
+border-radius:8px;
+font-size:16px;
+cursor:pointer
+}
+
+button:disabled{
+background:#999!important;
+cursor:not-allowed
+}
+
+.button{
+background:#17365d;
+color:white
+}
+
+.secondary{
+background:#666;
+color:white
+}
+
+.success-button{
+background:#198754;
+color:white
+}
+
+.danger{
+background:#b02a37;
+color:white
+}
+
+.message{
+margin-top:15px;
+padding:12px;
+border-radius:7px;
+text-align:center;
+line-height:1.5;
+display:none
+}
+
+.message.success{
+display:block;
+background:#d4edda;
+color:#155724;
+border:1px solid #b8dfc1
+}
+
+.message.error{
+display:block;
+background:#f8d7da;
+color:#721c24;
+border:1px solid #f1bfc4
+}
+
+.welcome{
+text-align:center;
+font-weight:bold;
+font-size:18px;
+color:#17365d;
+margin-bottom:15px
+}
+
+.scanner-box{
+width:100%;
+margin-top:20px
+}
+
+#qr-reader{
+width:100%
+}
+
+#qr-reader video{
+width:100%!important;
+height:auto!important;
+border-radius:8px
+}
+
+.scan-result{
+display:none;
+margin-top:20px;
+padding:20px;
+border-radius:10px
+}
+
+.scan-accepted{
+display:block;
+background:#d4edda;
+color:#155724;
+border:1px solid #b8dfc1
+}
+
+.scan-duplicate,
+.scan-invalid{
+display:block;
+background:#f8d7da;
+color:#721c24;
+border:1px solid #f1bfc4
+}
+
+.scan-processing{
+display:block;
+background:#eef3f8;
+color:#17365d;
+border:1px solid #c9d5e2
+}
+
+.scan-result h2{
+margin-top:0;
+text-align:center
+}
+
+.scan-result p{
+margin:8px 0;
+font-size:14px;
+line-height:1.5;
+word-break:break-word
+}
+
+.hidden{
+display:none!important
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- LOGIN -->
+
+<div id="loginPage" class="card">
+
+<h1>ICEMD-2026</h1>
+
+<h2>Certificate Distribution</h2>
+
+<p class="subtitle">Assistant Login</p>
+
+<label for="assistantName">Name</label>
+
+<input
+type="text"
+id="assistantName"
+placeholder="Enter your name"
+autocomplete="name"
+>
+
+<label for="assistantEmail">Email ID</label>
+
+<input
+type="email"
+id="assistantEmail"
+placeholder="Enter your email ID"
+autocomplete="email"
+>
+
+<button
+id="continueButton"
+class="button"
+onclick="requestOTP()"
+>
+Continue
+</button>
+
+<button
+class="button secondary"
+onclick="goHome()"
+>
+Back
+</button>
+
+<div id="loginMessage" class="message"></div>
+
+</div>
+
+
+<!-- OTP -->
+
+<div id="otpPage" class="card hidden">
+
+<h1>ICEMD-2026</h1>
+
+<h2>Verify Email</h2>
+
+<p class="subtitle">
+Enter the OTP sent to your email.
+</p>
+
+<label for="otpInput">OTP</label>
+
+<input
+type="text"
+id="otpInput"
+placeholder="Enter OTP"
+inputmode="numeric"
+autocomplete="one-time-code"
+>
+
+<button
+id="verifyButton"
+class="button"
+onclick="verifyOTP()"
+>
+Verify OTP
+</button>
+
+<button
+class="button secondary"
+onclick="backToLogin()"
+>
+Back
+</button>
+
+<div id="otpMessage" class="message"></div>
+
+</div>
+
+
+<!-- SCANNER -->
+
+<div id="scannerPage" class="card hidden">
+
+<h1>ICEMD-2026</h1>
+
+<h2>Certificate Scanner</h2>
+
+<p id="welcomeText" class="welcome"></p>
+
+<div class="scanner-box">
+
+<div id="qr-reader"></div>
+
+</div>
+
+<div
+id="scanResult"
+class="scan-result"
+></div>
+
+<button
+id="startScannerButton"
+class="button success-button"
+onclick="startScanner()"
+>
+Start Scanner
+</button>
+
+<button
+class="button danger"
+onclick="logout()"
+>
+Logout
+</button>
+
+</div>
+
+</div>
+
+
+<script>
+
+const APPS_SCRIPT_URL=
+"https://script.google.com/macros/s/AKfycbxD0VHRLp17LUYiPlYzxPRWwsZUagkVZycolhHfn6Nyt6XN-N2bQD0_uekzWlZc3iOgrA/exec";
+
+
+let assistantName="";
+let assistantEmail="";
+let scanner=null;
+let scannerRunning=false;
+let processingScan=false;
+
+
+function escapeHtml(value){
+return String(value??"")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+}
+
+
+function goHome(){
+window.location.href="index.html";
+}
+
+
+function showMessage(id,message,type){
+const box=document.getElementById(id);
+box.innerText=message;
+box.className=
+"message "+
+(type==="success"?"success":"error");
+}
+
+
+function apiRequest(params,callback){
+
+const callbackName=
+"icemdCertificateCallback_"+
+Date.now()+"_"+
+Math.floor(Math.random()*100000);
+
+const script=document.createElement("script");
+
+let finished=false;
+
+window[callbackName]=function(data){
+
+if(finished)return;
+
+finished=true;
+
+try{
+delete window[callbackName];
+}catch(error){}
+
+if(script.parentNode){
+script.parentNode.removeChild(script);
+}
+
+callback(data);
+
+};
+
+params.callback=callbackName;
+
+const query=new URLSearchParams(params);
+
+script.src=
+APPS_SCRIPT_URL+
+"?"+
+query.toString();
+
+script.onerror=function(){
+
+if(finished)return;
+
+finished=true;
+
+try{
+delete window[callbackName];
+}catch(error){}
+
+if(script.parentNode){
+script.parentNode.removeChild(script);
+}
+
+callback({
+status:"error",
+message:"Unable to connect to the server."
+});
+
+};
+
+document.body.appendChild(script);
+
+}
+
+
+/* REQUEST OTP */
+
+function requestOTP(){
+
+const name=
+document.getElementById("assistantName")
+.value.trim();
+
+const email=
+document.getElementById("assistantEmail")
+.value.trim();
+
+if(!name||!email){
+
+showMessage(
+"loginMessage",
+"Please enter your name and email ID.",
+"error"
+);
+
+return;
+}
+
+assistantName=name;
+assistantEmail=email;
+
+const button=
+document.getElementById("continueButton");
+
+button.disabled=true;
+button.innerText="Sending...";
+
+showMessage(
+"loginMessage",
+"Sending OTP...",
+"success"
+);
+
+apiRequest({
+
+action:"requestOTP",
+name:name,
+email:email
+
+},function(result){
+
+button.disabled=false;
+button.innerText="Continue";
+
+if(result&&result.status==="success"){
+
+document.getElementById("loginPage")
+.classList.add("hidden");
+
+document.getElementById("otpPage")
+.classList.remove("hidden");
+
+showMessage(
+"otpMessage",
+"OTP sent successfully.",
+"success"
+);
+
+}else{
+
+showMessage(
+"loginMessage",
+result&&result.message
+?result.message
+:"Unable to send OTP.",
+"error"
+);
+
+}
+
+});
+
+}
+
+
+/* VERIFY OTP */
+
+function verifyOTP(){
+
+const otp=
+document.getElementById("otpInput")
+.value.trim();
+
+if(!otp){
+
+showMessage(
+"otpMessage",
+"Please enter the OTP.",
+"error"
+);
+
+return;
+}
+
+const button=
+document.getElementById("verifyButton");
+
+button.disabled=true;
+button.innerText="Verifying...";
+
+apiRequest({
+
+action:"verifyOTP",
+name:assistantName,
+email:assistantEmail,
+otp:otp
+
+},function(result){
+
+button.disabled=false;
+button.innerText="Verify OTP";
+
+if(result&&result.status==="success"){
+
+sessionStorage.setItem(
+"icemdCertificateUser",
+assistantName
+);
+
+sessionStorage.setItem(
+"icemdCertificateEmail",
+assistantEmail
+);
+
+document.getElementById("otpPage")
+.classList.add("hidden");
+
+document.getElementById("scannerPage")
+.classList.remove("hidden");
+
+document.getElementById("welcomeText")
+.innerText=
+"Welcome, "+assistantName;
+
+}else{
+
+showMessage(
+"otpMessage",
+result&&result.message
+?result.message
+:"Invalid OTP.",
+"error"
+);
+
+}
+
+});
+
+}
+
+
+/* BACK TO LOGIN */
+
+function backToLogin(){
+
+document.getElementById("otpPage")
+.classList.add("hidden");
+
+document.getElementById("loginPage")
+.classList.remove("hidden");
+
+document.getElementById("otpInput")
+.value="";
+
+document.getElementById("otpMessage")
+.className="message";
+
+document.getElementById("otpMessage")
+.innerText="";
+
+}
+
+
+/* START QR SCANNER */
+
+async function startScanner(){
+
+if(scannerRunning||processingScan)return;
+
+const startButton=
+document.getElementById("startScannerButton");
+
+const resultBox=
+document.getElementById("scanResult");
+
+resultBox.style.display="none";
+resultBox.innerHTML="";
+resultBox.className="scan-result";
+
+startButton.disabled=true;
+
+try{
+
+if(
+!navigator.mediaDevices||
+!navigator.mediaDevices.getUserMedia
+){
+
+throw new Error(
+"Camera access is not supported by this browser."
+);
+
+}
+
+
+/* FORCE CAMERA PERMISSION */
+
+const permissionStream=
+await navigator.mediaDevices.getUserMedia({
+video:{
+facingMode:{
+ideal:"environment"
+}
+},
+audio:false
+});
+
+permissionStream
+.getTracks()
+.forEach(function(track){
+track.stop();
+});
+
+
+scanner=
+new Html5Qrcode("qr-reader");
+
+await scanner.start(
+
+{facingMode:"environment"},
+
+{
+fps:10,
+qrbox:{
+width:250,
+height:250
+}
+},
+
+async function(decodedText){
+
+if(processingScan)return;
+
+processingScan=true;
+
+const registrationID=
+String(decodedText||"").trim();
+
+if(!registrationID){
+
+processingScan=false;
+return;
+
+}
+
+
+/* SHOW PROCESSING IMMEDIATELY */
+
+resultBox.className=
+"scan-result scan-processing";
+
+resultBox.style.display="block";
+
+resultBox.innerHTML=
+"<h2>Verifying QR...</h2>"+
+"<p>Please wait while the certificate record is being checked.</p>";
+
+
+/* STOP CAMERA IMMEDIATELY */
+
+try{
+
+if(scanner){
+await scanner.stop();
+}
+
+}catch(error){
+
+console.error(
+"Scanner stop error:",
+error
+);
+
+}
+
+try{
+
+if(scanner){
+await scanner.clear();
+}
+
+}catch(error){
+
+console.error(
+"Scanner clear error:",
+error
+);
+
+}
+
+scanner=null;
+scannerRunning=false;
+startButton.disabled=false;
+
+processCertificateScan(registrationID);
+
+},
+
+function(errorMessage){}
+
+);
+
+scannerRunning=true;
+
+}catch(error){
+
+console.error(
+"Camera start error:",
+error
+);
+
+scanner=null;
+scannerRunning=false;
+processingScan=false;
+startButton.disabled=false;
+
+resultBox.className=
+"scan-result scan-invalid";
+
+resultBox.style.display="block";
+
+resultBox.innerHTML=
+"<h2>✕ Camera Error</h2>"+
+"<p>"+
+escapeHtml(
+error&&error.message
+?error.message
+:String(error)
+)+
+"</p>"+
+"<p>Please allow camera access and try again.</p>";
+
+}
+
+}
+
+
+/* PROCESS CERTIFICATE */
+
+function processCertificateScan(registrationID){
+
+apiRequest({
+
+action:"scanCertificate",
+registrationId:registrationID,
+distributedBy:assistantName,
+distributedByEmail:assistantEmail
+
+},function(result){
+
+console.log(
+"Certificate response:",
+result
+);
+
+showCertificateResult(result);
+
+processingScan=false;
+
+});
+
+}
+
+
+/* SHOW RESULT */
+
+function showCertificateResult(result){
+
+const box=
+document.getElementById("scanResult");
+
+box.style.display="block";
+box.className="scan-result";
+
+if(!result){
+
+box.classList.add("scan-invalid");
+
+box.innerHTML=
+"<h2>✕ Certificate Scan Error</h2>"+
+"<p>Unable to process this QR code.</p>";
+
+return;
+
+}
+
+
+/* SUCCESS */
+
+if(
+result.status==="success"||
+result.result==="SUCCESS"
+){
+
+box.classList.add("scan-accepted");
+
+box.innerHTML=
+
+"<h2>✓ Certificate Distributed Successfully</h2>"+
+
+"<p><b>Name:</b> "+
+escapeHtml(
+result.name||"Not available"
+)+
+"</p>"+
+
+"<p><b>Email:</b> "+
+escapeHtml(
+result.email||"Not available"
+)+
+"</p>"+
+
+"<p><b>Institute:</b> "+
+escapeHtml(
+result.institute||"Not available"
+)+
+"</p>"+
+
+"<p><b>Registration ID:</b> "+
+escapeHtml(
+result.registrationId||
+result.registrationID||
+"Not available"
+)+
+"</p>"+
+
+"<p><b>Date:</b> "+
+escapeHtml(
+result.date||
+"Not available"
+)+
+"</p>"+
+
+"<p><b>Time:</b> "+
+escapeHtml(
+result.time||
+"Not available"
+)+
+"</p>"+
+
+"<p><b>Distributed By:</b> "+
+escapeHtml(
+result.distributedBy||
+assistantName||
+"Not available"
+)+
+"</p>";
+
+box.scrollIntoView({
+behavior:"smooth",
+block:"start"
+});
+
+return;
+
+}
+
+
+/* FAILED */
+
+if(
+result.status==="error"||
+result.result==="FAILED"
+){
+
+box.classList.add("scan-duplicate");
+
+box.innerHTML=
+
+"<h2>✕ Certificate Not Distributed</h2>"+
+
+"<p><b>Registration ID:</b> "+
+escapeHtml(
+result.registrationId||
+result.registrationID||
+""
+)+
+"</p>"+
+
+"<p><b>Name:</b> "+
+escapeHtml(
+result.name||
+""
+)+
+"</p>"+
+
+"<p><b>Email:</b> "+
+escapeHtml(
+result.email||
+""
+)+
+"</p>"+
+
+"<p><b>Institute:</b> "+
+escapeHtml(
+result.institute||
+""
+)+
+"</p>"+
+
+"<p><b>Reason:</b> "+
+escapeHtml(
+result.message||
+result.reason||
+"Certificate could not be distributed."
+)+
+"</p>"+
+
+"<p><b>Distributed By:</b> "+
+escapeHtml(
+result.distributedBy||
+assistantName||
+""
+)+
+"</p>";
+
+box.scrollIntoView({
+behavior:"smooth",
+block:"start"
+});
+
+return;
+
+}
+
+
+/* UNKNOWN */
+
+box.classList.add("scan-invalid");
+
+box.innerHTML=
+
+"<h2>✕ Scan Error</h2>"+
+
+"<p>"+
+escapeHtml(
+result.message||
+"Unexpected server response."
+)+
+"</p>";
+
+}
+
+
+/* LOGOUT */
+
+async function logout(){
+
+try{
+
+if(scanner){
+
+try{
+await scanner.stop();
+}catch(error){}
+
+try{
+await scanner.clear();
+}catch(error){}
+
+}
+
+}catch(error){}
+
+scanner=null;
+scannerRunning=false;
+processingScan=false;
+
+assistantName="";
+assistantEmail="";
+
+sessionStorage.removeItem(
+"icemdCertificateUser"
+);
+
+sessionStorage.removeItem(
+"icemdCertificateEmail"
+);
+
+document.getElementById("assistantName")
+.value="";
+
+document.getElementById("assistantEmail")
+.value="";
+
+document.getElementById("otpInput")
+.value="";
+
+document.getElementById("scannerPage")
+.classList.add("hidden");
+
+document.getElementById("otpPage")
+.classList.add("hidden");
+
+document.getElementById("loginPage")
+.classList.remove("hidden");
+
+document.getElementById("scanResult")
+.style.display="none";
+
+document.getElementById("scanResult")
+.innerHTML="";
+
+}
+
+
+/* PAGE LOAD */
+
+window.addEventListener(
+"load",
+function(){
+
+const savedUser=
+sessionStorage.getItem(
+"icemdCertificateUser"
+);
+
+const savedEmail=
+sessionStorage.getItem(
+"icemdCertificateEmail"
+);
+
+if(savedUser&&savedEmail){
+
+assistantName=savedUser;
+assistantEmail=savedEmail;
+
+document.getElementById("welcomeText")
+.innerText=
+"Welcome, "+assistantName;
+
+document.getElementById("loginPage")
+.classList.add("hidden");
+
+document.getElementById("scannerPage")
+.classList.remove("hidden");
+
+}
+
+});
+
+</script>
+
+</body>
+</html>
