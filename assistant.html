@@ -524,27 +524,15 @@
     <div id="assistantDetails">
 
 
-      <label for="assistantFirstName">
-        First Name
+      <label for="assistantName">
+        Name
       </label>
 
       <input
         type="text"
-        id="assistantFirstName"
-        placeholder="Enter first name"
-        autocomplete="given-name"
-      >
-
-
-      <label for="assistantLastName">
-        Last Name
-      </label>
-
-      <input
-        type="text"
-        id="assistantLastName"
-        placeholder="Enter last name"
-        autocomplete="family-name"
+        id="assistantName"
+        placeholder="Enter your full name"
+        autocomplete="name"
       >
 
 
@@ -765,7 +753,7 @@
       <input
         type="text"
         id="manualRegistrationID"
-        placeholder="Example: ICEMD26-0001"
+        placeholder="Example: ICEMD2026-0001"
       >
 
 
@@ -803,7 +791,7 @@
 ===================================================== */
 
 const APPS_SCRIPT_URL =
-  "https://script.google.com/a/macros/iitj.ac.in/s/AKfycbwRp-RAfstklkMP7Xmg0f5O46AxMMiODytXNXyJPK0sYHcdOZpNOgZQmYxRQAd66pTv/exec";
+  "https://script.google.com/macros/s/AKfycbxD0VHRLp17LUYiPlYzxPRWwsZUagkVZycolhHfn6Nyt6XN-N2bQD0_uekzWlZc3iOgrA/exec";
 
 
 
@@ -924,19 +912,10 @@ function escapeHtml(
 function requestOTP() {
 
 
-  const firstName =
+  const name =
     document
       .getElementById(
-        "assistantFirstName"
-      )
-      .value
-      .trim();
-
-
-  const lastName =
-    document
-      .getElementById(
-        "assistantLastName"
+        "assistantName"
       )
       .value
       .trim();
@@ -957,14 +936,13 @@ function requestOTP() {
    */
 
   if (
-    !firstName ||
-    !lastName ||
+    !name ||
     !email
   ) {
 
     showMessage(
 
-      "Please enter First Name, Last Name and Email.",
+      "Please enter Name and Email.",
 
       "error"
 
@@ -1185,14 +1163,8 @@ function requestOTP() {
 
 
   params.append(
-    "firstName",
-    firstName
-  );
-
-
-  params.append(
-    "lastName",
-    lastName
+    "name",
+    name
   );
 
 
@@ -1760,12 +1732,51 @@ async function startScanner() {
 
 
     /*
-     * IMPORTANT:
+     * Explicitly request camera permission first.
      *
-     * Keep this camera configuration.
-     *
-     * This is the configuration that
-     * was already working.
+     * This forces the browser to show the
+     * camera permission prompt when permission
+     * has not yet been granted.
+     */
+
+    if (
+      !navigator.mediaDevices ||
+      !navigator.mediaDevices.getUserMedia
+    ) {
+
+      throw new Error(
+        "Camera access is not supported by this browser."
+      );
+
+    }
+
+
+    status.innerText =
+      "Requesting camera permission...\n" +
+      "Please press Allow when the browser asks for camera access.";
+
+
+    const permissionStream =
+      await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: {
+            ideal: "environment"
+          }
+        },
+        audio: false
+      });
+
+
+    permissionStream
+      .getTracks()
+      .forEach(function(track) {
+        track.stop();
+      });
+
+
+    /*
+     * Start the QR scanner after permission
+     * has been granted.
      */
 
     scanner =
@@ -1960,12 +1971,21 @@ async function startScanner() {
       false;
 
 
+    const cameraError =
+      error && error.message
+        ? error.message
+        : String(error);
+
+
     status.innerHTML =
-      "<strong>Camera failed to start.</strong><br><br>" +
-      escapeHtml(
-        error.message ||
-        String(error)
-      );
+      "<strong>Camera could not be started.</strong><br><br>" +
+      escapeHtml(cameraError).replace(/\n/g, "<br>") +
+      "<br><br>" +
+      "If the browser asks for camera permission, " +
+      "<strong>press Allow</strong>.<br>" +
+      "If permission was previously blocked, " +
+      "open the browser site settings and allow Camera, " +
+      "then press Start Scanner again.";
 
   }
 
@@ -2095,25 +2115,19 @@ function sendScanToAppsScript(
 
   params.append(
     "action",
-    "scan"
+    "scanAttendance"
   );
 
 
   params.append(
-    "registrationID",
+    "registrationId",
     registrationID
   );
 
 
   params.append(
-    "assistantName",
+    "scannedBy",
     assistantName
-  );
-
-
-  params.append(
-    "assistantEmail",
-    assistantEmail
   );
 
 
@@ -2204,32 +2218,22 @@ function showScanResult(
   result
 ) {
 
-
   const box =
     document.getElementById(
       "scanResult"
     );
-
 
   const status =
     document.getElementById(
       "scannerStatus"
     );
 
-
   box.style.display =
     "block";
-
 
   box.className =
     "scan-result";
 
-
-  /*
-   * ---------------------------------------------------
-   * NO RESPONSE
-   * ---------------------------------------------------
-   */
 
   if (!result) {
 
@@ -2237,20 +2241,13 @@ function showScanResult(
       "scan-invalid"
     );
 
-
     box.innerHTML =
-
       "<h2>✕ Scan Error</h2>" +
-
-      "<p>" +
-      "Unable to process this QR code." +
-      "</p>";
-
+      "<p>Unable to process this QR code.</p>";
 
     status.innerHTML =
       "Scan could not be processed.<br>" +
       "You may scan the next guest.";
-
 
     return;
 
@@ -2258,66 +2255,53 @@ function showScanResult(
 
 
   /*
-   * ---------------------------------------------------
-   * ACCEPTED
-   * ---------------------------------------------------
+   * Current Apps Script backend returns
+   * result = SUCCESS for a successful scan.
    */
 
   if (
     result.result ===
-    "ACCEPTED"
+    "SUCCESS"
   ) {
-
 
     box.classList.add(
       "scan-accepted"
     );
-
 
     box.innerHTML =
 
       "<h2>✓ Attendance Accepted</h2>" +
 
       "<p><b>Name:</b> " +
-      escapeHtml(
-        result.name
-      ) +
+      escapeHtml(result.name || "") +
       "</p>" +
 
       "<p><b>Email:</b> " +
-      escapeHtml(
-        result.email
-      ) +
+      escapeHtml(result.email || "") +
       "</p>" +
 
       "<p><b>Institute:</b> " +
-      escapeHtml(
-        result.institute
-      ) +
+      escapeHtml(result.institute || "") +
       "</p>" +
 
       "<p><b>Registration ID:</b> " +
       escapeHtml(
-        result.registrationID
+        result.registrationId ||
+        result.registrationID ||
+        ""
       ) +
       "</p>" +
 
       "<p><b>Date:</b> " +
-      escapeHtml(
-        result.date
-      ) +
+      escapeHtml(result.date || "") +
       "</p>" +
 
       "<p><b>Time:</b> " +
-      escapeHtml(
-        result.time
-      ) +
+      escapeHtml(result.time || "") +
       "</p>" +
 
       "<p><b>Scanned By:</b> " +
-      escapeHtml(
-        result.scannedBy
-      ) +
+      escapeHtml(result.scannedBy || currentAssistantName) +
       "</p>";
 
 
@@ -2326,139 +2310,69 @@ function showScanResult(
       "Click <strong>Start Scanner</strong> " +
       "for the next guest.";
 
-
     return;
 
   }
 
 
   /*
-   * ---------------------------------------------------
-   * DUPLICATE
-   * ---------------------------------------------------
+   * Current backend returns FAILED for
+   * duplicate, invalid QR and other rejected scans.
+   * The backend message gives the exact reason.
    */
 
   if (
     result.result ===
-    "DUPLICATE"
+    "FAILED"
   ) {
-
 
     box.classList.add(
       "scan-duplicate"
     );
 
-
     box.innerHTML =
 
-      "<h2>✕ Already Scanned</h2>" +
-
-      "<p><b>Name:</b> " +
-      escapeHtml(
-        result.name
-      ) +
-      "</p>" +
-
-      "<p><b>Email:</b> " +
-      escapeHtml(
-        result.email
-      ) +
-      "</p>" +
-
-      "<p><b>Institute:</b> " +
-      escapeHtml(
-        result.institute
-      ) +
-      "</p>" +
+      "<h2>✕ Attendance Not Accepted</h2>" +
 
       "<p><b>Registration ID:</b> " +
       escapeHtml(
-        result.registrationID
+        result.registrationId ||
+        result.registrationID ||
+        ""
       ) +
       "</p>" +
 
-      "<p><b>First Scan Date:</b> " +
-      escapeHtml(
-        result.firstScanDate
-      ) +
+      "<p><b>Name:</b> " +
+      escapeHtml(result.name || "") +
       "</p>" +
 
-      "<p><b>First Scan Time:</b> " +
+      "<p><b>Reason:</b> " +
       escapeHtml(
-        result.firstScanTime
+        result.message ||
+        "Attendance could not be recorded."
       ) +
       "</p>" +
 
       "<p><b>Scanned By:</b> " +
       escapeHtml(
-        result.scannedBy
+        result.scannedBy ||
+        currentAssistantName
       ) +
       "</p>";
 
 
     status.innerHTML =
-      "This guest has already been marked present.<br>" +
+      "Attendance was not recorded.<br>" +
       "You may scan the next guest.";
-
 
     return;
 
   }
 
-
-  /*
-   * ---------------------------------------------------
-   * INVALID
-   * ---------------------------------------------------
-   */
-
-  if (
-    result.result ===
-    "INVALID"
-  ) {
-
-
-    box.classList.add(
-      "scan-invalid"
-    );
-
-
-    box.innerHTML =
-
-      "<h2>✕ Invalid QR Code</h2>" +
-
-      "<p>" +
-
-      escapeHtml(
-
-        result.message ||
-        "Registration ID not found."
-
-      ) +
-
-      "</p>";
-
-
-    status.innerHTML =
-      "Registration could not be verified.<br>" +
-      "You may scan the next guest.";
-
-
-    return;
-
-  }
-
-
-  /*
-   * ---------------------------------------------------
-   * UNEXPECTED RESPONSE
-   * ---------------------------------------------------
-   */
 
   box.classList.add(
     "scan-invalid"
   );
-
 
   box.innerHTML =
 
@@ -2467,10 +2381,8 @@ function showScanResult(
     "<p>" +
 
     escapeHtml(
-
       result.message ||
       "Unexpected server response."
-
     ) +
 
     "</p>";
@@ -2481,7 +2393,6 @@ function showScanResult(
     "You may scan the next guest.";
 
 }
-
 
 
 /* =====================================================
@@ -2692,15 +2603,7 @@ async function logoutAssistant() {
 
   document
     .getElementById(
-      "assistantFirstName"
-    )
-    .value =
-    "";
-
-
-  document
-    .getElementById(
-      "assistantLastName"
+      "assistantName"
     )
     .value =
     "";
