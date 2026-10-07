@@ -38,6 +38,7 @@ button:disabled{background:#999!important;cursor:not-allowed}
 .scan-accepted{display:block;background:#d4edda;color:#155724;border:1px solid #b8dfc1}
 .scan-duplicate{display:block;background:#f8d7da;color:#721c24;border:1px solid #f1bfc4}
 .scan-invalid{display:block;background:#f8d7da;color:#721c24;border:1px solid #f1bfc4}
+.scan-processing{display:block;background:#eef3f8;color:#17365d;border:1px solid #c9d5e2}
 .scan-result h2{margin-top:0;text-align:center}
 .scan-result p{margin:8px 0;font-size:14px;line-height:1.5;word-break:break-word}
 .hidden{display:none!important}
@@ -142,17 +143,6 @@ class="button success-button"
 onclick="startScanner()"
 >
 Start Scanner
-</button>
-
-
-<!-- STOP -->
-
-<button
-id="stopScannerButton"
-class="button secondary"
-onclick="stopQRScanner()"
->
-Stop Scanner
 </button>
 
 
@@ -446,6 +436,7 @@ document.getElementById("scanResult");
 
 resultBox.style.display="none";
 resultBox.innerHTML="";
+resultBox.className="scan-result";
 
 startButton.disabled=true;
 
@@ -516,6 +507,18 @@ console.log(
 "Food QR detected:",
 registrationID
 );
+
+
+/* SHOW PROCESSING STATE IMMEDIATELY */
+
+resultBox.className="scan-result scan-processing";
+resultBox.style.display="block";
+resultBox.innerHTML=
+"<h2>Verifying QR...</h2>"+
+"<p>Please wait while the food record is being checked.</p>";
+
+
+/* STOP CAMERA IMMEDIATELY AFTER QR CAPTURE */
 
 try{
 
@@ -762,25 +765,29 @@ result.registrationID||
 
 "<p><b>Name:</b> "+
 escapeHtml(
-result.name||""
+result.name||
+""
 )+
 "</p>"+
 
 "<p><b>Email:</b> "+
 escapeHtml(
-result.email||""
+result.email||
+""
 )+
 "</p>"+
 
 "<p><b>Institute:</b> "+
 escapeHtml(
-result.institute||""
+result.institute||
+""
 )+
 "</p>"+
 
 "<p><b>Meal:</b> "+
 escapeHtml(
-result.meal||""
+result.meal||
+""
 )+
 "</p>"+
 
@@ -831,71 +838,29 @@ block:"start"
 }
 
 
-/* STOP SCANNER */
-
-async function stopQRScanner(){
-
-processingScan=false;
-
-if(!scanner){
-
-document.getElementById(
-"startScannerButton"
-).disabled=false;
-
-scannerRunning=false;
-
-return;
-
-}
-
-try{
-
-await scanner.stop();
-
-}catch(error){
-
-console.error(
-"Scanner stop error:",
-error
-);
-
-}
-
-try{
-
-await scanner.clear();
-
-}catch(error){
-
-console.error(
-"Scanner clear error:",
-error
-);
-
-}
-
-scanner=null;
-scannerRunning=false;
-
-document.getElementById(
-"qr-reader"
-).innerHTML="";
-
-document.getElementById(
-"startScannerButton"
-).disabled=false;
-
-}
-
-
 /* LOGOUT */
 
 async function logoutFoodScanner(){
 
 try{
-await stopQRScanner();
+
+if(scanner){
+
+try{
+await scanner.stop();
 }catch(error){}
+
+try{
+await scanner.clear();
+}catch(error){}
+
+}
+
+}catch(error){}
+
+scanner=null;
+scannerRunning=false;
+processingScan=false;
 
 currentScannerName="";
 
@@ -934,10 +899,6 @@ document.getElementById(
 document.getElementById(
 "loginMessage"
 ).innerText="";
-
-processingScan=false;
-scannerRunning=false;
-scanner=null;
 
 }
 
