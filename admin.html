@@ -2,6 +2,7 @@
 <html lang="en">
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <head>
 
@@ -2144,11 +2145,489 @@ function hideGuestUploadProgress() {
 
 }
 
-function generateQRCodes() {
+async function generateQRCodes() {
 
-  alert(
-    "QR code generation will be added next."
-  );
+  try {
+
+    // ---------------------------------------------------------
+    // Load all guests from GUESTS sheet
+    // ---------------------------------------------------------
+
+    const result = await apiRequestPromise({
+      action: "guests"
+    });
+
+    if (!result) {
+
+      alert(
+        "Unable to connect to the server."
+      );
+
+      return;
+    }
+
+    if (result.status !== "success") {
+
+      alert(
+        result.message ||
+        "Unable to load guest records."
+      );
+
+      return;
+    }
+
+    const guests =
+      Array.isArray(result.data)
+        ? result.data
+        : [];
+
+    // ---------------------------------------------------------
+    // Check whether guests exist
+    // ---------------------------------------------------------
+
+    if (guests.length === 0) {
+
+      alert(
+        "No guest registrations are available.\n\n" +
+        "Please upload the Guest Excel file first."
+      );
+
+      return;
+    }
+
+    // ---------------------------------------------------------
+    // Validate Registration IDs
+    // ---------------------------------------------------------
+
+    const invalidGuests =
+      guests.filter(function (guest) {
+
+        return !String(
+          guest["Registration ID"] || ""
+        ).trim();
+
+      });
+
+    if (invalidGuests.length > 0) {
+
+      alert(
+        "Some guest records do not have a Registration ID.\n\n" +
+        "QR generation cannot continue."
+      );
+
+      return;
+    }
+
+    // ---------------------------------------------------------
+    // Generate QR display
+    // ---------------------------------------------------------
+
+    showQRGenerationPanel(guests);
+
+  } catch (error) {
+
+    console.error(
+      "QR generation error:",
+      error
+    );
+
+    alert(
+      "Unable to generate QR codes.\n\n" +
+      error.message
+    );
+
+  }
+
+}
+
+function showQRGenerationPanel(guests) {
+
+  // Remove previous panel if it exists
+  const oldPanel =
+    document.getElementById(
+      "qrGenerationPanel"
+    );
+
+  if (oldPanel) {
+    oldPanel.remove();
+  }
+
+  // ---------------------------------------------------------
+  // Create full-screen overlay
+  // ---------------------------------------------------------
+
+  const overlay =
+    document.createElement("div");
+
+  overlay.id =
+    "qrGenerationPanel";
+
+  overlay.style.position =
+    "fixed";
+
+  overlay.style.left =
+    "0";
+
+  overlay.style.top =
+    "0";
+
+  overlay.style.width =
+    "100%";
+
+  overlay.style.height =
+    "100%";
+
+  overlay.style.background =
+    "#f5f5f5";
+
+  overlay.style.zIndex =
+    "99998";
+
+  overlay.style.overflowY =
+    "auto";
+
+  // ---------------------------------------------------------
+  // Main container
+  // ---------------------------------------------------------
+
+  const container =
+    document.createElement("div");
+
+  container.style.maxWidth =
+    "900px";
+
+  container.style.margin =
+    "0 auto";
+
+  container.style.padding =
+    "20px";
+
+  container.style.boxSizing =
+    "border-box";
+
+  // ---------------------------------------------------------
+  // Header
+  // ---------------------------------------------------------
+
+  const header =
+    document.createElement("div");
+
+  header.style.background =
+    "#ffffff";
+
+  header.style.borderRadius =
+    "12px";
+
+  header.style.padding =
+    "20px";
+
+  header.style.marginBottom =
+    "15px";
+
+  header.style.boxShadow =
+    "0 2px 10px rgba(0,0,0,0.08)";
+
+  header.innerHTML =
+
+    '<h2 style="' +
+    'margin:0 0 8px 0;' +
+    'text-align:center;' +
+    'color:#17365d;' +
+    'font-size:22px;' +
+    '">' +
+
+    'ICEMD-2026 QR Codes' +
+
+    '</h2>' +
+
+    '<p style="' +
+    'margin:0;' +
+    'text-align:center;' +
+    'color:#666;' +
+    'font-size:14px;' +
+    '">' +
+
+    guests.length +
+    ' guest registration(s)' +
+
+    '</p>';
+
+  container.appendChild(header);
+
+  // ---------------------------------------------------------
+  // Action buttons
+  // ---------------------------------------------------------
+
+  const actions =
+    document.createElement("div");
+
+  actions.style.background =
+    "#ffffff";
+
+  actions.style.padding =
+    "15px";
+
+  actions.style.borderRadius =
+    "12px";
+
+  actions.style.marginBottom =
+    "15px";
+
+  actions.style.boxShadow =
+    "0 2px 10px rgba(0,0,0,0.08)";
+
+  actions.style.display =
+    "flex";
+
+  actions.style.gap =
+    "10px";
+
+  actions.style.flexWrap =
+    "wrap";
+
+  actions.style.justifyContent =
+    "center";
+
+  actions.innerHTML =
+
+    '<button id="qrDownloadButton" ' +
+    'style="' +
+    'background:#17365d;' +
+    'color:white;' +
+    'border:none;' +
+    'padding:12px 20px;' +
+    'border-radius:8px;' +
+    'font-size:15px;' +
+    'cursor:pointer;' +
+    '">' +
+
+    'Download QR PDF' +
+
+    '</button>' +
+
+    '<button id="qrCloseButton" ' +
+    'style="' +
+    'background:#777;' +
+    'color:white;' +
+    'border:none;' +
+    'padding:12px 20px;' +
+    'border-radius:8px;' +
+    'font-size:15px;' +
+    'cursor:pointer;' +
+    '">' +
+
+    'Close' +
+
+    '</button>';
+
+  container.appendChild(actions);
+
+  // ---------------------------------------------------------
+  // QR grid
+  // ---------------------------------------------------------
+
+  const grid =
+    document.createElement("div");
+
+  grid.id =
+    "qrPreviewGrid";
+
+  grid.style.display =
+    "grid";
+
+  grid.style.gridTemplateColumns =
+    "repeat(auto-fit, minmax(220px, 1fr))";
+
+  grid.style.gap =
+    "15px";
+
+  container.appendChild(grid);
+
+  overlay.appendChild(container);
+
+  document.body.appendChild(overlay);
+
+  // ---------------------------------------------------------
+  // Generate QR codes
+  // ---------------------------------------------------------
+
+  guests.forEach(function (guest, index) {
+
+    const registrationId =
+      String(
+        guest["Registration ID"] || ""
+      ).trim();
+
+    const name =
+      String(
+        guest["Name"] || ""
+      ).trim();
+
+    const institute =
+      String(
+        guest["Institute"] || ""
+      ).trim();
+
+    // Card
+    const card =
+      document.createElement("div");
+
+    card.className =
+      "icemd-qr-card";
+
+    card.dataset.registrationId =
+      registrationId;
+
+    card.dataset.name =
+      name;
+
+    card.dataset.institute =
+      institute;
+
+    card.style.background =
+      "#ffffff";
+
+    card.style.borderRadius =
+      "12px";
+
+    card.style.padding =
+      "18px";
+
+    card.style.textAlign =
+      "center";
+
+    card.style.boxShadow =
+      "0 2px 8px rgba(0,0,0,0.08)";
+
+    // Registration ID
+    const idElement =
+      document.createElement("div");
+
+    idElement.style.fontWeight =
+      "bold";
+
+    idElement.style.color =
+      "#17365d";
+
+    idElement.style.fontSize =
+      "16px";
+
+    idElement.style.marginBottom =
+      "10px";
+
+    idElement.textContent =
+      registrationId;
+
+    card.appendChild(idElement);
+
+    // QR container
+    const qrContainer =
+      document.createElement("div");
+
+    qrContainer.className =
+      "icemd-qr-code";
+
+    qrContainer.style.width =
+      "180px";
+
+    qrContainer.style.height =
+      "180px";
+
+    qrContainer.style.margin =
+      "0 auto 12px auto";
+
+    card.appendChild(qrContainer);
+
+    // Name
+    const nameElement =
+      document.createElement("div");
+
+    nameElement.style.fontWeight =
+      "bold";
+
+    nameElement.style.fontSize =
+      "15px";
+
+    nameElement.style.marginBottom =
+      "4px";
+
+    nameElement.textContent =
+      name;
+
+    card.appendChild(nameElement);
+
+    // Institute
+    const instituteElement =
+      document.createElement("div");
+
+    instituteElement.style.fontSize =
+      "13px";
+
+    instituteElement.style.color =
+      "#666";
+
+    instituteElement.textContent =
+      institute;
+
+    card.appendChild(instituteElement);
+
+    grid.appendChild(card);
+
+    // -------------------------------------------------------
+    // Generate QR
+    //
+    // IMPORTANT:
+    // QR contains ONLY Registration ID
+    // -------------------------------------------------------
+
+    new QRCode(
+      qrContainer,
+      {
+        text: registrationId,
+
+        width: 180,
+
+        height: 180,
+
+        correctLevel:
+          QRCode.CorrectLevel.H
+      }
+    );
+
+  });
+
+  // ---------------------------------------------------------
+  // Close
+  // ---------------------------------------------------------
+
+  document
+    .getElementById("qrCloseButton")
+    .addEventListener(
+      "click",
+      function () {
+
+        overlay.remove();
+
+      }
+    );
+
+  // ---------------------------------------------------------
+  // PDF button
+  // ---------------------------------------------------------
+
+  document
+    .getElementById("qrDownloadButton")
+    .addEventListener(
+      "click",
+      function () {
+
+        alert(
+          "QR codes have been generated successfully.\n\n" +
+          "The A4 QR PDF download will be added in the next step."
+        );
+
+      }
+    );
 
 }
 
