@@ -3,6 +3,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <head>
 
@@ -2619,24 +2620,373 @@ function showQRGenerationPanel(guests) {
     .getElementById("qrDownloadButton")
     .addEventListener(
       "click",
-      function () {
-
-        alert(
-          "QR codes have been generated successfully.\n\n" +
-          "The A4 QR PDF download will be added in the next step."
-        );
-
-      }
+      downloadQRPDF
     );
 
 }
 
 
-function downloadQRPDF() {
+async function downloadQRPDF() {
 
-  alert(
-    "QR PDF download will be added after QR generation."
-  );
+  const qrCards =
+    Array.from(
+      document.querySelectorAll(".icemd-qr-card")
+    );
+
+  if (!qrCards.length) {
+
+    alert(
+      "Please click \"Generate QR Codes\" first."
+    );
+
+    return;
+  }
+
+  const button =
+    document.getElementById("qrDownloadButton");
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Preparing PDF...";
+    button.style.opacity = "0.7";
+    button.style.cursor = "wait";
+  }
+
+  try {
+
+    if (
+      !window.jspdf ||
+      !window.jspdf.jsPDF
+    ) {
+      throw new Error(
+        "PDF library could not be loaded. Please refresh the page and try again."
+      );
+    }
+
+    const jsPDF =
+      window.jspdf.jsPDF;
+
+    const pdf =
+      new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+        compress: true
+      });
+
+    // -------------------------------------------------------
+    // A4 portrait dimensions
+    // -------------------------------------------------------
+
+    const pageWidth = 210;
+    const pageHeight = 297;
+
+    // -------------------------------------------------------
+    // Page margins
+    // -------------------------------------------------------
+
+    const marginLeft = 10;
+    const marginRight = 10;
+    const marginTop = 10;
+    const marginBottom = 10;
+
+    // -------------------------------------------------------
+    // SIX QR CODES PER PAGE
+    // 2 columns × 3 rows
+    // -------------------------------------------------------
+
+    const columns = 2;
+    const rows = 3;
+    const cardsPerPage = 6;
+
+    const usableWidth =
+      pageWidth -
+      marginLeft -
+      marginRight;
+
+    const usableHeight =
+      pageHeight -
+      marginTop -
+      marginBottom;
+
+    const cellWidth =
+      usableWidth / columns;
+
+    const cellHeight =
+      usableHeight / rows;
+
+    // Large QR for reliable scanning
+    const qrSize = 55;
+
+    // -------------------------------------------------------
+    // Process each guest
+    // -------------------------------------------------------
+
+    for (
+      let i = 0;
+      i < qrCards.length;
+      i++
+    ) {
+
+      const card =
+        qrCards[i];
+
+      const registrationId =
+        String(
+          card.dataset.registrationId || ""
+        ).trim();
+
+      const name =
+        String(
+          card.dataset.name || ""
+        ).trim();
+
+      const institute =
+        String(
+          card.dataset.institute || ""
+        ).trim();
+
+      if (!registrationId) {
+        continue;
+      }
+
+      // -----------------------------------------------------
+      // Find generated QR canvas
+      // -----------------------------------------------------
+
+      const qrCanvas =
+        card.querySelector("canvas");
+
+      const qrImage =
+        card.querySelector("img");
+
+      let qrDataURL = "";
+
+      if (qrCanvas) {
+
+        qrDataURL =
+          qrCanvas.toDataURL("image/png");
+
+      } else if (qrImage) {
+
+        qrDataURL =
+          qrImage.src;
+
+      }
+
+      if (!qrDataURL) {
+
+        console.warn(
+          "QR image not found:",
+          registrationId
+        );
+
+        continue;
+      }
+
+      // -----------------------------------------------------
+      // Start a new page after every 6 QR codes
+      // -----------------------------------------------------
+
+      if (
+        i > 0 &&
+        i % cardsPerPage === 0
+      ) {
+        pdf.addPage();
+      }
+
+      const position =
+        i % cardsPerPage;
+
+      const column =
+        position % columns;
+
+      const row =
+        Math.floor(
+          position / columns
+        );
+
+      const cellX =
+        marginLeft +
+        column * cellWidth;
+
+      const cellY =
+        marginTop +
+        row * cellHeight;
+
+      // -----------------------------------------------------
+      // Card border
+      // -----------------------------------------------------
+
+      const cardMargin = 2;
+
+      pdf.setDrawColor(
+        210,
+        210,
+        210
+      );
+
+      pdf.setLineWidth(0.3);
+
+      pdf.roundedRect(
+        cellX + cardMargin,
+        cellY + cardMargin,
+        cellWidth -
+          cardMargin * 2,
+        cellHeight -
+          cardMargin * 2,
+        2,
+        2,
+        "S"
+      );
+
+      // -----------------------------------------------------
+      // Registration ID
+      // -----------------------------------------------------
+
+      pdf.setFont(
+        "helvetica",
+        "bold"
+      );
+
+      pdf.setFontSize(11);
+
+      pdf.setTextColor(
+        23,
+        54,
+        93
+      );
+
+      pdf.text(
+        registrationId,
+        cellX + cellWidth / 2,
+        cellY + 10,
+        {
+          align: "center"
+        }
+      );
+
+      // -----------------------------------------------------
+      // QR CODE
+      // -----------------------------------------------------
+
+      const qrX =
+        cellX +
+        (cellWidth - qrSize) / 2;
+
+      const qrY =
+        cellY + 15;
+
+      pdf.addImage(
+        qrDataURL,
+        "PNG",
+        qrX,
+        qrY,
+        qrSize,
+        qrSize
+      );
+
+      // -----------------------------------------------------
+      // Guest name
+      // -----------------------------------------------------
+
+      pdf.setFont(
+        "helvetica",
+        "bold"
+      );
+
+      pdf.setFontSize(9);
+
+      pdf.setTextColor(
+        30,
+        30,
+        30
+      );
+
+      const textWidth =
+        cellWidth - 10;
+
+      const nameLines =
+        pdf.splitTextToSize(
+          name,
+          textWidth
+        );
+
+      pdf.text(
+        nameLines.slice(0, 2),
+        cellX + cellWidth / 2,
+        cellY + 76,
+        {
+          align: "center"
+        }
+      );
+
+      // -----------------------------------------------------
+      // Institute
+      // -----------------------------------------------------
+
+      pdf.setFont(
+        "helvetica",
+        "normal"
+      );
+
+      pdf.setFontSize(7.5);
+
+      pdf.setTextColor(
+        90,
+        90,
+        90
+      );
+
+      const instituteLines =
+        pdf.splitTextToSize(
+          institute,
+          textWidth
+        );
+
+      pdf.text(
+        instituteLines.slice(0, 2),
+        cellX + cellWidth / 2,
+        cellY + 84,
+        {
+          align: "center"
+        }
+      );
+
+    }
+
+    // -------------------------------------------------------
+    // Download
+    // -------------------------------------------------------
+
+    pdf.save(
+      "ICEMD-2026-Guest-QR-Codes.pdf"
+    );
+
+  } catch (error) {
+
+    console.error(
+      "QR PDF generation error:",
+      error
+    );
+
+    alert(
+      "Unable to generate the QR PDF.\n\n" +
+      error.message
+    );
+
+  } finally {
+
+    if (button) {
+
+      button.disabled = false;
+      button.textContent = "Download QR PDF";
+      button.style.opacity = "1";
+      button.style.cursor = "pointer";
+
+    }
+
+  }
 
 }
 
