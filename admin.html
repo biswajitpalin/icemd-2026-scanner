@@ -2301,6 +2301,12 @@ guests.length+
 
 if(!confirmed)return;
 
+try{
+const rowMap={};
+guests.forEach(function(guest,index){const email=String(guest.Email||"").trim().toLowerCase();if(email)rowMap[email]=index+2;});
+localStorage.setItem("icemdParticipantExcelRowByEmail",JSON.stringify(rowMap));
+}catch(rowMapError){}
+
 const BATCH_SIZE=20;
 
 let totalRecords=guests.length;
@@ -2417,6 +2423,8 @@ allErrors.push(error);
 }
 
 hideGuestUploadProgress();
+
+try{localStorage.setItem("icemdLastParticipantImportReport",JSON.stringify({totalRecords:totalRecords,newRegistrations:newRegistrations,skippedDuplicates:skippedDuplicates,errors:allErrors}));}catch(storageError){}
 
 let message=
 "Upload completed successfully.\n\n"+
@@ -2693,6 +2701,12 @@ guests.length+
 
 if(!confirmed)return;
 
+try{
+const rowMap={};
+guests.forEach(function(guest,index){const email=String(guest.Email||"").trim().toLowerCase();if(email)rowMap[email]=index+2;});
+localStorage.setItem("icemdInvitedExcelRowByEmail",JSON.stringify(rowMap));
+}catch(rowMapError){}
+
 showGenericUploadProgress(
 0,
 guests.length,
@@ -2771,6 +2785,8 @@ result&&result.message
 }
 
 hideGenericUploadProgress();
+
+try{localStorage.setItem("icemdLastInvitedImportReport",JSON.stringify({totalRecords:guests.length,added:added,skipped:skipped,errors:errorDetails}));}catch(storageError){}
 
 let message=
 "Invited guest upload completed.\n\n"+
@@ -4157,842 +4173,108 @@ messageBox.textContent=
    ===================================================== */
 
 async function generateQRCodes(){
-
-try{
-
-const participantResult=
-await apiRequestPromise({
-
-action:"guests",
-_cache:Date.now()
-
-});
-
-const invitedResult=
-await apiRequestPromise({
-
-action:"getInvitedGuests",
-_cache:Date.now()
-
-});
-
-if(
-!participantResult||
-participantResult.status!=="success"
-){
-
-alert(
-participantResult&&
-participantResult.message
-?participantResult.message
-:"Unable to load participants."
-);
-
-return;
-
+  try{
+    const results=await Promise.all([
+      apiRequestPromise({action:"guests",_cache:Date.now()}),
+      apiRequestPromise({action:"getInvitedGuests",_cache:Date.now()})
+    ]);
+    if(!results[0]||results[0].status!=="success"){
+      alert(results[0]&&results[0].message?results[0].message:"Unable to load participants.");return;
+    }
+    if(!results[1]||results[1].status!=="success"){
+      alert(results[1]&&results[1].message?results[1].message:"Unable to load invited guests.");return;
+    }
+    const participants=(Array.isArray(results[0].data)?results[0].data:[]).map(function(g){return{
+      guestType:"GUEST",id:String(g["Registration ID"]||"").trim(),name:String(g["Name"]||"").trim(),email:String(g["Email"]||"").trim(),institute:String(g["Institute"]||"").trim(),storedQR:String(g["QR Code"]||"").trim()
+    };});
+    const invited=(Array.isArray(results[1].data)?results[1].data:[]).map(function(g){return{
+      guestType:"INVITED",id:String(g["ID"]||g["Registration ID"]||"").trim(),name:String(g["Name"]||"").trim(),email:String(g["Email"]||"").trim(),institute:String(g["Institute"]||"").trim(),storedQR:String(g["QR Code"]||"").trim()
+    };});
+    if(!participants.length&&!invited.length){alert("No participant or invited guest records are available. Please upload the Excel files first.");return;}
+    showQRGenerationPanel(participants,invited);
+  }catch(error){console.error("QR generation error:",error);alert("Unable to load QR records.\n\n"+(error.message||String(error)));}
 }
 
-if(
-!invitedResult||
-invitedResult.status!=="success"
-){
+function showQRGenerationPanel(participants,invitedGuests){
+  const oldPanel=document.getElementById("qrGenerationPanel");if(oldPanel)oldPanel.remove();
+  participants=Array.isArray(participants)?participants:[];invitedGuests=Array.isArray(invitedGuests)?invitedGuests:[];
+  const overlay=document.createElement("div");overlay.id="qrGenerationPanel";
+  Object.assign(overlay.style,{position:"fixed",left:"0",top:"0",width:"100%",height:"100%",background:"#f5f5f5",zIndex:"99998",overflowY:"auto"});
+  const container=document.createElement("div");Object.assign(container.style,{maxWidth:"1200px",margin:"0 auto",padding:"20px",boxSizing:"border-box"});
 
-alert(
-invitedResult&&
-invitedResult.message
-?invitedResult.message
-:"Unable to load invited guests."
-);
+  const header=document.createElement("div");Object.assign(header.style,{background:"#fff",borderRadius:"16px",padding:"22px",marginBottom:"15px",boxShadow:"0 2px 10px rgba(0,0,0,.08)"});
+  const title=document.createElement("h2");title.textContent="ICEMD-2026 QR Codes";title.style.cssText="margin:0 0 8px;text-align:center;color:#17365d;font-size:28px";
+  const subtitle=document.createElement("p");subtitle.textContent=participants.length+" participant(s) + "+invitedGuests.length+" invited guest(s)";subtitle.style.cssText="margin:0;text-align:center;color:#666;font-size:17px";
+  header.append(title,subtitle);container.appendChild(header);
 
-return;
+  const summaries=document.createElement("div");summaries.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:15px;margin-bottom:15px";container.appendChild(summaries);
+  const actionMessage=document.createElement("div");actionMessage.id="qrForceMessage";actionMessage.style.cssText="display:none;margin-bottom:15px;padding:12px;border-radius:8px;line-height:1.5;white-space:pre-wrap";container.appendChild(actionMessage);
+  const actions=document.createElement("div");actions.style.cssText="background:#fff;padding:18px;border-radius:14px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,.08);display:flex;gap:10px;flex-wrap:wrap;justify-content:center";
+  actions.innerHTML='<button id="qrForceGenerateButton" style="background:#b45309;color:white;border:none;padding:13px 20px;border-radius:9px;font-size:16px;cursor:pointer;font-weight:bold">Force Generate QR</button><button id="qrDownloadButton" style="background:#17365d;color:white;border:none;padding:13px 20px;border-radius:9px;font-size:16px;cursor:pointer">Download QR PDF</button><button id="qrCloseButton" style="background:#777;color:white;border:none;padding:13px 20px;border-radius:9px;font-size:16px;cursor:pointer">Close</button>';
+  container.appendChild(actions);
+  const grid=document.createElement("div");grid.id="qrPreviewGrid";grid.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px";container.appendChild(grid);
+  overlay.appendChild(container);document.body.appendChild(overlay);
 
+  const records=[];
+  const stats={PARTICIPANT:{total:participants.length,success:0,failed:0,failures:[]},INVITED:{total:invitedGuests.length,success:0,failed:0,failures:[]}};
+  let participantRows={},invitedRows={};
+  try{participantRows=JSON.parse(localStorage.getItem("icemdParticipantExcelRowByEmail")||"{}");}catch(e){}
+  try{invitedRows=JSON.parse(localStorage.getItem("icemdInvitedExcelRowByEmail")||"{}");}catch(e){}
+
+  function showActionMessage(text,type){actionMessage.style.display="block";actionMessage.style.background=type==="error"?"#ffebee":type==="success"?"#e8f5e9":"#eaf2f8";actionMessage.style.color=type==="error"?"#c62828":type==="success"?"#2e7d32":"#17365d";actionMessage.textContent=text;}
+  function renderSummary(){
+    summaries.innerHTML="";
+    [{key:"PARTICIPANT",label:"Participant QR Summary",reportKey:"icemdLastParticipantImportReport"},{key:"INVITED",label:"Invited Guest QR Summary",reportKey:"icemdLastInvitedImportReport"}].forEach(function(group){
+      const stat=stats[group.key],panel=document.createElement("section");panel.style.cssText="background:#fff;border-radius:14px;padding:17px;box-shadow:0 2px 10px rgba(0,0,0,.08);min-width:0";
+      const heading=document.createElement("h3");heading.textContent=group.label;heading.style.cssText="margin:0 0 12px;color:#17365d;font-size:17px;text-align:center";panel.appendChild(heading);
+      const nums=document.createElement("div");nums.style.cssText="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;text-align:center";
+      [{label:"Total",value:stat.total,color:"#17365d"},{label:"Generated / Stored",value:stat.success,color:"#2e7d32"},{label:"Failed / Missing",value:stat.failed,color:"#c62828"}].forEach(function(v){const cell=document.createElement("div");cell.style.cssText="background:#f5f5f5;border-radius:8px;padding:10px 4px";const n=document.createElement("div");n.textContent=String(v.value);n.style.cssText="font-weight:bold;font-size:23px;color:"+v.color;const l=document.createElement("div");l.textContent=v.label;l.style.cssText="font-size:11px;color:#666;margin-top:4px";cell.append(n,l);nums.appendChild(cell);});panel.appendChild(nums);
+      const details=document.createElement("div");details.style.cssText="margin-top:12px;font-size:12px;line-height:1.5;color:#444;max-height:180px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere";
+      if(stat.failures.length){details.style.color="#b71c1c";details.textContent="Records not generated (Excel row is used when matched to the latest upload; otherwise sheet row):\n"+stat.failures.map(function(f){return (f.rowLabel||"Row")+" "+f.row+" — "+(f.id||"No ID")+" — "+(f.name||"Unnamed")+" — "+f.reason;}).join("\n");}
+      else{details.style.color=stat.total?"#2e7d32":"#666";details.textContent=stat.total?"All records have a QR code stored successfully.":"No records in this category.";}
+      panel.appendChild(details);
+      try{const report=JSON.parse(sessionStorage.getItem(group.reportKey)||"null");if(report&&Array.isArray(report.errors)&&report.errors.length){const importBox=document.createElement("div");importBox.style.cssText="margin-top:10px;padding:10px;border-radius:7px;background:#fff3e0;color:#8a4b08;font-size:12px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere";importBox.textContent="Last Excel upload issues ("+report.errors.length+"):\n"+report.errors.map(function(e){return e.row?"Excel row "+e.row+": "+(e.reason||"Unknown error"):e.batch?"Batch "+e.batch+": "+(e.reason||"Unknown error"):"Import: "+(e.reason||"Unknown error");}).join("\n");panel.appendChild(importBox);}}catch(e){}
+      summaries.appendChild(panel);
+    });
+  }
+
+  function makeCard(record,index){
+    const card=document.createElement("div");card.className="icemd-qr-card";card.dataset.registrationId=record.id;card.dataset.name=record.name;card.dataset.institute=record.institute;card.dataset.guestType=record.guestType;
+    card.style.cssText="background:#fff;border-radius:15px;padding:20px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.08);min-width:0";
+    const typeLabel=document.createElement("div");typeLabel.textContent=record.type==="PARTICIPANT"?"PARTICIPANT":"INVITED GUEST";typeLabel.style.cssText="font-size:13px;font-weight:bold;letter-spacing:.4px;color:#666;margin-bottom:6px";
+    const idElement=document.createElement("div");idElement.textContent=record.id||"NO REGISTRATION ID";idElement.style.cssText="font-weight:bold;color:#17365d;font-size:17px;margin-bottom:12px;overflow-wrap:anywhere";card.append(typeLabel,idElement);
+    const qrContainer=document.createElement("div");qrContainer.className="icemd-qr-code";qrContainer.style.cssText="width:180px;height:180px;margin:0 auto 12px";card.appendChild(qrContainer);
+    const nameElement=document.createElement("div");nameElement.textContent=record.name||"Name missing";nameElement.style.cssText="font-weight:bold;font-size:17px;margin-bottom:4px;overflow-wrap:anywhere";
+    const instituteElement=document.createElement("div");instituteElement.textContent=record.institute||"";instituteElement.style.cssText="font-size:14px;color:#666;overflow-wrap:anywhere";card.append(nameElement,instituteElement);
+    const saveStatus=document.createElement("div");saveStatus.style.cssText="font-size:13px;margin-top:10px;color:#666;line-height:1.4";
+    const saveButton=document.createElement("button");saveButton.type="button";saveButton.style.cssText="margin-top:10px;width:100%;padding:11px;border:none;border-radius:8px;background:#17365d;color:#fff;font-size:14px;cursor:pointer";
+    const emailStatus=document.createElement("div");emailStatus.className="email-status email-unsent";emailStatus.textContent="Checking QR email status...";
+    const emailButton=document.createElement("button");emailButton.type="button";emailButton.className="qr-email-button";emailButton.textContent=record.storedQR?"Send QR Email":"Store QR before sending";emailButton.disabled=!record.storedQR;card.append(saveStatus,saveButton,emailStatus,emailButton);grid.appendChild(card);
+    let isStored=!!record.storedQR,isFailed=false,isSaving=false;
+    const item={record:record,card:card,saveButton:saveButton,get isStored(){return isStored;},get isFailed(){return isFailed;},get isSaving(){return isSaving;}};records.push(item);
+    function markStored(){isStored=true;isFailed=false;saveStatus.style.color="#2e7d32";saveStatus.textContent="✓ QR generated and stored successfully";saveButton.textContent="✓ Stored";saveButton.disabled=true;saveButton.style.background="#2e7d32";saveButton.style.cursor="default";emailButton.disabled=false;emailButton.textContent="Send QR Email";renderSummary();}
+    function markFailed(reason){const alreadyFailed=isFailed;isSaving=false;isFailed=true;saveStatus.style.color="#c62828";saveStatus.textContent="✗ QR generation/storage failed: "+reason;saveButton.disabled=false;saveButton.textContent="Retry QR Generation";saveButton.style.background="#b91c1c";saveButton.style.cursor="pointer";const stat=stats[record.type];if(!alreadyFailed)stat.failed++;stat.failures=stat.failures.filter(function(f){return f.id!==record.id;});stat.failures.push({row:record.row,rowLabel:record.rowLabel,id:record.id,name:record.name,reason:reason});renderSummary();}
+    function generateAndStore(){if(isSaving||isStored)return;if(!record.id){markFailed("Registration ID is missing.");return;}isSaving=true;saveButton.disabled=true;saveButton.textContent="Generating...";saveStatus.style.color="#17365d";saveStatus.textContent="Generating QR and saving to Google Sheet...";let dataURL="";try{const canvas=qrContainer.querySelector("canvas"),img=qrContainer.querySelector("img");if(canvas)dataURL=canvas.toDataURL("image/png");else if(img)dataURL=img.src;}catch(e){markFailed("Could not read the QR image: "+(e.message||String(e)));return;}if(!dataURL){markFailed("QR image was not created by the QR library.");return;}
+      const params={action:record.guestType==="GUEST"?"saveGuestQR":"saveInvitedGuestQR",qrCode:dataURL,_cache:Date.now()};if(record.guestType==="GUEST")params.registrationId=record.id;else params.id=record.id;
+      apiRequest(params,function(result){isSaving=false;if(result&&result.status==="success"){if(isFailed){const st=stats[record.type];st.failed=Math.max(0,st.failed-1);st.failures=st.failures.filter(function(f){return f.id!==record.id;});}stats[record.type].success++;markStored();}else{markFailed(result&&result.message?result.message:"Server rejected the QR storage request.");}});
+    }
+    saveButton.onclick=generateAndStore;
+    emailButton.onclick=function(){if(!isStored)return;emailButton.disabled=true;emailButton.textContent="Sending...";const params=record.guestType==="GUEST"?{action:"sendGuestQREmail",registrationId:record.id,_cache:Date.now()}:{action:"sendInvitedGuestQREmail",id:record.id,_cache:Date.now()};apiRequest(params,function(result){if(result&&result.status==="success"){emailButton.textContent="✓ SENT";emailButton.style.background="#2e7d32";emailStatus.className="email-status email-sent";emailStatus.textContent="✓ QR email SENT";}else{emailButton.disabled=false;emailButton.textContent="Send QR Email";emailStatus.className="email-status email-failed";emailStatus.textContent=result&&result.message?result.message:"QR email failed; retry is available.";}});};
+    if(isStored){saveStatus.style.color="#2e7d32";saveStatus.textContent="✓ QR already stored — will not be overwritten";saveButton.textContent="✓ Stored";saveButton.disabled=true;saveButton.style.background="#2e7d32";emailButton.disabled=false;stats[record.type].success++;
+      apiRequest({action:"getQREmailStatus",id:record.id,guestType:record.guestType,_cache:Date.now()},function(result){if(result&&result.status==="success"){const state=String(result.statusText||"UNSENT").toUpperCase();if(state==="SENT"){emailStatus.className="email-status email-sent";emailStatus.textContent="✓ QR email SENT";emailButton.textContent="✓ SENT";emailButton.style.background="#2e7d32";}else if(state==="FAILED"){emailStatus.className="email-status email-failed";emailStatus.textContent="✗ Previous send FAILED — retry available";}else{emailStatus.className="email-status email-unsent";emailStatus.textContent="QR email UNSENT";}}});
+    }else if(!record.id){stats[record.type].failed++;isFailed=true;stats[record.type].failures.push({row:record.row,rowLabel:record.rowLabel,id:record.id,name:record.name,reason:"Registration ID is missing."});saveStatus.style.color="#c62828";saveStatus.textContent="✗ Registration ID is missing.";saveButton.textContent="Cannot generate QR";saveButton.disabled=true;
+    }else{stats[record.type].failed++;stats[record.type].failures.push({row:record.row,rowLabel:record.rowLabel,id:record.id,name:record.name,reason:"QR not stored yet; generation pending"});stats[record.type].failed--;stats[record.type].failures=stats[record.type].failures.filter(function(f){return f.id!==record.id;});setTimeout(generateAndStore,250+index*20);}
+    try{new QRCode(qrContainer,{text:record.id||"MISSING-ID",width:180,height:180,correctLevel:QRCode.CorrectLevel.H});}catch(error){if(!isStored)markFailed("QR library error: "+(error.message||String(error)));}
+  }
+
+  participants.forEach(function(r,i){const email=String(r.email||"").trim().toLowerCase();const excelRow=participantRows[email];makeCard({type:"PARTICIPANT",guestType:"GUEST",id:r.id,name:r.name,email:email,institute:r.institute,storedQR:r.storedQR,row:excelRow||i+2,rowLabel:excelRow?"Excel row":"Sheet row"},i);});
+  invitedGuests.forEach(function(r,i){const email=String(r.email||"").trim().toLowerCase();const excelRow=invitedRows[email];makeCard({type:"INVITED",guestType:"INVITED",id:r.id,name:r.name,email:email,institute:r.institute,storedQR:r.storedQR,row:excelRow||i+2,rowLabel:excelRow?"Excel row":"Sheet row"},participants.length+i);});
+  renderSummary();
+
+  document.getElementById("qrForceGenerateButton").addEventListener("click",function(){const button=this;const pending=records.filter(function(item){return !item.isStored&&!item.isSaving&&item.record.id;});if(!pending.length){showActionMessage("No missing or failed QR codes were found. All successfully stored QR codes were left unchanged.","success");return;}if(!confirm("Force Generate QR will retry only missing or failed QR codes. Already stored QR codes will not be changed.\n\nRecords to retry: "+pending.length+"\n\nContinue?"))return;button.disabled=true;button.textContent="Retrying missing QR codes...";showActionMessage("Retrying "+pending.length+" missing/failed QR code(s). Successfully stored QR codes are being left unchanged.","info");pending.forEach(function(item){item.saveButton.click();});const started=Date.now();const watcher=setInterval(function(){const running=records.some(function(item){return item.isSaving;});if(!running||Date.now()-started>120000){clearInterval(watcher);button.disabled=false;button.textContent="Force Generate QR";const failed=records.filter(function(item){return !item.isStored&&!item.isSaving;});showActionMessage("Force generation attempt finished.\nSuccessfully stored: "+records.filter(function(item){return item.isStored;}).length+"\nStill missing/failed: "+failed.length+"\nReview the separate summaries above for row numbers and failure reasons.",failed.length?"error":"success");}},500);});
+  document.getElementById("qrCloseButton").addEventListener("click",function(){overlay.remove();});
+  document.getElementById("qrDownloadButton").addEventListener("click",downloadQRPDF);
 }
-
-const participants=
-Array.isArray(
-participantResult.data
-)
-?participantResult.data
-:[];
-
-const invited=
-Array.isArray(
-invitedResult.data
-)
-?invitedResult.data
-:[];
-
-if(
-!participants.length&&
-!invited.length
-){
-
-alert(
-"No participant or invited guest records are available.\n\n"+
-"Please upload the Excel files first."
-);
-
-return;
-
-}
-
-const participantRecords=
-participants.map(
-function(guest){
-
-return{
-
-guestType:"GUEST",
-
-id:String(
-guest["Registration ID"]||""
-).trim(),
-
-name:String(
-guest["Name"]||""
-).trim(),
-
-email:String(
-guest["Email"]||""
-).trim(),
-
-institute:String(
-guest["Institute"]||""
-).trim(),
-
-storedQR:String(
-guest["QR Code"]||""
-).trim()
-
-};
-
-});
-
-const invitedRecords=
-invited.map(
-function(guest){
-
-return{
-
-guestType:"INVITED",
-
-id:String(
-guest["ID"]||
-guest["Registration ID"]||
-""
-).trim(),
-
-name:String(
-guest["Name"]||""
-).trim(),
-
-email:String(
-guest["Email"]||""
-).trim(),
-
-institute:String(
-guest["Institute"]||""
-).trim(),
-
-storedQR:String(
-guest["QR Code"]||""
-).trim()
-
-};
-
-});
-
-const invalid=
-participantRecords
-.concat(invitedRecords)
-.filter(
-function(record){
-
-return !record.id;
-
-});
-
-if(invalid.length){
-
-alert(
-"Some records do not have an ID.\n\n"+
-"QR generation cannot continue."
-);
-
-return;
-
-}
-
-showQRGenerationPanel(
-participantRecords,
-invitedRecords
-);
-
-}catch(error){
-
-console.error(
-"QR generation error:",
-error
-);
-
-alert(
-"Unable to generate QR codes.\n\n"+
-error.message
-);
-
-}
-
-}
-
-
-function showQRGenerationPanel(
-participants,
-invitedGuests
-){
-
-const oldPanel=
-document.getElementById(
-"qrGenerationPanel"
-);
-
-if(oldPanel)
-oldPanel.remove();
-
-const records=
-participants.concat(
-invitedGuests
-);
-
-const overlay=
-document.createElement("div");
-
-overlay.id=
-"qrGenerationPanel";
-
-Object.assign(
-overlay.style,
-{
-position:"fixed",
-left:"0",
-top:"0",
-width:"100%",
-height:"100%",
-background:"#f5f5f5",
-zIndex:"99998",
-overflowY:"auto"
-}
-);
-
-const container=
-document.createElement("div");
-
-Object.assign(
-container.style,
-{
-maxWidth:"900px",
-margin:"0 auto",
-padding:"20px",
-boxSizing:"border-box"
-}
-);
-
-const header=
-document.createElement("div");
-
-Object.assign(
-header.style,
-{
-background:"#fff",
-borderRadius:"12px",
-padding:"20px",
-marginBottom:"15px",
-boxShadow:"0 2px 10px rgba(0,0,0,.08)"
-}
-);
-
-header.innerHTML=
-'<h2 style="margin:0 0 8px;text-align:center;color:#17365d;font-size:22px;">ICEMD-2026 QR Codes</h2>'+
-'<p style="margin:0;text-align:center;color:#666;font-size:14px;">'+
-participants.length+
-" participant(s) + "+
-invitedGuests.length+
-" invited guest(s)"+
-'</p>';
-
-container.appendChild(header);
-
-const actions=
-document.createElement("div");
-
-Object.assign(
-actions.style,
-{
-background:"#fff",
-padding:"15px",
-borderRadius:"12px",
-marginBottom:"15px",
-boxShadow:"0 2px 10px rgba(0,0,0,.08)",
-display:"flex",
-gap:"10px",
-flexWrap:"wrap",
-justifyContent:"center"
-}
-);
-
-actions.innerHTML=
-'<button id="qrDownloadButton" style="background:#17365d;color:white;border:none;padding:12px 20px;border-radius:8px;font-size:15px;cursor:pointer;">Download QR PDF</button>'+
-'<button id="qrCloseButton" style="background:#777;color:white;border:none;padding:12px 20px;border-radius:8px;font-size:15px;cursor:pointer;">Close</button>';
-
-container.appendChild(actions);
-
-const grid=
-document.createElement("div");
-
-grid.id=
-"qrPreviewGrid";
-
-Object.assign(
-grid.style,
-{
-display:"grid",
-gridTemplateColumns:
-"repeat(auto-fit,minmax(220px,1fr))",
-gap:"15px"
-}
-);
-
-container.appendChild(grid);
-
-overlay.appendChild(container);
-document.body.appendChild(overlay);
-
-
-records.forEach(
-function(record){
-
-const id=record.id;
-
-const card=
-document.createElement("div");
-
-card.className=
-"icemd-qr-card";
-
-card.dataset.registrationId=id;
-card.dataset.name=record.name;
-card.dataset.institute=record.institute;
-card.dataset.guestType=
-record.guestType;
-
-Object.assign(
-card.style,
-{
-background:"#fff",
-borderRadius:"12px",
-padding:"18px",
-textAlign:"center",
-boxShadow:"0 2px 8px rgba(0,0,0,.08)"
-}
-);
-
-
-const typeElement=
-document.createElement("div");
-
-Object.assign(
-typeElement.style,
-{
-fontSize:"12px",
-fontWeight:"bold",
-color:"#666",
-marginBottom:"4px"
-}
-);
-
-typeElement.textContent=
-record.guestType==="GUEST"
-?"PARTICIPANT"
-:"INVITED GUEST";
-
-card.appendChild(typeElement);
-
-
-const idElement=
-document.createElement("div");
-
-Object.assign(
-idElement.style,
-{
-fontWeight:"bold",
-color:"#17365d",
-fontSize:"16px",
-marginBottom:"10px"
-}
-);
-
-idElement.textContent=id;
-
-card.appendChild(idElement);
-
-
-const qrContainer=
-document.createElement("div");
-
-qrContainer.className=
-"icemd-qr-code";
-
-Object.assign(
-qrContainer.style,
-{
-width:"180px",
-height:"180px",
-margin:"0 auto 12px"
-}
-);
-
-card.appendChild(qrContainer);
-
-
-const nameElement=
-document.createElement("div");
-
-Object.assign(
-nameElement.style,
-{
-fontWeight:"bold",
-fontSize:"15px",
-marginBottom:"4px"
-}
-);
-
-nameElement.textContent=
-record.name;
-
-card.appendChild(nameElement);
-
-
-const instituteElement=
-document.createElement("div");
-
-Object.assign(
-instituteElement.style,
-{
-fontSize:"13px",
-color:"#666"
-}
-);
-
-instituteElement.textContent=
-record.institute;
-
-card.appendChild(instituteElement);
-
-
-const saveStatus=
-document.createElement("div");
-
-Object.assign(
-saveStatus.style,
-{
-fontSize:"12px",
-marginTop:"9px",
-color:
-record.storedQR
-?"#2e7d32"
-:"#666"
-}
-);
-
-saveStatus.textContent=
-record.storedQR
-?"✓ QR already stored"
-:"QR not stored";
-
-card.appendChild(saveStatus);
-
-
-const saveButton=
-document.createElement("button");
-
-saveButton.type="button";
-
-saveButton.textContent=
-record.storedQR
-?"✓ Stored"
-:"Store QR in Sheet";
-
-saveButton.disabled=
-!!record.storedQR;
-
-Object.assign(
-saveButton.style,
-{
-marginTop:"10px",
-width:"100%",
-padding:"9px",
-border:"none",
-borderRadius:"7px",
-background:
-record.storedQR
-?"#2e7d32"
-:"#17365d",
-color:"#fff",
-fontSize:"13px",
-cursor:
-record.storedQR
-?"default"
-:"pointer"
-}
-);
-
-card.appendChild(saveButton);
-
-
-const emailStatus=
-document.createElement("div");
-
-emailStatus.className=
-"email-status email-unsent";
-
-emailStatus.textContent=
-"Checking QR email status...";
-
-card.appendChild(emailStatus);
-
-
-const emailButton=
-document.createElement("button");
-
-emailButton.type="button";
-
-emailButton.className=
-"qr-email-button";
-
-emailButton.textContent=
-record.storedQR
-?"Send QR Email"
-:"Store QR before sending";
-
-emailButton.disabled=
-!record.storedQR;
-
-card.appendChild(emailButton);
-
-
-function sendThisQREmail(){
-
-emailButton.disabled=true;
-
-emailButton.textContent=
-"Sending...";
-
-const params=
-record.guestType==="GUEST"
-?
-{
-action:"sendGuestQREmail",
-registrationId:id,
-_cache:Date.now()
-}
-:
-{
-action:"sendInvitedGuestQREmail",
-id:id,
-_cache:Date.now()
-};
-
-apiRequest(
-params,
-function(result){
-
-if(
-result&&
-result.status==="success"
-){
-
-emailButton.textContent=
-"✓ SENT";
-
-emailButton.style.background=
-"#2e7d32";
-
-emailStatus.className=
-"email-status email-sent";
-
-emailStatus.textContent=
-"✓ QR email SENT";
-
-}else{
-
-emailButton.disabled=false;
-
-emailButton.textContent=
-"Send QR Email";
-
-emailStatus.className=
-"email-status email-failed";
-
-emailStatus.textContent=
-result&&result.message
-?result.message
-:"QR email failed. Retry available.";
-
-}
-
-});
-
-}
-
-emailButton.onclick=
-sendThisQREmail;
-
-
-if(record.storedQR){
-
-apiRequest({
-
-action:"getQREmailStatus",
-
-id:id,
-
-guestType:
-record.guestType,
-
-_cache:Date.now()
-
-},function(result){
-
-if(
-result&&
-result.status==="success"
-){
-
-const state=
-String(
-result.statusText||"UNSENT"
-)
-.toUpperCase();
-
-if(state==="SENT"){
-
-emailStatus.className=
-"email-status email-sent";
-
-emailStatus.textContent=
-"✓ QR email SENT";
-
-emailButton.textContent=
-"✓ SENT";
-
-emailButton.style.background=
-"#2e7d32";
-
-}else if(state==="FAILED"){
-
-emailStatus.className=
-"email-status email-failed";
-
-emailStatus.textContent=
-"✗ Previous send FAILED — retry available";
-
-}else{
-
-emailStatus.className=
-"email-status email-unsent";
-
-emailStatus.textContent=
-"QR email UNSENT";
-
-}
-
-}
-
-});
-
-}
-
-
-new QRCode(
-qrContainer,
-{
-text:id,
-width:180,
-height:180,
-correctLevel:
-QRCode.CorrectLevel.H
-}
-);
-
-
-function storeThisQR(){
-
-saveButton.disabled=true;
-
-saveButton.textContent=
-"Saving...";
-
-saveStatus.style.color=
-"#666";
-
-saveStatus.textContent=
-"Saving QR code to Google Sheet...";
-
-const qrCanvas=
-qrContainer.querySelector("canvas");
-
-const qrImage=
-qrContainer.querySelector("img");
-
-let qrDataURL="";
-
-if(qrCanvas){
-
-qrDataURL=
-qrCanvas.toDataURL(
-"image/png"
-);
-
-}else if(qrImage){
-
-qrDataURL=
-qrImage.src;
-
-}
-
-if(!qrDataURL){
-
-saveButton.disabled=false;
-
-saveButton.textContent=
-"Store QR in Sheet";
-
-saveStatus.style.color=
-"#c62828";
-
-saveStatus.textContent=
-"Unable to read generated QR image.";
-
-return;
-
-}
-
-const params=
-record.guestType==="GUEST"
-?
-{
-action:"saveGuestQR",
-registrationId:id,
-qrCode:qrDataURL,
-_cache:Date.now()
-}
-:
-{
-action:"saveInvitedGuestQR",
-id:id,
-qrCode:qrDataURL,
-_cache:Date.now()
-};
-
-apiRequest(
-params,
-function(result){
-
-if(
-result&&
-result.status==="success"
-){
-
-record.storedQR=
-qrDataURL;
-
-saveButton.textContent=
-"✓ Stored";
-
-saveButton.style.background=
-"#2e7d32";
-
-saveButton.disabled=true;
-
-saveStatus.style.color=
-"#2e7d32";
-
-saveStatus.textContent=
-"✓ QR stored successfully in sheet";
-
-emailButton.disabled=false;
-
-emailButton.textContent=
-"Send QR Email";
-
-emailStatus.className=
-"email-status email-unsent";
-
-emailStatus.textContent=
-"QR email UNSENT";
-
-}else{
-
-saveButton.disabled=false;
-
-saveButton.textContent=
-"Store QR in Sheet";
-
-saveStatus.style.color=
-"#c62828";
-
-saveStatus.textContent=
-result&&result.message
-?result.message
-:"Unable to store QR code.";
-
-}
-
-});
-
-}
-
-
-saveButton.addEventListener(
-"click",
-storeThisQR
-);
-
-
-if(!record.storedQR){
-
-setTimeout(
-storeThisQR,
-250
-);
-
-}
-
-grid.appendChild(card);
-
-});
-
-
-document.getElementById(
-"qrCloseButton"
-).addEventListener(
-"click",
-function(){
-
-overlay.remove();
-
-}
-);
-
-
-document.getElementById(
-"qrDownloadButton"
-).addEventListener(
-"click",
-downloadQRPDF
-);
-
-}
-
 
 /* =====================================================
    QR PDF
