@@ -4,114 +4,526 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>ICEMD-2026 IIT Jodhpur - Admin</title>
+
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;padding:20px;font-family:Arial,sans-serif;background:#f5f5f5;color:#222;min-height:90vh}
-.container{max-width:500px;width:100%;margin:0 auto}
-body.login-view{display:flex;align-items:center;justify-content:center}
-body.app-view{display:block}
-.card{background:#fff;padding:22px;border-radius:12px;box-shadow:0 3px 12px rgba(0,0,0,.08)}
-h1{text-align:center;font-size:24px;margin:0 0 5px}
-h2{text-align:center;font-size:20px;color:#17365d;margin:10px 0}
-.subtitle{text-align:center;color:#666;margin-bottom:25px;font-size:18px}
-.option{display:block;width:100%;padding:16px;margin-top:15px;background:#17365d;color:#fff;border:none;text-decoration:none;text-align:center;border-radius:8px;font-family:Arial,sans-serif;font-size:17px;font-weight:normal;cursor:pointer;transition:background .15s ease,transform .1s ease}
-.option:hover{background:#214a7a}
-.option:active{transform:scale(.99)}
-.option-title{font-size:18px}
-.back-button{background:#666}
-.back-button:hover{background:#555}
-.logout-button{background:#8b0000}
-.logout-button:hover{background:#a00000}
-.input-group{margin-top:15px}
-.input-group label{display:block;font-size:14px;color:#444;margin-bottom:6px}
-input,select{width:100%;padding:13px;border:1px solid #ccc;border-radius:7px;font-family:Arial,sans-serif;font-size:16px;background:#fff}
-input:focus,select:focus{outline:none;border-color:#17365d}
-.message{display:none;margin-top:15px;padding:11px;border-radius:7px;text-align:center;font-size:14px}
-.success{display:block;background:#e8f5e9;color:#2e7d32}
-.error{display:block;background:#ffebee;color:#c62828}
-.info{display:block;background:#eaf2f8;color:#17365d}
-.summary{display:flex;gap:10px;margin-top:18px;margin-bottom:20px}
-.summary-box{flex:1;background:#f5f5f5;border-radius:8px;padding:12px 5px;text-align:center}
-.summary-number{font-size:22px;font-weight:bold;color:#17365d}
-.summary-label{font-size:12px;color:#666;margin-top:3px}
-.user-list{margin-top:20px}
-.user-item{border:1px solid #ddd;border-radius:8px;padding:13px;margin-top:10px;background:#fff}
-.user-name{font-size:16px;font-weight:bold;color:#17365d}
-.user-email{font-size:14px;color:#666;margin-top:4px;word-break:break-word}
-.user-status{font-size:13px;margin-top:7px}
-.status-active{color:#2e7d32;font-weight:bold}
-.status-inactive{color:#c62828;font-weight:bold}
-.user-actions{display:flex;gap:8px;margin-top:10px}
-.small-button{flex:1;padding:9px 5px;border:none;border-radius:6px;font-family:Arial,sans-serif;font-size:13px;cursor:pointer;color:#fff;background:#17365d}
-.small-button:hover{background:#214a7a}
-.small-button:disabled{opacity:.65;cursor:wait}
-.small-button.delete{background:#8b0000}
-.small-button.delete:hover{background:#a00000}
-.section-title{text-align:center;color:#17365d;font-size:20px;margin:5px 0}
-.section-subtitle{text-align:center;color:#666;font-size:14px;margin-bottom:20px}
-.loading{text-align:center;color:#666;padding:20px 5px;font-size:14px}
-.empty{text-align:center;color:#666;padding:20px 5px;font-size:14px}
-.footer{text-align:center;color:#666;margin-top:25px;font-size:14px;line-height:1.5}
-.hidden{display:none!important}
-.food-day{border:1px solid #ddd;border-radius:10px;padding:15px;margin-top:12px;background:#fff}
-.food-day-title{font-size:16px;font-weight:bold;color:#17365d;margin-bottom:10px}
-.food-current{font-size:13px;color:#666;margin-top:7px}
-.food-save{margin-top:10px;padding:10px;width:100%;border:none;border-radius:7px;background:#17365d;color:#fff;font-size:14px;cursor:pointer}
-.food-save:hover{background:#214a7a}
 
-.email-status{font-size:12px;margin-top:8px;font-weight:bold}
-.email-sent{color:#2e7d32}
-.email-unsent{color:#666}
-.email-failed{color:#c62828}
-.qr-email-button{margin-top:8px;width:100%;padding:9px;border:none;border-radius:7px;background:#214a7a;color:#fff;font-size:13px;cursor:pointer}
-.qr-email-button:hover{background:#17365d}
-.qr-email-button:disabled{opacity:.65;cursor:wait}
-.invited-list{margin-top:20px}
-.invited-item{border:1px solid #ddd;border-radius:10px;padding:14px;margin-top:10px;background:#fff}
-.invited-name{font-size:16px;font-weight:bold;color:#17365d}
-.invited-meta{font-size:13px;color:#666;margin-top:4px;word-break:break-word}
-.invited-actions{display:flex;gap:8px;margin-top:10px}
-.invited-actions button{flex:1}
-.update-box{margin-top:15px;border-top:1px solid #ddd;padding-top:18px}
-.update-note{background:#eaf2f8;color:#17365d;padding:12px;border-radius:8px;font-size:13px;line-height:1.5;margin-bottom:15px}
-textarea{width:100%;min-height:180px;padding:13px;border:1px solid #ccc;border-radius:7px;font-family:Arial,sans-serif;font-size:15px;resize:vertical}
-textarea:focus{outline:none;border-color:#17365d}
-.action-row{display:flex;gap:8px;margin-top:10px}
-.action-row button{flex:1}
+body{
+margin:0;
+padding:20px;
+font-family:Arial,sans-serif;
+background:#f5f5f5;
+color:#222;
+min-height:90vh
+}
+
+.container{
+max-width:500px;
+width:100%;
+margin:0 auto
+}
+
+body.login-view{
+display:flex;
+align-items:center;
+justify-content:center
+}
+
+body.app-view{
+display:block
+}
+
+.card{
+background:#fff;
+padding:22px;
+border-radius:12px;
+box-shadow:0 3px 12px rgba(0,0,0,.08)
+}
+
+h1{
+text-align:center;
+font-size:24px;
+margin:0 0 5px
+}
+
+h2{
+text-align:center;
+font-size:20px;
+color:#17365d;
+margin:10px 0
+}
+
+.subtitle{
+text-align:center;
+color:#666;
+margin-bottom:25px;
+font-size:18px
+}
+
+.option{
+display:block;
+width:100%;
+padding:16px;
+margin-top:15px;
+background:#17365d;
+color:#fff;
+border:none;
+text-decoration:none;
+text-align:center;
+border-radius:8px;
+font-family:Arial,sans-serif;
+font-size:17px;
+font-weight:normal;
+cursor:pointer;
+transition:background .15s ease,transform .1s ease
+}
+
+.option:hover{
+background:#214a7a
+}
+
+.option:active{
+transform:scale(.99)
+}
+
+.option-title{
+font-size:18px
+}
+
+.back-button{
+background:#666
+}
+
+.back-button:hover{
+background:#555
+}
+
+.logout-button{
+background:#8b0000
+}
+
+.logout-button:hover{
+background:#a00000
+}
+
+.input-group{
+margin-top:15px
+}
+
+.input-group label{
+display:block;
+font-size:14px;
+color:#444;
+margin-bottom:6px
+}
+
+input,select{
+width:100%;
+padding:13px;
+border:1px solid #ccc;
+border-radius:7px;
+font-family:Arial,sans-serif;
+font-size:16px;
+background:#fff
+}
+
+input:focus,select:focus{
+outline:none;
+border-color:#17365d
+}
+
+.message{
+display:none;
+margin-top:15px;
+padding:11px;
+border-radius:7px;
+text-align:center;
+font-size:14px
+}
+
+.success{
+display:block;
+background:#e8f5e9;
+color:#2e7d32
+}
+
+.error{
+display:block;
+background:#ffebee;
+color:#c62828
+}
+
+.info{
+display:block;
+background:#eaf2f8;
+color:#17365d
+}
+
+.summary{
+display:flex;
+gap:10px;
+margin-top:18px;
+margin-bottom:20px
+}
+
+.summary-box{
+flex:1;
+background:#f5f5f5;
+border-radius:8px;
+padding:12px 5px;
+text-align:center
+}
+
+.summary-number{
+font-size:22px;
+font-weight:bold;
+color:#17365d
+}
+
+.summary-label{
+font-size:12px;
+color:#666;
+margin-top:3px
+}
+
+.user-list{
+margin-top:20px
+}
+
+.user-item{
+border:1px solid #ddd;
+border-radius:8px;
+padding:13px;
+margin-top:10px;
+background:#fff
+}
+
+.user-name{
+font-size:16px;
+font-weight:bold;
+color:#17365d
+}
+
+.user-email{
+font-size:14px;
+color:#666;
+margin-top:4px;
+word-break:break-word
+}
+
+.user-status{
+font-size:13px;
+margin-top:7px
+}
+
+.status-active{
+color:#2e7d32;
+font-weight:bold
+}
+
+.status-inactive{
+color:#c62828;
+font-weight:bold
+}
+
+.user-actions{
+display:flex;
+gap:8px;
+margin-top:10px
+}
+
+.small-button{
+flex:1;
+padding:9px 5px;
+border:none;
+border-radius:6px;
+font-family:Arial,sans-serif;
+font-size:13px;
+cursor:pointer;
+color:#fff;
+background:#17365d
+}
+
+.small-button:hover{
+background:#214a7a
+}
+
+.small-button:disabled{
+opacity:.65;
+cursor:wait
+}
+
+.small-button.delete{
+background:#8b0000
+}
+
+.small-button.delete:hover{
+background:#a00000
+}
+
+.section-title{
+text-align:center;
+color:#17365d;
+font-size:20px;
+margin:5px 0
+}
+
+.section-subtitle{
+text-align:center;
+color:#666;
+font-size:14px;
+margin-bottom:20px
+}
+
+.loading{
+text-align:center;
+color:#666;
+padding:20px 5px;
+font-size:14px
+}
+
+.empty{
+text-align:center;
+color:#666;
+padding:20px 5px;
+font-size:14px
+}
+
+.footer{
+text-align:center;
+color:#666;
+margin-top:25px;
+font-size:14px;
+line-height:1.5
+}
+
+.hidden{
+display:none!important
+}
+
+.food-day{
+border:1px solid #ddd;
+border-radius:10px;
+padding:15px;
+margin-top:12px;
+background:#fff
+}
+
+.food-day-title{
+font-size:16px;
+font-weight:bold;
+color:#17365d;
+margin-bottom:10px
+}
+
+.food-current{
+font-size:13px;
+color:#666;
+margin-top:7px
+}
+
+.food-save{
+margin-top:10px;
+padding:10px;
+width:100%;
+border:none;
+border-radius:7px;
+background:#17365d;
+color:#fff;
+font-size:14px;
+cursor:pointer
+}
+
+.food-save:hover{
+background:#214a7a
+}
+
+.email-status{
+font-size:12px;
+margin-top:8px;
+font-weight:bold
+}
+
+.email-sent{
+color:#2e7d32
+}
+
+.email-unsent{
+color:#666
+}
+
+.email-failed{
+color:#c62828
+}
+
+.qr-email-button{
+margin-top:8px;
+width:100%;
+padding:9px;
+border:none;
+border-radius:7px;
+background:#214a7a;
+color:#fff;
+font-size:13px;
+cursor:pointer
+}
+
+.qr-email-button:hover{
+background:#17365d
+}
+
+.qr-email-button:disabled{
+opacity:.65;
+cursor:wait
+}
+
+.invited-list{
+margin-top:20px
+}
+
+.invited-item{
+border:1px solid #ddd;
+border-radius:10px;
+padding:14px;
+margin-top:10px;
+background:#fff
+}
+
+.invited-name{
+font-size:16px;
+font-weight:bold;
+color:#17365d
+}
+
+.invited-meta{
+font-size:13px;
+color:#666;
+margin-top:4px;
+word-break:break-word
+}
+
+.invited-actions{
+display:flex;
+gap:8px;
+margin-top:10px
+}
+
+.invited-actions button{
+flex:1
+}
+
+.update-box{
+margin-top:15px;
+border-top:1px solid #ddd;
+padding-top:18px
+}
+
+.update-note{
+background:#eaf2f8;
+color:#17365d;
+padding:12px;
+border-radius:8px;
+font-size:13px;
+line-height:1.5;
+margin-bottom:15px
+}
+
+textarea{
+width:100%;
+min-height:180px;
+padding:13px;
+border:1px solid #ccc;
+border-radius:7px;
+font-family:Arial,sans-serif;
+font-size:15px;
+resize:vertical
+}
+
+textarea:focus{
+outline:none;
+border-color:#17365d
+}
+
+.action-row{
+display:flex;
+gap:8px;
+margin-top:10px
+}
+
+.action-row button{
+flex:1
+}
 </style>
 </head>
 
 <body class="login-view">
+
 <div class="container">
+
 <div class="card">
 
+<!-- =====================================================
+     LOGIN
+     ===================================================== -->
+
 <div id="loginSection">
+
 <h1>ICEMD-2026</h1>
 <h2>IIT Jodhpur, India</h2>
 <p class="subtitle">Admin Console</p>
 
 <form id="adminLoginForm" onsubmit="adminLogin(event)" autocomplete="on">
+
 <div class="input-group">
 <label for="adminEmail">Email</label>
-<input type="text" id="adminEmail" value="pal.17@iitj.ac.in" readonly autocomplete="username">
+<input
+type="text"
+id="adminEmail"
+value="pal.17@iitj.ac.in"
+readonly
+autocomplete="username">
 </div>
 
 <div class="input-group">
 <label for="adminPassword">Password</label>
-<input type="password" id="adminPassword" placeholder="Enter password" autocomplete="current-password" autocapitalize="none" spellcheck="false" required>
+<input
+type="password"
+id="adminPassword"
+placeholder="Enter password"
+autocomplete="current-password"
+autocapitalize="none"
+spellcheck="false"
+required>
 </div>
 
-<button type="submit" class="option">Login</button>
+<button type="submit" class="option">
+Login
+</button>
+
 </form>
 
-<button type="button" class="option back-button" onclick="goHome()">Back</button>
+<button
+type="button"
+class="option back-button"
+onclick="goHome()">
+Back
+</button>
+
 <div id="loginMessage" class="message"></div>
+
 </div>
 
+
+<!-- =====================================================
+     DASHBOARD
+     ===================================================== -->
+
 <div id="dashboardSection" class="hidden">
+
 <h1>ICEMD-2026</h1>
 <h2>IIT Jodhpur, India</h2>
 <p class="subtitle">Admin Dashboard</p>
@@ -129,7 +541,11 @@ Welcome, Biswajit Pal
 </button>
 
 <button type="button" class="option" onclick="uploadGuestExcel()">
-<div class="option-title">Upload Guest Excel</div>
+<div class="option-title">Upload Participant Excel</div>
+</button>
+
+<button type="button" class="option" onclick="uploadInvitedExcel()">
+<div class="option-title">Upload Invited Guest Excel</div>
 </button>
 
 <button type="button" class="option" onclick="generateQRCodes()">
@@ -138,9 +554,6 @@ Welcome, Biswajit Pal
 
 <button type="button" class="option" onclick="downloadQRPDF()">
 <div class="option-title">Download QR PDF</div>
-</button>
-<button type="button" class="option" onclick="openInvitedGuests()">
-<div class="option-title">Manage Invited Guests</div>
 </button>
 
 <button type="button" class="option" onclick="openGuestQRMail()">
@@ -159,16 +572,23 @@ Welcome, Biswajit Pal
 <div class="option-title">Invited Guest Updates</div>
 </button>
 
-<button type="button" class="option back-button" onclick="goHome()">Back</button>
+<button type="button" class="option back-button" onclick="goHome()">
+Back
+</button>
 
 <button type="button" class="option logout-button" onclick="adminLogout()">
 <div class="option-title">Logout</div>
 </button>
 
-
 </div>
 
+
+<!-- =====================================================
+     USERS
+     ===================================================== -->
+
 <div id="usersSection" class="hidden">
+
 <h1>ICEMD-2026</h1>
 <h2>IIT Jodhpur, India</h2>
 
@@ -176,6 +596,7 @@ Welcome, Biswajit Pal
 <div class="section-subtitle">Registration Desk Users</div>
 
 <div class="summary">
+
 <div class="summary-box">
 <div id="totalUsers" class="summary-number">0</div>
 <div class="summary-label">Total</div>
@@ -190,9 +611,11 @@ Welcome, Biswajit Pal
 <div id="userLimit" class="summary-number">30</div>
 <div class="summary-label">Limit</div>
 </div>
+
 </div>
 
 <div style="border-top:1px solid #ddd;padding-top:18px">
+
 <div style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:5px">
 Add New User
 </div>
@@ -202,38 +625,71 @@ Any valid email address can be used.
 </div>
 
 <form id="addUserForm" onsubmit="addNewUser(event)">
+
 <div class="input-group">
 <label for="newUserName">Name</label>
-<input type="text" id="newUserName" placeholder="Enter name" required>
+<input
+type="text"
+id="newUserName"
+placeholder="Enter name"
+required>
 </div>
 
 <div class="input-group">
 <label for="newUserEmail">Email</label>
-<input type="email" id="newUserEmail" placeholder="Enter email address" autocomplete="email" required>
+<input
+type="email"
+id="newUserEmail"
+placeholder="Enter email address"
+autocomplete="email"
+required>
 </div>
 
-<button type="submit" class="option">Add User</button>
+<button type="submit" class="option">
+Add User
+</button>
+
 </form>
 
 <div id="userMessage" class="message"></div>
+
 </div>
 
 <div class="user-list">
+
 <div style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:8px">
 Current Users
 </div>
-<div id="usersList" class="loading">Loading users...</div>
+
+<div id="usersList" class="loading">
+Loading users...
 </div>
 
-<button type="button" class="option back-button" onclick="closeUsers()">Back</button>
 </div>
+
+<button
+type="button"
+class="option back-button"
+onclick="closeUsers()">
+Back
+</button>
+
+</div>
+
+
+<!-- =====================================================
+     FOOD
+     ===================================================== -->
 
 <div id="foodSection" class="hidden">
+
 <h1>ICEMD-2026</h1>
 <h2>IIT Jodhpur, India</h2>
 
 <div class="section-title">Manage Food Service</div>
-<div class="section-subtitle">Set the meal available on each conference day</div>
+<div class="section-subtitle">
+Set the meal available on each conference day
+</div>
 
 <div style="background:#eaf2f8;color:#17365d;padding:12px;border-radius:8px;font-size:13px;line-height:1.5;margin-bottom:15px;text-align:center">
 The caterer does not select the meal during scanning.
@@ -246,170 +702,279 @@ The system automatically determines the active meal from these settings.
 
 <div id="foodMessage" class="message"></div>
 
+<button
+type="button"
+class="option back-button"
+onclick="closeFoodService()">
+Back
+</button>
 
-<button type="button" class="option back-button" onclick="closeFoodService()">Back</button>
-</div>
-
-<!-- =====================================================
-     INVITED GUESTS
-     ===================================================== -->
-<div id="invitedGuestsSection" class="hidden">
-<h1>ICEMD-2026</h1>
-<h2>IIT Jodhpur, India</h2>
-<div class="section-title">Manage Invited Guests</div>
-<div class="section-subtitle">Add, delete and manage invited guest QR codes</div>
-
-<div style="border-top:1px solid #ddd;padding-top:18px">
-<div style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:5px">Add Invited Guest</div>
-<div style="color:#666;font-size:13px;margin-bottom:15px">ID is optional. If left blank, the system generates an ID such as IG-0001.</div>
-
-<form id="addInvitedGuestForm" onsubmit="addNewInvitedGuest(event)">
-<div class="input-group">
-<label for="invitedId">ID (optional)</label>
-<input type="text" id="invitedId" placeholder="e.g. IG-0001">
-</div>
-<div class="input-group">
-<label for="invitedName">Name</label>
-<input type="text" id="invitedName" placeholder="Enter name" required>
-</div>
-<div class="input-group">
-<label for="invitedEmail">Email</label>
-<input type="email" id="invitedEmail" placeholder="Enter email address" required>
-</div>
-<div class="input-group">
-<label for="invitedInstitute">Institute</label>
-<input type="text" id="invitedInstitute" placeholder="Enter institute">
-</div>
-<button type="submit" class="option">Add Invited Guest</button>
-</form>
-<div id="invitedGuestMessage" class="message"></div>
 </div>
 
-<div class="action-row">
-<button type="button" class="small-button" onclick="sendAllInvitedQREmails()">Send All Unsent QR Emails</button>
-<button type="button" class="small-button" onclick="loadInvitedGuests()">Refresh</button>
-</div>
-
-<div id="invitedGuestsList" class="loading">Loading invited guests...</div>
-
-<button type="button" class="option back-button" onclick="closeInvitedGuests()">Back</button>
-</div>
 
 <!-- =====================================================
      PARTICIPANT QR EMAILS
      ===================================================== -->
+
 <div id="guestQRMailSection" class="hidden">
+
 <h1>ICEMD-2026</h1>
 <h2>IIT Jodhpur, India</h2>
+
 <div class="section-title">Participant QR Emails</div>
-<div class="section-subtitle">Send each registered participant their own stored QR code</div>
+
+<div class="section-subtitle">
+Send each registered participant their own stored QR code
+</div>
 
 <div class="update-note">
-Each participant receives an individual email. Guests whose QR email was already sent are not sent again. Failed emails remain available for retry.
+Each participant receives an individual email.
+Guests whose QR email was already sent are not sent again.
+Failed emails remain available for retry.
 </div>
 
 <div class="summary">
-<div class="summary-box"><div id="guestQRTotal" class="summary-number">0</div><div class="summary-label">Participants</div></div>
-<div class="summary-box"><div id="guestQRSent" class="summary-number">0</div><div class="summary-label">Sent</div></div>
-<div class="summary-box"><div id="guestQRUnsent" class="summary-number">0</div><div class="summary-label">Unsent</div></div>
+
+<div class="summary-box">
+<div id="guestQRTotal" class="summary-number">0</div>
+<div class="summary-label">Participants</div>
 </div>
 
-<button type="button" class="option" onclick="sendAllGuestQREmails()">Send All Unsent QR Emails</button>
-<div id="guestQRMailMessage" class="message"></div>
-<div id="guestQRMailList" class="loading">Loading participant QR status...</div>
-<button type="button" class="option back-button" onclick="closeGuestQRMail()">Back</button>
+<div class="summary-box">
+<div id="guestQRSent" class="summary-number">0</div>
+<div class="summary-label">Sent</div>
 </div>
+
+<div class="summary-box">
+<div id="guestQRUnsent" class="summary-number">0</div>
+<div class="summary-label">Unsent</div>
+</div>
+
+</div>
+
+<button
+type="button"
+class="option"
+onclick="sendAllGuestQREmails()">
+Send All Unsent QR Emails
+</button>
+
+<div id="guestQRMailMessage" class="message"></div>
+
+<div id="guestQRMailList" class="loading">
+Loading participant QR status...
+</div>
+
+<button
+type="button"
+class="option back-button"
+onclick="closeGuestQRMail()">
+Back
+</button>
+
+</div>
+
 
 <!-- =====================================================
      INVITED QR EMAILS
      ===================================================== -->
+
 <div id="invitedQRMailSection" class="hidden">
+
 <h1>ICEMD-2026</h1>
 <h2>IIT Jodhpur, India</h2>
+
 <div class="section-title">Invited Guest QR Emails</div>
-<div class="section-subtitle">Send each invited guest their own stored QR code</div>
+
+<div class="section-subtitle">
+Send each invited guest their own stored QR code
+</div>
 
 <div class="update-note">
-Each invited guest receives an individual email. Already sent QR emails are skipped. Failed emails remain retryable.
+Each invited guest receives an individual email.
+Already sent QR emails are skipped.
+Failed emails remain retryable.
 </div>
 
 <div class="summary">
-<div class="summary-box"><div id="invitedQRTotal" class="summary-number">0</div><div class="summary-label">Invited</div></div>
-<div class="summary-box"><div id="invitedQRSent" class="summary-number">0</div><div class="summary-label">Sent</div></div>
-<div class="summary-box"><div id="invitedQRUnsent" class="summary-number">0</div><div class="summary-label">Unsent</div></div>
+
+<div class="summary-box">
+<div id="invitedQRTotal" class="summary-number">0</div>
+<div class="summary-label">Invited</div>
 </div>
 
-<button type="button" class="option" onclick="sendAllInvitedQREmails()">Send All Unsent QR Emails</button>
-<div id="invitedQRMailMessage" class="message"></div>
-<div id="invitedQRMailList" class="loading">Loading invited guest QR status...</div>
-<button type="button" class="option back-button" onclick="closeInvitedQRMail()">Back</button>
+<div class="summary-box">
+<div id="invitedQRSent" class="summary-number">0</div>
+<div class="summary-label">Sent</div>
 </div>
+
+<div class="summary-box">
+<div id="invitedQRUnsent" class="summary-number">0</div>
+<div class="summary-label">Unsent</div>
+</div>
+
+</div>
+
+<button
+type="button"
+class="option"
+onclick="sendAllInvitedQREmails()">
+Send All Unsent QR Emails
+</button>
+
+<div id="invitedQRMailMessage" class="message"></div>
+
+<div id="invitedQRMailList" class="loading">
+Loading invited guest QR status...
+</div>
+
+<button
+type="button"
+class="option back-button"
+onclick="closeInvitedQRMail()">
+Back
+</button>
+
+</div>
+
 
 <!-- =====================================================
      PARTICIPANT UPDATES
      ===================================================== -->
+
 <div id="participantUpdatesSection" class="hidden">
+
 <h1>ICEMD-2026</h1>
 <h2>IIT Jodhpur, India</h2>
+
 <div class="section-title">Participant Updates</div>
-<div class="section-subtitle">Send an individual update email to every registered participant</div>
+
+<div class="section-subtitle">
+Send an individual update email to every registered participant
+</div>
 
 <div class="update-note">
-The email is sent separately to every participant. No CC or BCC is used. The participant's name is automatically added to the greeting.
+The email is sent separately to every participant.
+No CC or BCC is used.
+The participant's name is automatically added to the greeting.
 </div>
 
 <div class="input-group">
 <label for="participantUpdateSubject">Subject</label>
-<input type="text" id="participantUpdateSubject" placeholder="Enter email subject">
+<input
+type="text"
+id="participantUpdateSubject"
+placeholder="Enter email subject">
 </div>
 
 <div class="input-group">
 <label for="participantUpdateMessage">Message</label>
-<textarea id="participantUpdateMessage" placeholder="Write the message for registered participants..."></textarea>
+<textarea
+id="participantUpdateMessage"
+placeholder="Write the message for registered participants..."></textarea>
 </div>
 
-<button type="button" class="option" onclick="sendParticipantUpdateEmail()">Send Update to Participants</button>
+<button
+type="button"
+class="option"
+onclick="sendParticipantUpdateEmail()">
+Send Update to Participants
+</button>
+
 <div id="participantUpdateMessageBox" class="message"></div>
-<div id="participantUpdateCount" class="section-subtitle" style="margin-top:12px;margin-bottom:0"></div>
-<button type="button" class="option back-button" onclick="closeParticipantUpdates()">Back</button>
+
+<div
+id="participantUpdateCount"
+class="section-subtitle"
+style="margin-top:12px;margin-bottom:0">
 </div>
+
+<button
+type="button"
+class="option back-button"
+onclick="closeParticipantUpdates()">
+Back
+</button>
+
+</div>
+
 
 <!-- =====================================================
      INVITED GUEST UPDATES
      ===================================================== -->
+
 <div id="invitedUpdatesSection" class="hidden">
+
 <h1>ICEMD-2026</h1>
 <h2>IIT Jodhpur, India</h2>
+
 <div class="section-title">Invited Guest Updates</div>
-<div class="section-subtitle">Send an individual update email to every invited guest</div>
+
+<div class="section-subtitle">
+Send an individual update email to every invited guest
+</div>
 
 <div class="update-note">
-The email is sent separately to every invited guest. No CC or BCC is used. The guest's name is automatically added to the greeting.
+The email is sent separately to every invited guest.
+No CC or BCC is used.
+The guest's name is automatically added to the greeting.
 </div>
 
 <div class="input-group">
 <label for="invitedUpdateSubject">Subject</label>
-<input type="text" id="invitedUpdateSubject" placeholder="Enter email subject">
+<input
+type="text"
+id="invitedUpdateSubject"
+placeholder="Enter email subject">
 </div>
 
 <div class="input-group">
 <label for="invitedUpdateMessage">Message</label>
-<textarea id="invitedUpdateMessage" placeholder="Write the message for invited guests..."></textarea>
+<textarea
+id="invitedUpdateMessage"
+placeholder="Write the message for invited guests..."></textarea>
 </div>
 
-<button type="button" class="option" onclick="sendInvitedUpdateEmail()">Send Update to Invited Guests</button>
+<button
+type="button"
+class="option"
+onclick="sendInvitedUpdateEmail()">
+Send Update to Invited Guests
+</button>
+
 <div id="invitedUpdateMessageBox" class="message"></div>
-<div id="invitedUpdateCount" class="section-subtitle" style="margin-top:12px;margin-bottom:0"></div>
-<button type="button" class="option back-button" onclick="closeInvitedUpdates()">Back</button>
+
+<div
+id="invitedUpdateCount"
+class="section-subtitle"
+style="margin-top:12px;margin-bottom:0">
+</div>
+
+<button
+type="button"
+class="option back-button"
+onclick="closeInvitedUpdates()">
+Back
+</button>
+
 </div>
 
 </div>
 </div>
+
 
 <script>
-const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbxD0VHRLp17LUYiPlYzxPRWwsZUagkVZycolhHfn6Nyt6XN-N2bQD0_uekzWlZc3iOgrA/exec";
+
+const APPS_SCRIPT_URL=
+"https://script.google.com/macros/s/AKfycbxD0VHRLp17LUYiPlYzxPRWwsZUagkVZycolhHfn6Nyt6XN-N2bQD0_uekzWlZc3iOgrA/exec";
+
 const FIXED_EMAIL="pal.17@iitj.ac.in";
 const FIXED_PASSWORD="icemd@20260317";
+
+
+/* =====================================================
+   VIEW
+   ===================================================== */
 
 function setAppView(){
 document.body.classList.remove("login-view");
@@ -421,133 +986,342 @@ document.body.classList.remove("app-view");
 document.body.classList.add("login-view");
 }
 
+
+/* =====================================================
+   LOGIN
+   ===================================================== */
+
 function adminLogin(event){
+
 event.preventDefault();
 
-const email=document.getElementById("adminEmail").value.trim();
-const passwordInput=document.getElementById("adminPassword");
-const password=passwordInput.value;
-const message=document.getElementById("loginMessage");
+const email=
+document.getElementById("adminEmail").value.trim();
 
-if(email===FIXED_EMAIL&&password===FIXED_PASSWORD){
-sessionStorage.setItem("icemdAdminLoggedIn","true");
+const passwordInput=
+document.getElementById("adminPassword");
 
-document.getElementById("loginSection").classList.add("hidden");
-document.getElementById("dashboardSection").classList.remove("hidden");
+const password=
+passwordInput.value;
+
+const message=
+document.getElementById("loginMessage");
+
+if(
+email===FIXED_EMAIL&&
+password===FIXED_PASSWORD
+){
+
+sessionStorage.setItem(
+"icemdAdminLoggedIn",
+"true"
+);
+
+document.getElementById(
+"loginSection"
+).classList.add("hidden");
+
+document.getElementById(
+"dashboardSection"
+).classList.remove("hidden");
 
 setAppView();
 
 message.className="message";
 message.textContent="";
+
 passwordInput.value="";
+
 }else{
+
 message.className="message error";
 message.textContent="Invalid admin password.";
+
 passwordInput.value="";
 passwordInput.focus();
+
 }
+
 }
+
+
+/* =====================================================
+   LOGOUT
+   ===================================================== */
 
 function adminLogout(){
-sessionStorage.removeItem("icemdAdminLoggedIn");
 
-document.getElementById("adminPassword").value="";
-document.getElementById("dashboardSection").classList.add("hidden");
-document.getElementById("usersSection").classList.add("hidden");
-document.getElementById("foodSection").classList.add("hidden");
-document.getElementById("invitedGuestsSection").classList.add("hidden");
-document.getElementById("guestQRMailSection").classList.add("hidden");
-document.getElementById("invitedQRMailSection").classList.add("hidden");
-document.getElementById("participantUpdatesSection").classList.add("hidden");
-document.getElementById("invitedUpdatesSection").classList.add("hidden");
-document.getElementById("loginSection").classList.remove("hidden");
+sessionStorage.removeItem(
+"icemdAdminLoggedIn"
+);
+
+document.getElementById(
+"adminPassword"
+).value="";
+
+document.getElementById(
+"dashboardSection"
+).classList.add("hidden");
+
+document.getElementById(
+"usersSection"
+).classList.add("hidden");
+
+document.getElementById(
+"foodSection"
+).classList.add("hidden");
+
+document.getElementById(
+"guestQRMailSection"
+).classList.add("hidden");
+
+document.getElementById(
+"invitedQRMailSection"
+).classList.add("hidden");
+
+document.getElementById(
+"participantUpdatesSection"
+).classList.add("hidden");
+
+document.getElementById(
+"invitedUpdatesSection"
+).classList.add("hidden");
+
+document.getElementById(
+"loginSection"
+).classList.remove("hidden");
 
 setLoginView();
-document.getElementById("adminPassword").focus();
+
+document.getElementById(
+"adminPassword"
+).focus();
+
 }
+
+
+/* =====================================================
+   HOME
+   ===================================================== */
 
 function goHome(){
 window.location.href="index.html";
 }
 
+
+/* =====================================================
+   NAVIGATION
+   ===================================================== */
+
 function openUsers(){
+
 hideAllAdminSections();
-document.getElementById("usersSection").classList.remove("hidden");
+
+document.getElementById(
+"usersSection"
+).classList.remove("hidden");
+
 loadUsers();
+
 }
 
 function closeUsers(){
-document.getElementById("usersSection").classList.add("hidden");
-document.getElementById("dashboardSection").classList.remove("hidden");
+
+document.getElementById(
+"usersSection"
+).classList.add("hidden");
+
+document.getElementById(
+"dashboardSection"
+).classList.remove("hidden");
+
 }
 
+
 function openFoodService(){
+
 hideAllAdminSections();
-document.getElementById("foodSection").classList.remove("hidden");
+
+document.getElementById(
+"foodSection"
+).classList.remove("hidden");
+
 loadFoodSettings();
+
 }
 
 function closeFoodService(){
-document.getElementById("foodSection").classList.add("hidden");
-document.getElementById("dashboardSection").classList.remove("hidden");
+
+document.getElementById(
+"foodSection"
+).classList.add("hidden");
+
+document.getElementById(
+"dashboardSection"
+).classList.remove("hidden");
+
 }
 
+
+function hideAllAdminSections(){
+
+document.getElementById(
+"dashboardSection"
+).classList.add("hidden");
+
+document.getElementById(
+"usersSection"
+).classList.add("hidden");
+
+document.getElementById(
+"foodSection"
+).classList.add("hidden");
+
+document.getElementById(
+"guestQRMailSection"
+).classList.add("hidden");
+
+document.getElementById(
+"invitedQRMailSection"
+).classList.add("hidden");
+
+document.getElementById(
+"participantUpdatesSection"
+).classList.add("hidden");
+
+document.getElementById(
+"invitedUpdatesSection"
+).classList.add("hidden");
+
+}
+
+
+/* =====================================================
+   JSONP API
+   ===================================================== */
+
 function apiRequest(params,callback){
-const callbackName="icemdCallback_"+Date.now()+"_"+Math.floor(Math.random()*10000);
+
+const callbackName=
+"icemdCallback_"+
+Date.now()+
+"_"+Math.floor(Math.random()*10000);
+
 params.callback=callbackName;
 
-const query=Object.keys(params).map(function(key){
-return encodeURIComponent(key)+"="+encodeURIComponent(params[key]);
-}).join("&");
+const query=
+Object.keys(params)
+.map(function(key){
+return encodeURIComponent(key)+
+"="+
+encodeURIComponent(params[key]);
+})
+.join("&");
 
-const script=document.createElement("script");
+const script=
+document.createElement("script");
+
 let finished=false;
 
-const timeout=setTimeout(function(){
+const timeout=
+setTimeout(function(){
+
 if(finished)return;
+
 finished=true;
 
-try{delete window[callbackName]}catch(e){}
-if(script.parentNode)script.parentNode.removeChild(script);
+try{
+delete window[callbackName];
+}catch(e){}
+
+if(script.parentNode)
+script.parentNode.removeChild(script);
 
 callback({
 status:"error",
 message:"Unable to connect to the server."
 });
+
 },15000);
 
+
 window[callbackName]=function(data){
+
 if(finished)return;
+
 finished=true;
+
 clearTimeout(timeout);
 
-try{delete window[callbackName]}catch(e){}
-if(script.parentNode)script.parentNode.removeChild(script);
+try{
+delete window[callbackName];
+}catch(e){}
+
+if(script.parentNode)
+script.parentNode.removeChild(script);
 
 callback(data);
+
 };
 
-script.src=APPS_SCRIPT_URL+"?"+query;
+
+script.src=
+APPS_SCRIPT_URL+
+"?"+
+query;
 
 script.onerror=function(){
+
 if(finished)return;
+
 finished=true;
+
 clearTimeout(timeout);
 
-try{delete window[callbackName]}catch(e){}
-if(script.parentNode)script.parentNode.removeChild(script);
+try{
+delete window[callbackName];
+}catch(e){}
+
+if(script.parentNode)
+script.parentNode.removeChild(script);
 
 callback({
 status:"error",
 message:"Unable to connect to the server."
 });
+
 };
 
 document.body.appendChild(script);
+
 }
 
+
+function apiRequestPromise(params){
+
+return new Promise(function(resolve){
+
+apiRequest(
+params,
+function(result){
+resolve(result);
+}
+);
+
+});
+
+}
+
+
+/* =====================================================
+   USERS
+   ===================================================== */
+
 function loadUsers(){
-const list=document.getElementById("usersList");
+
+const list=
+document.getElementById("usersList");
+
 list.className="loading";
 list.innerHTML="Loading users...";
 
@@ -556,13 +1330,27 @@ action:"users",
 _cache:Date.now()
 },function(result){
 
-if(!result||result.status!=="success"){
+if(
+!result||
+result.status!=="success"
+){
+
 list.className="message error";
-list.textContent=result&&result.message?result.message:"Unable to load users.";
+
+list.textContent=
+result&&result.message
+?result.message
+:"Unable to load users.";
+
 return;
+
 }
 
-const users=Array.isArray(result.data)?result.data:[];
+const users=
+Array.isArray(result.data)
+?result.data
+:[];
+
 renderUsers(users);
 
 apiRequest({
@@ -572,35 +1360,73 @@ _cache:Date.now()
 
 let limit=30;
 
-if(settingsResult&&settingsResult.status==="success"){
-const settings=settingsResult.settings||{};
-limit=Number(settings["Assistant Limit"]||30);
+if(
+settingsResult&&
+settingsResult.status==="success"
+){
+
+const settings=
+settingsResult.settings||{};
+
+limit=
+Number(
+settings["Assistant Limit"]||30
+);
+
 }
 
 updateUserSummary(users,limit);
+
 });
+
 });
+
 }
+
 
 function updateUserSummary(users,limit){
+
 const total=users.length;
 
-const active=users.filter(function(user){
-return String(user["Status"]||"").trim().toUpperCase()==="ACTIVE";
+const active=
+users.filter(function(user){
+
+return String(
+user["Status"]||""
+)
+.trim()
+.toUpperCase()==="ACTIVE";
+
 }).length;
 
-document.getElementById("totalUsers").textContent=total;
-document.getElementById("activeUsers").textContent=active;
-document.getElementById("userLimit").textContent=limit;
+document.getElementById(
+"totalUsers"
+).textContent=total;
+
+document.getElementById(
+"activeUsers"
+).textContent=active;
+
+document.getElementById(
+"userLimit"
+).textContent=limit;
+
 }
 
+
 function renderUsers(users){
-const list=document.getElementById("usersList");
+
+const list=
+document.getElementById("usersList");
 
 if(!users.length){
+
 list.className="empty";
-list.textContent="No users have been added yet.";
+list.textContent=
+"No users have been added yet.";
+
 return;
+
 }
 
 list.className="user-list";
@@ -608,47 +1434,104 @@ list.innerHTML="";
 
 users.forEach(function(user){
 
-const name=String(user["Name"]||"").trim();
-const email=String(user["Email"]||"").trim().toLowerCase();
+const name=
+String(
+user["Name"]||""
+).trim();
 
-const userStatus=String(user["Status"]||"").trim().toUpperCase();
-const isActive=userStatus==="ACTIVE";
+const email=
+String(
+user["Email"]||""
+).trim()
+.toLowerCase();
 
-const item=document.createElement("div");
+const userStatus=
+String(
+user["Status"]||""
+).trim()
+.toUpperCase();
+
+const isActive=
+userStatus==="ACTIVE";
+
+const item=
+document.createElement("div");
+
 item.className="user-item";
 
-const nameElement=document.createElement("div");
+const nameElement=
+document.createElement("div");
+
 nameElement.className="user-name";
 nameElement.textContent=name;
 
-const emailElement=document.createElement("div");
+const emailElement=
+document.createElement("div");
+
 emailElement.className="user-email";
-emailElement.textContent=email||"Email not available";
+emailElement.textContent=
+email||"Email not available";
 
-const statusElement=document.createElement("div");
-statusElement.className="user-status "+(isActive?"status-active":"status-inactive");
-statusElement.textContent="Status: "+(isActive?"ACTIVE":"INACTIVE");
+const statusElement=
+document.createElement("div");
 
-const actions=document.createElement("div");
+statusElement.className=
+"user-status "+
+(isActive
+?"status-active"
+:"status-inactive");
+
+statusElement.textContent=
+"Status: "+
+(isActive?"ACTIVE":"INACTIVE");
+
+const actions=
+document.createElement("div");
+
 actions.className="user-actions";
 
-const statusButton=document.createElement("button");
+const statusButton=
+document.createElement("button");
+
 statusButton.type="button";
 statusButton.className="small-button";
-statusButton.textContent=isActive?"Deactivate":"Activate";
+
+statusButton.textContent=
+isActive
+?"Deactivate"
+:"Activate";
 
 statusButton.onclick=function(){
-const newStatus=isActive?"INACTIVE":"ACTIVE";
-changeUserStatus(email,newStatus,statusButton);
+
+const newStatus=
+isActive
+?"INACTIVE"
+:"ACTIVE";
+
+changeUserStatus(
+email,
+newStatus,
+statusButton
+);
+
 };
 
-const deleteButton=document.createElement("button");
+const deleteButton=
+document.createElement("button");
+
 deleteButton.type="button";
-deleteButton.className="small-button delete";
+deleteButton.className=
+"small-button delete";
+
 deleteButton.textContent="Delete";
 
 deleteButton.onclick=function(){
-deleteExistingUser(email,deleteButton);
+
+deleteExistingUser(
+email,
+deleteButton
+);
+
 };
 
 actions.appendChild(statusButton);
@@ -660,71 +1543,159 @@ item.appendChild(statusElement);
 item.appendChild(actions);
 
 list.appendChild(item);
+
 });
+
 }
+
 
 function addNewUser(event){
+
 event.preventDefault();
 
-const name=document.getElementById("newUserName").value.trim();
-const email=document.getElementById("newUserEmail").value.trim().toLowerCase();
+const name=
+document.getElementById(
+"newUserName"
+).value.trim();
+
+const email=
+document.getElementById(
+"newUserEmail"
+).value.trim()
+.toLowerCase();
 
 if(!name){
-showUserMessage("Please enter the user's name.","error");
+
+showUserMessage(
+"Please enter the user's name.",
+"error"
+);
+
 return;
+
 }
 
-const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const emailPattern=
+/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 if(!emailPattern.test(email)){
-showUserMessage("Please enter a valid email address.","error");
+
+showUserMessage(
+"Please enter a valid email address.",
+"error"
+);
+
 return;
+
 }
 
-showUserMessage("Adding user...","info");
+showUserMessage(
+"Adding user...",
+"info"
+);
 
 apiRequest({
+
 action:"addUser",
 name:name,
 email:email,
 _cache:Date.now()
+
 },function(result){
 
-if(!result||result.status!=="success"){
+if(
+!result||
+result.status!=="success"
+){
+
 showUserMessage(
-result&&result.message?result.message:"Unable to add user.",
+result&&result.message
+?result.message
+:"Unable to add user.",
 "error"
 );
+
 return;
+
 }
 
-showUserMessage("User added successfully.","success");
-document.getElementById("addUserForm").reset();
+showUserMessage(
+"User added successfully.",
+"success"
+);
+
+document.getElementById(
+"addUserForm"
+).reset();
+
 loadUsers();
+
 });
+
 }
+
 
 function showUserMessage(text,type){
-const message=document.getElementById("userMessage");
-message.className="message "+type;
+
+const message=
+document.getElementById(
+"userMessage"
+);
+
+message.className=
+"message "+
+type;
+
 message.textContent=text;
+
 }
 
-function changeUserStatus(email,status,button){
-email=String(email||"").trim().toLowerCase();
-status=String(status||"").trim().toUpperCase();
+
+function changeUserStatus(
+email,
+status,
+button
+){
+
+email=
+String(email||"")
+.trim()
+.toLowerCase();
+
+status=
+String(status||"")
+.trim()
+.toUpperCase();
 
 if(!email){
-showUserMessage("User email is missing.","error");
+
+showUserMessage(
+"User email is missing.",
+"error"
+);
+
 return;
+
 }
 
-if(status!=="ACTIVE"&&status!=="INACTIVE"){
-showUserMessage("Invalid user status.","error");
+if(
+status!=="ACTIVE"&&
+status!=="INACTIVE"
+){
+
+showUserMessage(
+"Invalid user status.",
+"error"
+);
+
 return;
+
 }
 
-const actionText=status==="ACTIVE"?"activate":"deactivate";
+const actionText=
+status==="ACTIVE"
+?"activate"
+:"deactivate";
 
 if(!confirm(
 "Are you sure you want to "+
@@ -732,38 +1703,63 @@ actionText+
 " this user?\n\n"+
 email
 )){
+
 return;
+
 }
 
 if(button){
+
 button.disabled=true;
-button.textContent=status==="ACTIVE"?"Activating...":"Deactivating...";
+
+button.textContent=
+status==="ACTIVE"
+?"Activating..."
+:"Deactivating...";
+
 }
 
 showUserMessage(
-status==="ACTIVE"?"Activating user...":"Deactivating user...",
+status==="ACTIVE"
+?"Activating user..."
+:"Deactivating user...",
 "info"
 );
 
 apiRequest({
+
 action:"updateUser",
 email:email,
 status:status,
 _cache:Date.now()
+
 },function(result){
 
-if(!result||result.status!=="success"){
+if(
+!result||
+result.status!=="success"
+){
 
 if(button){
+
 button.disabled=false;
-button.textContent=status==="ACTIVE"?"Activate":"Deactivate";
+
+button.textContent=
+status==="ACTIVE"
+?"Activate"
+:"Deactivate";
+
 }
 
 showUserMessage(
-result&&result.message?result.message:"Unable to update user.",
+result&&result.message
+?result.message
+:"Unable to update user.",
 "error"
 );
+
 return;
+
 }
 
 showUserMessage(
@@ -776,15 +1772,31 @@ status==="ACTIVE"
 setTimeout(function(){
 loadUsers();
 },300);
+
 });
+
 }
 
-function deleteExistingUser(email,button){
-email=String(email||"").trim().toLowerCase();
+
+function deleteExistingUser(
+email,
+button
+){
+
+email=
+String(email||"")
+.trim()
+.toLowerCase();
 
 if(!email){
-showUserMessage("User email is missing.","error");
+
+showUserMessage(
+"User email is missing.",
+"error"
+);
+
 return;
+
 }
 
 if(!confirm(
@@ -792,55 +1804,93 @@ if(!confirm(
 email+
 "\n\nThis action cannot be undone."
 )){
+
 return;
+
 }
 
 if(button){
+
 button.disabled=true;
 button.textContent="Deleting...";
-}
 
-showUserMessage("Deleting user...","info");
-
-apiRequest({
-action:"deleteUser",
-email:email,
-_cache:Date.now()
-},function(result){
-
-if(!result||result.status!=="success"){
-
-if(button){
-button.disabled=false;
-button.textContent="Delete";
 }
 
 showUserMessage(
-result&&result.message?result.message:"Unable to delete user.",
-"error"
+"Deleting user...",
+"info"
 );
-return;
+
+apiRequest({
+
+action:"deleteUser",
+email:email,
+_cache:Date.now()
+
+},function(result){
+
+if(
+!result||
+result.status!=="success"
+){
+
+if(button){
+
+button.disabled=false;
+button.textContent="Delete";
+
 }
 
-showUserMessage("User deleted successfully.","success");
+showUserMessage(
+result&&result.message
+?result.message
+:"Unable to delete user.",
+"error"
+);
+
+return;
+
+}
+
+showUserMessage(
+"User deleted successfully.",
+"success"
+);
 
 setTimeout(function(){
 loadUsers();
 },300);
+
 });
+
 }
 
-function loadFoodSettings(){
-const container=document.getElementById("foodSettingsContainer");
 
-container.innerHTML='<div class="loading">Loading food settings...</div>';
+/* =====================================================
+   FOOD
+   ===================================================== */
+
+function loadFoodSettings(){
+
+const container=
+document.getElementById(
+"foodSettingsContainer"
+);
+
+container.innerHTML=
+'<div class="loading">Loading food settings...</div>';
 
 apiRequest({
+
 action:"foodSettings",
 _cache:Date.now()
+
 },function(result){
 
-if(!result||result.status!=="success"){
+if(
+!result||
+result.status!=="success"
+){
 
 container.innerHTML=
 '<div class="message error">'+
@@ -852,56 +1902,113 @@ result&&result.message
 '</div>';
 
 return;
+
 }
 
-renderFoodSettings(result.dates||{});
+renderFoodSettings(
+result.dates||{}
+);
+
 });
+
 }
+
 
 function renderFoodSettings(dates){
-const container=document.getElementById("foodSettingsContainer");
+
+const container=
+document.getElementById(
+"foodSettingsContainer"
+);
+
 container.innerHTML="";
 
-["21","22","23"].forEach(function(day){
+["21","22","23"].forEach(
+function(day){
 
-const current=dates[day]||"OFF";
+const current=
+dates[day]||"OFF";
 
-const box=document.createElement("div");
+const box=
+document.createElement("div");
+
 box.className="food-day";
 
-const title=document.createElement("div");
-title.className="food-day-title";
-title.textContent="December "+day+", 2026";
+const title=
+document.createElement("div");
 
-const select=document.createElement("select");
-select.id="foodSelect_"+day;
+title.className=
+"food-day-title";
 
-["OFF","Breakfast","Lunch","Dinner"].forEach(function(meal){
+title.textContent=
+"December "+
+day+
+", 2026";
 
-const option=document.createElement("option");
+const select=
+document.createElement("select");
+
+select.id=
+"foodSelect_"+day;
+
+[
+"OFF",
+"Breakfast",
+"Lunch",
+"Dinner"
+].forEach(function(meal){
+
+const option=
+document.createElement("option");
 
 option.value=meal;
 option.textContent=meal;
 
-if(meal.toLowerCase()===String(current).toLowerCase()){
+if(
+meal.toLowerCase()===
+String(current).toLowerCase()
+){
+
 option.selected=true;
+
 }
 
 select.appendChild(option);
+
 });
 
-const currentText=document.createElement("div");
-currentText.className="food-current";
-currentText.id="foodCurrent_"+day;
-currentText.textContent="Current setting: "+current;
+const currentText=
+document.createElement("div");
 
-const button=document.createElement("button");
+currentText.className=
+"food-current";
+
+currentText.id=
+"foodCurrent_"+day;
+
+currentText.textContent=
+"Current setting: "+
+current;
+
+const button=
+document.createElement("button");
+
 button.type="button";
 button.className="food-save";
-button.textContent="Save "+day+" December";
+
+button.textContent=
+"Save "+
+day+
+" December";
 
 button.onclick=function(){
-saveFoodSetting(day,select.value,button);
+
+saveFoodSetting(
+day,
+select.value,
+button
+);
+
 };
 
 box.appendChild(title);
@@ -910,90 +2017,149 @@ box.appendChild(currentText);
 box.appendChild(button);
 
 container.appendChild(box);
+
 });
 }
 
-function saveFoodSetting(day,meal,button){
-const message=document.getElementById("foodMessage");
+
+function saveFoodSetting(
+day,
+meal,
+button
+){
+
+const message=
+document.getElementById(
+"foodMessage"
+);
 
 if(button){
+
 button.disabled=true;
+
 button.textContent="Saving...";
+
 }
 
 message.className="message";
 message.textContent="";
 
 apiRequest({
+
 action:"updateFoodSetting",
 day:day,
 meal:meal,
 _cache:Date.now()
+
 },function(result){
 
 if(button){
+
 button.disabled=false;
-button.textContent="Save "+day+" December";
+
+button.textContent=
+"Save "+
+day+
+" December";
+
 }
 
-if(!result||result.status!=="success"){
+if(
+!result||
+result.status!=="success"
+){
 
-message.className="message error";
+message.className=
+"message error";
+
 message.textContent=
 result&&result.message
 ?result.message
 :"Unable to update food setting.";
 
 return;
+
 }
 
-const current=document.getElementById("foodCurrent_"+day);
+const current=
+document.getElementById(
+"foodCurrent_"+day
+);
 
 if(current){
-current.textContent="Current setting: "+meal;
+
+current.textContent=
+"Current setting: "+
+meal;
+
 }
 
-message.className="message success";
+message.className=
+"message success";
+
 message.textContent=
 "Food service updated successfully for December "+
 day+".";
+
 });
+
 }
 
+
+/* =====================================================
+   HELPERS
+   ===================================================== */
+
 function escapeHTML(value){
+
 return String(value||"")
 .replace(/&/g,"&amp;")
 .replace(/</g,"&lt;")
 .replace(/>/g,"&gt;")
 .replace(/"/g,"&quot;")
 .replace(/'/g,"&#039;");
+
 }
+
+
+/* =====================================================
+   PARTICIPANT EXCEL UPLOAD
+   ===================================================== */
 
 function uploadGuestExcel(){
 
-const input=document.createElement("input");
+const input=
+document.createElement("input");
 
 input.type="file";
 input.accept=".xlsx,.xls";
 
 input.onchange=async function(event){
 
-const file=event.target.files[0];
+const file=
+event.target.files[0];
 
 if(!file)return;
 
 try{
 
-const arrayBuffer=await file.arrayBuffer();
+const arrayBuffer=
+await file.arrayBuffer();
 
-const workbook=XLSX.read(
+const workbook=
+XLSX.read(
 arrayBuffer,
 {type:"array"}
 );
 
 if(!workbook.SheetNames.length){
-alert("The Excel file does not contain any worksheet.");
+
+alert(
+"The Excel file does not contain any worksheet."
+);
+
 return;
+
 }
 
 const worksheet=
@@ -1008,12 +2174,20 @@ worksheet,
 );
 
 if(!rawRows.length){
-alert("The Excel file is empty.");
+
+alert(
+"The Excel file is empty."
+);
+
 return;
+
 }
 
-const firstRow=rawRows[0];
-const columns=Object.keys(firstRow);
+const firstRow=
+rawRows[0];
+
+const columns=
+Object.keys(firstRow);
 
 const requiredColumns=[
 "Name",
@@ -1048,6 +2222,7 @@ missingColumns.join(", ")+
 );
 
 return;
+
 }
 
 const guests=
@@ -1113,6 +2288,7 @@ invalidRows.join(", ")
 );
 
 return;
+
 }
 
 const confirmed=
@@ -1131,6 +2307,7 @@ let totalRecords=guests.length;
 let newRegistrations=0;
 let skippedDuplicates=0;
 let errors=0;
+
 const allErrors=[];
 
 const totalBatches=
@@ -1169,13 +2346,13 @@ totalRecords
 );
 
 const result=
-await apiRequestPromise(
-{
+await apiRequestPromise({
+
 action:"importGuests",
 rows:JSON.stringify(batch),
 _cache:Date.now()
-}
-);
+
+});
 
 if(!result){
 
@@ -1188,6 +2365,7 @@ reason:
 });
 
 continue;
+
 }
 
 if(result.status!=="success"){
@@ -1202,6 +2380,7 @@ result.message||
 });
 
 continue;
+
 }
 
 newRegistrations+=
@@ -1326,23 +2505,342 @@ input.click();
 
 }
 
-function apiRequestPromise(params){
 
-return new Promise(
-function(resolve){
+/* =====================================================
+   INVITED GUEST EXCEL UPLOAD
+   ===================================================== */
 
-apiRequest(
-params,
-function(result){
+function uploadInvitedExcel(){
 
-resolve(result);
+const input=
+document.createElement("input");
+
+input.type="file";
+input.accept=".xlsx,.xls";
+
+input.onchange=async function(event){
+
+const file=
+event.target.files[0];
+
+if(!file)return;
+
+try{
+
+const arrayBuffer=
+await file.arrayBuffer();
+
+const workbook=
+XLSX.read(
+arrayBuffer,
+{type:"array"}
+);
+
+if(!workbook.SheetNames.length){
+
+alert(
+"The Excel file does not contain any worksheet."
+);
+
+return;
 
 }
+
+const worksheet=
+workbook.Sheets[
+workbook.SheetNames[0]
+];
+
+const rawRows=
+XLSX.utils.sheet_to_json(
+worksheet,
+{defval:""}
 );
+
+if(!rawRows.length){
+
+alert(
+"The Excel file is empty."
+);
+
+return;
+
+}
+
+const columns=
+Object.keys(rawRows[0]);
+
+const requiredColumns=[
+"Name",
+"Email"
+];
+
+const missingColumns=
+requiredColumns.filter(
+function(column){
+
+return !columns.some(
+function(existingColumn){
+
+return String(existingColumn)
+.trim()
+.toLowerCase()===
+column.toLowerCase();
 
 });
 
+});
+
+if(missingColumns.length){
+
+alert(
+"Invalid Excel format.\n\n"+
+"Missing column(s): "+
+missingColumns.join(", ")+
+"\n\nRequired columns are:\n"+
+"Name\nEmail\nInstitute\nID (optional)"
+);
+
+return;
+
 }
+
+const guests=
+rawRows.map(
+function(row){
+
+let id="";
+let name="";
+let email="";
+let institute="";
+
+Object.keys(row).forEach(
+function(key){
+
+const normalizedKey=
+String(key)
+.trim()
+.toLowerCase();
+
+if(
+normalizedKey==="id"||
+normalizedKey==="registration id"
+){
+
+id=
+String(row[key]||"").trim();
+
+}
+
+if(normalizedKey==="name")
+name=
+String(row[key]||"").trim();
+
+if(normalizedKey==="email")
+email=
+String(row[key]||"").trim();
+
+if(normalizedKey==="institute")
+institute=
+String(row[key]||"").trim();
+
+});
+
+return{
+ID:id,
+Name:name,
+Email:email,
+Institute:institute
+};
+
+});
+
+const invalidRows=[];
+
+guests.forEach(
+function(guest,index){
+
+if(
+!guest.Name||
+!guest.Email
+){
+
+invalidRows.push(index+2);
+
+}
+
+});
+
+if(invalidRows.length){
+
+alert(
+"Some Excel rows are missing Name or Email.\n\n"+
+"Invalid row(s): "+
+invalidRows.join(", ")
+);
+
+return;
+
+}
+
+const confirmed=
+confirm(
+"Excel file loaded successfully.\n\n"+
+"Total invited guests: "+
+guests.length+
+"\n\nDo you want to upload these invited guests?"
+);
+
+if(!confirmed)return;
+
+showGenericUploadProgress(
+0,
+guests.length,
+"Uploading invited guests"
+);
+
+let added=0;
+let skipped=0;
+let errors=0;
+
+const errorDetails=[];
+
+for(
+let i=0;
+i<guests.length;
+i++
+){
+
+showGenericUploadProgress(
+i+1,
+guests.length,
+"Uploading invited guests"
+);
+
+const guest=
+guests[i];
+
+const result=
+await apiRequestPromise({
+
+action:"addInvitedGuest",
+
+id:guest.ID,
+
+name:guest.Name,
+
+email:guest.Email.toLowerCase(),
+
+institute:guest.Institute,
+
+_cache:Date.now()
+
+});
+
+if(
+result&&
+result.status==="success"
+){
+
+added++;
+
+}else if(
+result&&
+result.message&&
+/already exists|duplicate/i.test(
+result.message
+)
+){
+
+skipped++;
+
+}else{
+
+errors++;
+
+errorDetails.push({
+row:i+2,
+reason:
+result&&result.message
+?result.message
+:"Unable to add invited guest."
+});
+
+}
+
+}
+
+hideGenericUploadProgress();
+
+let message=
+"Invited guest upload completed.\n\n"+
+"Total Excel records: "+
+guests.length+
+"\nAdded: "+
+added+
+"\nSkipped: "+
+skipped+
+"\nErrors: "+
+errors;
+
+if(errorDetails.length){
+
+message+=
+"\n\nError details:";
+
+errorDetails
+.slice(0,10)
+.forEach(function(error){
+
+message+=
+"\nRow "+
+error.row+
+": "+
+error.reason;
+
+});
+
+if(errorDetails.length>10){
+
+message+=
+"\n...and "+
+(
+errorDetails.length-10
+)+
+" more error(s).";
+
+}
+
+}
+
+alert(message);
+
+}catch(error){
+
+hideGenericUploadProgress();
+
+console.error(
+"Invited guest Excel upload error:",
+error
+);
+
+alert(
+"Unable to process the Excel file.\n\n"+
+error.message
+);
+
+}
+
+};
+
+input.click();
+
+}
+
+
+/* =====================================================
+   UPLOAD PROGRESS
+   ===================================================== */
 
 function showGuestUploadProgress(
 currentBatch,
@@ -1379,13 +2877,14 @@ overlay.style.zIndex="99999";
 
 overlay.innerHTML=
 '<div style="background:#fff;padding:25px;border-radius:12px;width:320px;max-width:85%;text-align:center;box-shadow:0 5px 25px rgba(0,0,0,.25);">'+
-'<div style="font-size:20px;font-weight:bold;color:#17365d;margin-bottom:12px;">Uploading Guests</div>'+
+'<div style="font-size:20px;font-weight:bold;color:#17365d;margin-bottom:12px;">Uploading Participants</div>'+
 '<div id="guestUploadProgressText" style="font-size:15px;color:#555;"></div>'+
 '<div style="margin-top:15px;height:8px;background:#e5e5e5;border-radius:5px;overflow:hidden;">'+
 '<div id="guestUploadProgressBar" style="height:100%;width:0%;background:#17365d;transition:width .2s ease;"></div>'+
 '</div></div>';
 
 document.body.appendChild(overlay);
+
 }
 
 const percentage=
@@ -1428,6 +2927,7 @@ percentage+
 
 }
 
+
 function hideGuestUploadProgress(){
 
 const overlay=
@@ -1441,654 +2941,159 @@ overlay.remove();
 }
 
 
-/* =====================================================
-   INVITED GUESTS
-   ===================================================== */
-function hideAllAdminSections(){
-document.getElementById("dashboardSection").classList.add("hidden");
-document.getElementById("usersSection").classList.add("hidden");
-document.getElementById("foodSection").classList.add("hidden");
-document.getElementById("invitedGuestsSection").classList.add("hidden");
-document.getElementById("guestQRMailSection").classList.add("hidden");
-document.getElementById("invitedQRMailSection").classList.add("hidden");
-document.getElementById("participantUpdatesSection").classList.add("hidden");
-document.getElementById("invitedUpdatesSection").classList.add("hidden");
-}
-function openInvitedGuests(){
-hideAllAdminSections();
-document.getElementById("invitedGuestsSection").classList.remove("hidden");
-loadInvitedGuests();
-}
-function closeInvitedGuests(){
-document.getElementById("invitedGuestsSection").classList.add("hidden");
-document.getElementById("dashboardSection").classList.remove("hidden");
-}
-function addNewInvitedGuest(event){
-event.preventDefault();
-const id=document.getElementById("invitedId").value.trim();
-const name=document.getElementById("invitedName").value.trim();
-const email=document.getElementById("invitedEmail").value.trim().toLowerCase();
-const institute=document.getElementById("invitedInstitute").value.trim();
-if(!name||!email){
-showInvitedGuestMessage("Name and email are required.","error");
-return;
-}
-showInvitedGuestMessage("Adding invited guest...","info");
-apiRequest({
-action:"addInvitedGuest",
-id:id,
-name:name,
-email:email,
-institute:institute,
-_cache:Date.now()
-},function(result){
-if(!result||result.status!=="success"){
-showInvitedGuestMessage(result&&result.message?result.message:"Unable to add invited guest.","error");
-return;
-}
-showInvitedGuestMessage("Invited guest added successfully: "+(result.id||id),"success");
-document.getElementById("addInvitedGuestForm").reset();
-loadInvitedGuests();
-});
-}
-function showInvitedGuestMessage(text,type){
-const message=document.getElementById("invitedGuestMessage");
-message.className="message "+type;
-message.textContent=text;
-}
-function loadInvitedGuests(){
-const list=document.getElementById("invitedGuestsList");
-list.className="loading";
-list.textContent="Loading invited guests...";
-apiRequest({
-action:"getInvitedGuests",
-_cache:Date.now()
-},function(result){
-if(!result||result.status!=="success"){
-list.className="message error";
-list.textContent=result&&result.message?result.message:"Unable to load invited guests.";
-return;
-}
-renderInvitedGuests(Array.isArray(result.data)?result.data:[]);
-});
-}
-function renderInvitedGuests(guests){
-const list=document.getElementById("invitedGuestsList");
-if(!guests.length){
-list.className="empty";
-list.textContent="No invited guests have been added yet.";
-return;
-}
-list.className="invited-list";
-list.innerHTML="";
-guests.forEach(function(guest){
-const id=String(guest["ID"]||"").trim();
-const name=String(guest["Name"]||"").trim();
-const email=String(guest["Email"]||"").trim();
-const institute=String(guest["Institute"]||"").trim();
-const storedQR=String(guest["QR Code"]||"").trim();
+function showGenericUploadProgress(
+current,
+total,
+title
+){
 
-const item=document.createElement("div");
-item.className="invited-item";
-
-const title=document.createElement("div");
-title.className="invited-name";
-title.textContent=id+" — "+name;
-
-const emailElement=document.createElement("div");
-emailElement.className="invited-meta";
-emailElement.textContent=email;
-
-const instituteElement=document.createElement("div");
-instituteElement.className="invited-meta";
-instituteElement.textContent=institute||"Institute not provided";
-
-const qrStatus=document.createElement("div");
-qrStatus.className="email-status "+(storedQR?"email-sent":"email-unsent");
-qrStatus.textContent=storedQR?"✓ QR stored in sheet":"QR not stored";
-
-const status=document.createElement("div");
-status.className="email-status email-unsent";
-status.textContent="Checking QR email status...";
-
-const qrButton=document.createElement("button");
-qrButton.type="button";
-qrButton.className="small-button";
-qrButton.textContent=storedQR?"Send QR Email":"Generate / Store QR";
-qrButton.disabled=!storedQR;
-
-const deleteButton=document.createElement("button");
-deleteButton.type="button";
-deleteButton.className="small-button delete";
-deleteButton.textContent="Delete";
-
-const actions=document.createElement("div");
-actions.className="invited-actions";
-actions.appendChild(qrButton);
-actions.appendChild(deleteButton);
-
-item.appendChild(title);
-item.appendChild(emailElement);
-item.appendChild(instituteElement);
-item.appendChild(qrStatus);
-item.appendChild(status);
-item.appendChild(actions);
-list.appendChild(item);
-
-qrButton.onclick=function(){
-if(!storedQR){
-generateAndStoreInvitedQR(id,item,qrButton,qrStatus);
-return;
-}
-sendInvitedQREmail(id,qrButton,status);
-};
-deleteButton.onclick=function(){
-deleteExistingInvitedGuest(id,deleteButton);
-};
-
-if(storedQR){
-apiRequest({
-action:"getQREmailStatus",
-id:id,
-guestType:"INVITED",
-_cache:Date.now()
-},function(result){
-if(result&&result.status==="success"){
-if(String(result.statusText||"").toUpperCase()==="SENT"){
-status.className="email-status email-sent";
-status.textContent="✓ QR email SENT";
-qrButton.textContent="✓ SENT";
-qrButton.style.background="#2e7d32";
-}else{
-status.className="email-status email-unsent";
-status.textContent=String(result.statusText||"UNSENT").toUpperCase()==="FAILED"?"✗ Previous send FAILED — retry available":"QR email UNSENT";
-}
-}else{
-status.textContent="QR email status unavailable";
-}
-});
-}
-});
-}
-function generateAndStoreInvitedQR(id,item,button,qrStatus){
-button.disabled=true;
-button.textContent="Generating...";
-const qrHolder=document.createElement("div");
-qrHolder.style.width="180px";
-qrHolder.style.height="180px";
-qrHolder.style.margin="12px auto";
-item.insertBefore(qrHolder,qrStatus);
-new QRCode(qrHolder,{text:id,width:180,height:180,correctLevel:QRCode.CorrectLevel.H});
-setTimeout(function(){
-const canvas=qrHolder.querySelector("canvas");
-const img=qrHolder.querySelector("img");
-const qrDataURL=canvas?canvas.toDataURL("image/png"):(img?img.src:"");
-if(!qrDataURL){
-button.disabled=false;
-button.textContent="Generate / Store QR";
-qrStatus.className="email-status email-failed";
-qrStatus.textContent="Unable to read QR image.";
-return;
-}
-apiRequest({
-action:"saveInvitedGuestQR",
-id:id,
-qrCode:qrDataURL,
-_cache:Date.now()
-},function(result){
-if(result&&result.status==="success"){
-qrStatus.className="email-status email-sent";
-qrStatus.textContent="✓ QR stored in sheet";
-button.textContent="Send QR Email";
-button.disabled=false;
-}else{
-button.disabled=false;
-button.textContent="Generate / Store QR";
-qrStatus.className="email-status email-failed";
-qrStatus.textContent=result&&result.message?result.message:"Unable to store QR.";
-}
-});
-},250);
-}
-function sendInvitedQREmail(id,button,status){
-button.disabled=true;
-button.textContent="Sending...";
-apiRequest({
-action:"sendInvitedGuestQREmail",
-id:id,
-_cache:Date.now()
-},function(result){
-if(result&&result.status==="success"){
-button.textContent="✓ SENT";
-button.style.background="#2e7d32";
-status.className="email-status email-sent";
-status.textContent="✓ QR email SENT";
-}else{
-button.disabled=false;
-button.textContent="Send QR Email";
-status.className="email-status email-failed";
-status.textContent=result&&result.message?result.message:"QR email failed. Retry available.";
-}
-});
-}
-function deleteExistingInvitedGuest(id,button){
-if(!confirm("Are you sure you want to permanently delete invited guest "+id+"?"))return;
-button.disabled=true;
-button.textContent="Deleting...";
-apiRequest({
-action:"deleteInvitedGuest",
-id:id,
-_cache:Date.now()
-},function(result){
-if(!result||result.status!=="success"){
-button.disabled=false;
-button.textContent="Delete";
-showInvitedGuestMessage(result&&result.message?result.message:"Unable to delete invited guest.","error");
-return;
-}
-showInvitedGuestMessage("Invited guest deleted successfully.","success");
-loadInvitedGuests();
-});
-}
-function sendAllInvitedQREmails(){
-const message=document.getElementById("invitedGuestMessage")||document.getElementById("invitedQRMailMessage");
-if(message){
-message.className="message info";
-message.textContent="Sending all unsent invited guest QR emails...";
-}
-apiRequest({
-action:"sendAllUnsentInvitedGuestQREmails",
-_cache:Date.now()
-},function(result){
-if(!result||result.status!=="success"){
-if(message){message.className="message error";message.textContent=result&&result.message?result.message:"Unable to send invited guest QR emails.";}
-return;
-}
-const text="QR email process completed. Sent: "+result.sent+" | Already sent: "+result.alreadySent+" | Failed: "+result.failed;
-if(message){message.className="message "+(result.failed?"error":"success");message.textContent=text;}
-loadInvitedGuests();
-loadInvitedQRMail();
-});
-}
-
-/* =====================================================
-   PARTICIPANT QR EMAIL STATUS
-   ===================================================== */
-function openGuestQRMail(){
-hideAllAdminSections();
-document.getElementById("guestQRMailSection").classList.remove("hidden");
-loadGuestQRMail();
-}
-function closeGuestQRMail(){
-document.getElementById("guestQRMailSection").classList.add("hidden");
-document.getElementById("dashboardSection").classList.remove("hidden");
-}
-function loadGuestQRMail(){
-const list=document.getElementById("guestQRMailList");
-list.className="loading";
-list.textContent="Loading participant QR status...";
-apiRequest({
-action:"guests",
-_cache:Date.now()
-},function(result){
-if(!result||result.status!=="success"){
-list.className="message error";
-list.textContent=result&&result.message?result.message:"Unable to load participants.";
-return;
-}
-const guests=Array.isArray(result.data)?result.data:[];
-document.getElementById("guestQRTotal").textContent=guests.length;
-if(!guests.length){
-document.getElementById("guestQRSent").textContent="0";
-document.getElementById("guestQRUnsent").textContent="0";
-list.className="empty";
-list.textContent="No participants found.";
-return;
-}
-let completed=0,sent=0;
-list.className="invited-list";
-list.innerHTML="";
-guests.forEach(function(guest){
-const id=String(guest["Registration ID"]||"").trim();
-const name=String(guest["Name"]||"").trim();
-const email=String(guest["Email"]||"").trim();
-const institute=String(guest["Institute"]||"").trim();
-const storedQR=String(guest["QR Code"]||"").trim();
-
-const item=document.createElement("div");
-item.className="invited-item";
-item.innerHTML='<div class="invited-name">'+escapeHTML(id+" — "+name)+'</div>'+
-'<div class="invited-meta">'+escapeHTML(email)+'</div>'+
-'<div class="invited-meta">'+escapeHTML(institute)+'</div>';
-
-const qrStatus=document.createElement("div");
-qrStatus.className="email-status "+(storedQR?"email-sent":"email-failed");
-qrStatus.textContent=storedQR?"✓ QR stored":"✗ QR not stored";
-
-const emailStatus=document.createElement("div");
-emailStatus.className="email-status email-unsent";
-emailStatus.textContent="Checking...";
-
-const button=document.createElement("button");
-button.type="button";
-button.className="qr-email-button";
-button.textContent=storedQR?"Send QR Email":"QR not stored";
-button.disabled=!storedQR;
-
-item.appendChild(qrStatus);
-item.appendChild(emailStatus);
-item.appendChild(button);
-list.appendChild(item);
-
-if(storedQR){
-apiRequest({
-action:"getQREmailStatus",
-id:id,
-guestType:"GUEST",
-_cache:Date.now()
-},function(statusResult){
-completed++;
-if(statusResult&&statusResult.status==="success"&&String(statusResult.statusText||"").toUpperCase()==="SENT"){
-sent++;
-emailStatus.className="email-status email-sent";
-emailStatus.textContent="✓ QR email SENT";
-button.textContent="✓ SENT";
-button.style.background="#2e7d32";
-}else if(statusResult&&statusResult.status==="success"&&String(statusResult.statusText||"").toUpperCase()==="FAILED"){
-emailStatus.className="email-status email-failed";
-emailStatus.textContent="✗ Previous send FAILED — retry available";
-}else{
-emailStatus.className="email-status email-unsent";
-emailStatus.textContent="QR email UNSENT";
-}
-document.getElementById("guestQRSent").textContent=sent;
-document.getElementById("guestQRUnsent").textContent=Math.max(guests.length-sent,0);
-});
-}else{
-completed++;
-document.getElementById("guestQRSent").textContent=sent;
-document.getElementById("guestQRUnsent").textContent=Math.max(guests.length-sent,0);
-}
-button.onclick=function(){
-button.disabled=true;
-button.textContent="Sending...";
-apiRequest({
-action:"sendGuestQREmail",
-registrationId:id,
-_cache:Date.now()
-},function(sendResult){
-if(sendResult&&sendResult.status==="success"){
-button.textContent="✓ SENT";
-button.style.background="#2e7d32";
-emailStatus.className="email-status email-sent";
-emailStatus.textContent="✓ QR email SENT";
-loadGuestQRMail();
-}else{
-button.disabled=false;
-button.textContent="Send QR Email";
-emailStatus.className="email-status email-failed";
-emailStatus.textContent=sendResult&&sendResult.message?sendResult.message:"QR email failed. Retry available.";
-}
-});
-};
-});
-});
-}
-function sendAllGuestQREmails(){
-const message=document.getElementById("guestQRMailMessage");
-message.className="message info";
-message.textContent="Sending all unsent participant QR emails...";
-apiRequest({
-action:"sendAllUnsentGuestQREmails",
-_cache:Date.now()
-},function(result){
-if(!result||result.status!=="success"){
-message.className="message error";
-message.textContent=result&&result.message?result.message:"Unable to send participant QR emails.";
-return;
-}
-message.className="message "+(result.failed?"error":"success");
-message.textContent="QR email process completed. Sent: "+result.sent+" | Already sent: "+result.alreadySent+" | Failed: "+result.failed;
-loadGuestQRMail();
-});
-}
-
-/* =====================================================
-   INVITED QR EMAIL STATUS
-   ===================================================== */
-function openInvitedQRMail(){
-hideAllAdminSections();
-document.getElementById("invitedQRMailSection").classList.remove("hidden");
-loadInvitedQRMail();
-}
-function closeInvitedQRMail(){
-document.getElementById("invitedQRMailSection").classList.add("hidden");
-document.getElementById("dashboardSection").classList.remove("hidden");
-}
-function loadInvitedQRMail(){
-const list=document.getElementById("invitedQRMailList");
-list.className="loading";
-list.textContent="Loading invited guest QR status...";
-apiRequest({
-action:"getInvitedGuests",
-_cache:Date.now()
-},function(result){
-if(!result||result.status!=="success"){
-list.className="message error";
-list.textContent=result&&result.message?result.message:"Unable to load invited guests.";
-return;
-}
-const guests=Array.isArray(result.data)?result.data:[];
-document.getElementById("invitedQRTotal").textContent=guests.length;
-if(!guests.length){
-document.getElementById("invitedQRSent").textContent="0";
-document.getElementById("invitedQRUnsent").textContent="0";
-list.className="empty";
-list.textContent="No invited guests found.";
-return;
-}
-let sent=0;
-list.className="invited-list";
-list.innerHTML="";
-guests.forEach(function(guest){
-const id=String(guest["ID"]||"").trim();
-const name=String(guest["Name"]||"").trim();
-const email=String(guest["Email"]||"").trim();
-const institute=String(guest["Institute"]||"").trim();
-const storedQR=String(guest["QR Code"]||"").trim();
-
-const item=document.createElement("div");
-item.className="invited-item";
-item.innerHTML='<div class="invited-name">'+escapeHTML(id+" — "+name)+'</div>'+
-'<div class="invited-meta">'+escapeHTML(email)+'</div>'+
-'<div class="invited-meta">'+escapeHTML(institute)+'</div>';
-
-const qrStatus=document.createElement("div");
-qrStatus.className="email-status "+(storedQR?"email-sent":"email-failed");
-qrStatus.textContent=storedQR?"✓ QR stored":"✗ QR not stored";
-const emailStatus=document.createElement("div");
-emailStatus.className="email-status email-unsent";
-emailStatus.textContent="Checking...";
-const button=document.createElement("button");
-button.type="button";
-button.className="qr-email-button";
-button.textContent=storedQR?"Send QR Email":"QR not stored";
-button.disabled=!storedQR;
-item.appendChild(qrStatus);
-item.appendChild(emailStatus);
-item.appendChild(button);
-list.appendChild(item);
-
-if(storedQR){
-apiRequest({
-action:"getQREmailStatus",
-id:id,
-guestType:"INVITED",
-_cache:Date.now()
-},function(statusResult){
-if(statusResult&&statusResult.status==="success"&&String(statusResult.statusText||"").toUpperCase()==="SENT"){
-sent++;
-emailStatus.className="email-status email-sent";
-emailStatus.textContent="✓ QR email SENT";
-button.textContent="✓ SENT";
-button.style.background="#2e7d32";
-}else if(statusResult&&statusResult.status==="success"&&String(statusResult.statusText||"").toUpperCase()==="FAILED"){
-emailStatus.className="email-status email-failed";
-emailStatus.textContent="✗ Previous send FAILED — retry available";
-}else{
-emailStatus.className="email-status email-unsent";
-emailStatus.textContent="QR email UNSENT";
-}
-document.getElementById("invitedQRSent").textContent=sent;
-document.getElementById("invitedQRUnsent").textContent=Math.max(guests.length-sent,0);
-});
-}else{
-document.getElementById("invitedQRSent").textContent=sent;
-document.getElementById("invitedQRUnsent").textContent=Math.max(guests.length-sent,0);
-}
-button.onclick=function(){
-button.disabled=true;
-button.textContent="Sending...";
-apiRequest({
-action:"sendInvitedGuestQREmail",
-id:id,
-_cache:Date.now()
-},function(sendResult){
-if(sendResult&&sendResult.status==="success"){
-button.textContent="✓ SENT";
-button.style.background="#2e7d32";
-emailStatus.className="email-status email-sent";
-emailStatus.textContent="✓ QR email SENT";
-loadInvitedQRMail();
-}else{
-button.disabled=false;
-button.textContent="Send QR Email";
-emailStatus.className="email-status email-failed";
-emailStatus.textContent=sendResult&&sendResult.message?sendResult.message:"QR email failed. Retry available.";
-}
-});
-};
-});
-});
-}
-
-/* =====================================================
-   UPDATE EMAILS
-   ===================================================== */
-function openParticipantUpdates(){
-hideAllAdminSections();
-document.getElementById("participantUpdatesSection").classList.remove("hidden");
-loadParticipantUpdateCount();
-}
-function closeParticipantUpdates(){
-document.getElementById("participantUpdatesSection").classList.add("hidden");
-document.getElementById("dashboardSection").classList.remove("hidden");
-}
-function loadParticipantUpdateCount(){
-apiRequest({action:"guests",_cache:Date.now()},function(result){
-if(result&&result.status==="success"){
-const guests=Array.isArray(result.data)?result.data:[];
-document.getElementById("participantUpdateCount").textContent=guests.length+" participant(s) will receive this update.";
-}
-});
-}
-function sendParticipantUpdateEmail(){
-const subject=document.getElementById("participantUpdateSubject").value.trim();
-const message=document.getElementById("participantUpdateMessage").value.trim();
-const box=document.getElementById("participantUpdateMessageBox");
-if(!subject||!message){
-box.className="message error";
-box.textContent="Please enter both subject and message.";
-return;
-}
-if(!confirm("Send this update individually to all registered participants?"))return;
-box.className="message info";
-box.textContent="Sending participant update emails...";
-apiRequest({
-action:"sendParticipantUpdate",
-subject:subject,
-message:message,
-_cache:Date.now()
-},function(result){
-if(!result||result.status!=="success"){
-box.className="message error";
-box.textContent=result&&result.message?result.message:"Unable to send participant updates.";
-return;
-}
-box.className="message "+(result.failed?"error":"success");
-box.textContent="Update process completed. Sent: "+result.sent+" | Failed: "+result.failed+" | Total: "+result.total;
-});
-}
-function openInvitedUpdates(){
-hideAllAdminSections();
-document.getElementById("invitedUpdatesSection").classList.remove("hidden");
-loadInvitedUpdateCount();
-}
-function closeInvitedUpdates(){
-document.getElementById("invitedUpdatesSection").classList.add("hidden");
-document.getElementById("dashboardSection").classList.remove("hidden");
-}
-function loadInvitedUpdateCount(){
-apiRequest({action:"getInvitedGuests",_cache:Date.now()},function(result){
-if(result&&result.status==="success"){
-const guests=Array.isArray(result.data)?result.data:[];
-document.getElementById("invitedUpdateCount").textContent=guests.length+" invited guest(s) will receive this update.";
-}
-});
-}
-function sendInvitedUpdateEmail(){
-const subject=document.getElementById("invitedUpdateSubject").value.trim();
-const message=document.getElementById("invitedUpdateMessage").value.trim();
-const box=document.getElementById("invitedUpdateMessageBox");
-if(!subject||!message){
-box.className="message error";
-box.textContent="Please enter both subject and message.";
-return;
-}
-if(!confirm("Send this update individually to all invited guests?"))return;
-box.className="message info";
-box.textContent="Sending invited guest update emails...";
-apiRequest({
-action:"sendInvitedGuestUpdate",
-subject:subject,
-message:message,
-_cache:Date.now()
-},function(result){
-if(!result||result.status!=="success"){
-box.className="message error";
-box.textContent=result&&result.message?result.message:"Unable to send invited guest updates.";
-return;
-}
-box.className="message "+(result.failed?"error":"success");
-box.textContent="Update process completed. Sent: "+result.sent+" | Failed: "+result.failed+" | Total: "+result.total;
-});
-}
-
-/* =====================================================
-   GENERATE QR + STORE QR IN GUESTS
-===================================================== */
-
-async function generateQRCodes(){
-
-try{
-
-const result=
-await apiRequestPromise({
-action:"guests",
-_cache:Date.now()
-});
-
-if(!result){
-alert("Unable to connect to the server.");
-return;
-}
-
-if(result.status!=="success"){
-alert(
-result.message||
-"Unable to load guest records."
+let overlay=
+document.getElementById(
+"genericUploadProgress"
 );
+
+if(!overlay){
+
+overlay=
+document.createElement("div");
+
+overlay.id=
+"genericUploadProgress";
+
+Object.assign(
+overlay.style,
+{
+position:"fixed",
+left:"0",
+top:"0",
+width:"100%",
+height:"100%",
+background:"rgba(0,0,0,.45)",
+display:"flex",
+alignItems:"center",
+justifyContent:"center",
+zIndex:"99999"
+}
+);
+
+overlay.innerHTML=
+'<div style="background:#fff;padding:25px;border-radius:12px;width:320px;max-width:85%;text-align:center;box-shadow:0 5px 25px rgba(0,0,0,.25);">'+
+'<div id="genericUploadTitle" style="font-size:20px;font-weight:bold;color:#17365d;margin-bottom:12px;"></div>'+
+'<div id="genericUploadText" style="font-size:15px;color:#555;"></div>'+
+'<div style="margin-top:15px;height:8px;background:#e5e5e5;border-radius:5px;overflow:hidden;">'+
+'<div id="genericUploadBar" style="height:100%;width:0%;background:#17365d;transition:width .2s ease;"></div>'+
+'</div></div>';
+
+document.body.appendChild(overlay);
+
+}
+
+const percentage=
+total>0
+?Math.round(
+(current/total)*100
+)
+:0;
+
+document.getElementById(
+"genericUploadTitle"
+).textContent=title;
+
+document.getElementById(
+"genericUploadText"
+).textContent=
+"Uploading "+
+current+
+" of "+
+total+
+" ("+
+percentage+
+"%)";
+
+document.getElementById(
+"genericUploadBar"
+).style.width=
+percentage+"%";
+
+}
+
+
+function hideGenericUploadProgress(){
+
+const overlay=
+document.getElementById(
+"genericUploadProgress"
+);
+
+if(overlay)
+overlay.remove();
+
+}
+
+
+/* =====================================================
+   PARTICIPANT QR EMAILS
+   ===================================================== */
+
+function openGuestQRMail(){
+
+hideAllAdminSections();
+
+document.getElementById(
+"guestQRMailSection"
+).classList.remove("hidden");
+
+loadGuestQRMail();
+
+}
+
+
+function closeGuestQRMail(){
+
+document.getElementById(
+"guestQRMailSection"
+).classList.add("hidden");
+
+document.getElementById(
+"dashboardSection"
+).classList.remove("hidden");
+
+}
+
+
+function loadGuestQRMail(){
+
+const list=
+document.getElementById(
+"guestQRMailList"
+);
+
+list.className="loading";
+list.textContent=
+"Loading participant QR status...";
+
+apiRequest({
+
+action:"guests",
+_cache:Date.now()
+
+},function(result){
+
+if(
+!result||
+result.status!=="success"
+){
+
+list.className=
+"message error";
+
+list.textContent=
+result&&result.message
+?result.message
+:"Unable to load participants.";
+
 return;
+
 }
 
 const guests=
@@ -2096,35 +3101,1232 @@ Array.isArray(result.data)
 ?result.data
 :[];
 
+document.getElementById(
+"guestQRTotal"
+).textContent=
+guests.length;
+
 if(!guests.length){
 
-alert(
-"No guest registrations are available.\n\n"+
-"Please upload the Guest Excel file first."
-);
+document.getElementById(
+"guestQRSent"
+).textContent="0";
+
+document.getElementById(
+"guestQRUnsent"
+).textContent="0";
+
+list.className="empty";
+
+list.textContent=
+"No participants found.";
 
 return;
+
 }
 
-if(
-guests.some(
-function(guest){
-return !String(
+let sent=0;
+
+list.className="invited-list";
+list.innerHTML="";
+
+guests.forEach(function(guest){
+
+const id=
+String(
 guest["Registration ID"]||""
 ).trim();
+
+const name=
+String(
+guest["Name"]||""
+).trim();
+
+const email=
+String(
+guest["Email"]||""
+).trim();
+
+const institute=
+String(
+guest["Institute"]||""
+).trim();
+
+const storedQR=
+String(
+guest["QR Code"]||""
+).trim();
+
+const item=
+document.createElement("div");
+
+item.className="invited-item";
+
+item.innerHTML=
+'<div class="invited-name">'+
+escapeHTML(id+" — "+name)+
+'</div>'+
+'<div class="invited-meta">'+
+escapeHTML(email)+
+'</div>'+
+'<div class="invited-meta">'+
+escapeHTML(institute)+
+'</div>';
+
+const qrStatus=
+document.createElement("div");
+
+qrStatus.className=
+"email-status "+
+(
+storedQR
+?"email-sent"
+:"email-failed"
+);
+
+qrStatus.textContent=
+storedQR
+?"✓ QR stored"
+:"✗ QR not stored";
+
+const emailStatus=
+document.createElement("div");
+
+emailStatus.className=
+"email-status email-unsent";
+
+emailStatus.textContent=
+"Checking...";
+
+const button=
+document.createElement("button");
+
+button.type="button";
+button.className=
+"qr-email-button";
+
+button.textContent=
+storedQR
+?"Send QR Email"
+:"QR not stored";
+
+button.disabled=
+!storedQR;
+
+item.appendChild(qrStatus);
+item.appendChild(emailStatus);
+item.appendChild(button);
+
+list.appendChild(item);
+
+if(storedQR){
+
+apiRequest({
+
+action:"getQREmailStatus",
+id:id,
+guestType:"GUEST",
+_cache:Date.now()
+
+},function(statusResult){
+
+if(
+statusResult&&
+statusResult.status==="success"&&
+String(
+statusResult.statusText||""
+).toUpperCase()==="SENT"
+){
+
+sent++;
+
+emailStatus.className=
+"email-status email-sent";
+
+emailStatus.textContent=
+"✓ QR email SENT";
+
+button.textContent="✓ SENT";
+
+button.style.background=
+"#2e7d32";
+
+}else if(
+statusResult&&
+statusResult.status==="success"&&
+String(
+statusResult.statusText||""
+).toUpperCase()==="FAILED"
+){
+
+emailStatus.className=
+"email-status email-failed";
+
+emailStatus.textContent=
+"✗ Previous send FAILED — retry available";
+
+}else{
+
+emailStatus.className=
+"email-status email-unsent";
+
+emailStatus.textContent=
+"QR email UNSENT";
+
 }
-)
+
+document.getElementById(
+"guestQRSent"
+).textContent=sent;
+
+document.getElementById(
+"guestQRUnsent"
+).textContent=
+Math.max(
+guests.length-sent,
+0
+);
+
+});
+
+}else{
+
+document.getElementById(
+"guestQRSent"
+).textContent=sent;
+
+document.getElementById(
+"guestQRUnsent"
+).textContent=
+Math.max(
+guests.length-sent,
+0
+);
+
+}
+
+button.onclick=function(){
+
+button.disabled=true;
+button.textContent="Sending...";
+
+apiRequest({
+
+action:"sendGuestQREmail",
+registrationId:id,
+_cache:Date.now()
+
+},function(sendResult){
+
+if(
+sendResult&&
+sendResult.status==="success"
+){
+
+button.textContent="✓ SENT";
+
+button.style.background=
+"#2e7d32";
+
+emailStatus.className=
+"email-status email-sent";
+
+emailStatus.textContent=
+"✓ QR email SENT";
+
+loadGuestQRMail();
+
+}else{
+
+button.disabled=false;
+
+button.textContent=
+"Send QR Email";
+
+emailStatus.className=
+"email-status email-failed";
+
+emailStatus.textContent=
+sendResult&&sendResult.message
+?sendResult.message
+:"QR email failed. Retry available.";
+
+}
+
+});
+
+};
+
+});
+
+});
+
+}
+
+
+function sendAllGuestQREmails(){
+
+const message=
+document.getElementById(
+"guestQRMailMessage"
+);
+
+message.className=
+"message info";
+
+message.textContent=
+"Sending all unsent participant QR emails...";
+
+apiRequest({
+
+action:"sendAllUnsentGuestQREmails",
+_cache:Date.now()
+
+},function(result){
+
+if(
+!result||
+result.status!=="success"
+){
+
+message.className=
+"message error";
+
+message.textContent=
+result&&result.message
+?result.message
+:"Unable to send participant QR emails.";
+
+return;
+
+}
+
+message.className=
+"message "+
+(
+result.failed
+?"error"
+:"success"
+);
+
+message.textContent=
+"QR email process completed. Sent: "+
+result.sent+
+" | Already sent: "+
+result.alreadySent+
+" | Failed: "+
+result.failed;
+
+loadGuestQRMail();
+
+});
+
+}
+
+
+/* =====================================================
+   INVITED QR EMAILS
+   ===================================================== */
+
+function openInvitedQRMail(){
+
+hideAllAdminSections();
+
+document.getElementById(
+"invitedQRMailSection"
+).classList.remove("hidden");
+
+loadInvitedQRMail();
+
+}
+
+
+function closeInvitedQRMail(){
+
+document.getElementById(
+"invitedQRMailSection"
+).classList.add("hidden");
+
+document.getElementById(
+"dashboardSection"
+).classList.remove("hidden");
+
+}
+
+
+function loadInvitedQRMail(){
+
+const list=
+document.getElementById(
+"invitedQRMailList"
+);
+
+list.className="loading";
+
+list.textContent=
+"Loading invited guest QR status...";
+
+apiRequest({
+
+action:"getInvitedGuests",
+_cache:Date.now()
+
+},function(result){
+
+if(
+!result||
+result.status!=="success"
+){
+
+list.className=
+"message error";
+
+list.textContent=
+result&&result.message
+?result.message
+:"Unable to load invited guests.";
+
+return;
+
+}
+
+const guests=
+Array.isArray(result.data)
+?result.data
+:[];
+
+document.getElementById(
+"invitedQRTotal"
+).textContent=
+guests.length;
+
+if(!guests.length){
+
+document.getElementById(
+"invitedQRSent"
+).textContent="0";
+
+document.getElementById(
+"invitedQRUnsent"
+).textContent="0";
+
+list.className="empty";
+
+list.textContent=
+"No invited guests found.";
+
+return;
+
+}
+
+let sent=0;
+
+list.className="invited-list";
+list.innerHTML="";
+
+guests.forEach(function(guest){
+
+const id=
+String(
+guest["ID"]||
+guest["Registration ID"]||
+""
+).trim();
+
+const name=
+String(
+guest["Name"]||""
+).trim();
+
+const email=
+String(
+guest["Email"]||""
+).trim();
+
+const institute=
+String(
+guest["Institute"]||""
+).trim();
+
+const storedQR=
+String(
+guest["QR Code"]||""
+).trim();
+
+const item=
+document.createElement("div");
+
+item.className="invited-item";
+
+item.innerHTML=
+'<div class="invited-name">'+
+escapeHTML(id+" — "+name)+
+'</div>'+
+'<div class="invited-meta">'+
+escapeHTML(email)+
+'</div>'+
+'<div class="invited-meta">'+
+escapeHTML(institute)+
+'</div>';
+
+const qrStatus=
+document.createElement("div");
+
+qrStatus.className=
+"email-status "+
+(
+storedQR
+?"email-sent"
+:"email-failed"
+);
+
+qrStatus.textContent=
+storedQR
+?"✓ QR stored"
+:"✗ QR not stored";
+
+const emailStatus=
+document.createElement("div");
+
+emailStatus.className=
+"email-status email-unsent";
+
+emailStatus.textContent=
+"Checking...";
+
+const button=
+document.createElement("button");
+
+button.type="button";
+
+button.className=
+"qr-email-button";
+
+button.textContent=
+storedQR
+?"Send QR Email"
+:"QR not stored";
+
+button.disabled=
+!storedQR;
+
+item.appendChild(qrStatus);
+item.appendChild(emailStatus);
+item.appendChild(button);
+
+list.appendChild(item);
+
+if(storedQR){
+
+apiRequest({
+
+action:"getQREmailStatus",
+id:id,
+guestType:"INVITED",
+_cache:Date.now()
+
+},function(statusResult){
+
+if(
+statusResult&&
+statusResult.status==="success"&&
+String(
+statusResult.statusText||""
+).toUpperCase()==="SENT"
+){
+
+sent++;
+
+emailStatus.className=
+"email-status email-sent";
+
+emailStatus.textContent=
+"✓ QR email SENT";
+
+button.textContent="✓ SENT";
+
+button.style.background=
+"#2e7d32";
+
+}else if(
+statusResult&&
+statusResult.status==="success"&&
+String(
+statusResult.statusText||""
+).toUpperCase()==="FAILED"
+){
+
+emailStatus.className=
+"email-status email-failed";
+
+emailStatus.textContent=
+"✗ Previous send FAILED — retry available";
+
+}else{
+
+emailStatus.className=
+"email-status email-unsent";
+
+emailStatus.textContent=
+"QR email UNSENT";
+
+}
+
+document.getElementById(
+"invitedQRSent"
+).textContent=sent;
+
+document.getElementById(
+"invitedQRUnsent"
+).textContent=
+Math.max(
+guests.length-sent,
+0
+);
+
+});
+
+}else{
+
+document.getElementById(
+"invitedQRSent"
+).textContent=sent;
+
+document.getElementById(
+"invitedQRUnsent"
+).textContent=
+Math.max(
+guests.length-sent,
+0
+);
+
+}
+
+button.onclick=function(){
+
+button.disabled=true;
+
+button.textContent="Sending...";
+
+apiRequest({
+
+action:"sendInvitedGuestQREmail",
+id:id,
+_cache:Date.now()
+
+},function(sendResult){
+
+if(
+sendResult&&
+sendResult.status==="success"
+){
+
+button.textContent="✓ SENT";
+
+button.style.background=
+"#2e7d32";
+
+emailStatus.className=
+"email-status email-sent";
+
+emailStatus.textContent=
+"✓ QR email SENT";
+
+loadInvitedQRMail();
+
+}else{
+
+button.disabled=false;
+
+button.textContent=
+"Send QR Email";
+
+emailStatus.className=
+"email-status email-failed";
+
+emailStatus.textContent=
+sendResult&&sendResult.message
+?sendResult.message
+:"QR email failed. Retry available.";
+
+}
+
+});
+
+};
+
+});
+
+});
+
+}
+
+
+function sendAllInvitedQREmails(){
+
+const message=
+document.getElementById(
+"invitedQRMailMessage"
+);
+
+message.className=
+"message info";
+
+message.textContent=
+"Sending all unsent invited guest QR emails...";
+
+apiRequest({
+
+action:
+"sendAllUnsentInvitedGuestQREmails",
+
+_cache:Date.now()
+
+},function(result){
+
+if(
+!result||
+result.status!=="success"
+){
+
+message.className=
+"message error";
+
+message.textContent=
+result&&result.message
+?result.message
+:"Unable to send invited guest QR emails.";
+
+return;
+
+}
+
+const text=
+"QR email process completed. Sent: "+
+result.sent+
+" | Already sent: "+
+result.alreadySent+
+" | Failed: "+
+result.failed;
+
+message.className=
+"message "+
+(
+result.failed
+?"error"
+:"success"
+);
+
+message.textContent=text;
+
+loadInvitedQRMail();
+
+});
+
+}
+
+
+/* =====================================================
+   PARTICIPANT UPDATES
+   ===================================================== */
+
+function openParticipantUpdates(){
+
+hideAllAdminSections();
+
+document.getElementById(
+"participantUpdatesSection"
+).classList.remove("hidden");
+
+loadParticipantUpdateCount();
+
+}
+
+
+function closeParticipantUpdates(){
+
+document.getElementById(
+"participantUpdatesSection"
+).classList.add("hidden");
+
+document.getElementById(
+"dashboardSection"
+).classList.remove("hidden");
+
+}
+
+
+function loadParticipantUpdateCount(){
+
+apiRequest({
+
+action:"guests",
+_cache:Date.now()
+
+},function(result){
+
+if(
+result&&
+result.status==="success"
+){
+
+const guests=
+Array.isArray(result.data)
+?result.data
+:[];
+
+document.getElementById(
+"participantUpdateCount"
+).textContent=
+guests.length+
+" participant(s) will receive this update.";
+
+}
+
+});
+
+}
+
+
+function sendParticipantUpdateEmail(){
+
+const subject=
+document.getElementById(
+"participantUpdateSubject"
+).value.trim();
+
+const message=
+document.getElementById(
+"participantUpdateMessage"
+).value.trim();
+
+const messageBox=
+document.getElementById(
+"participantUpdateMessageBox"
+);
+
+if(!subject){
+
+messageBox.className=
+"message error";
+
+messageBox.textContent=
+"Please enter an email subject.";
+
+return;
+
+}
+
+if(!message){
+
+messageBox.className=
+"message error";
+
+messageBox.textContent=
+"Please enter the email message.";
+
+return;
+
+}
+
+if(!confirm(
+"Send this update individually to all registered participants?"
+)){
+
+return;
+
+}
+
+messageBox.className=
+"message info";
+
+messageBox.textContent=
+"Sending participant update emails...";
+
+apiRequest({
+
+action:"sendParticipantUpdate",
+
+subject:subject,
+message:message,
+_cache:Date.now()
+
+},function(result){
+
+if(
+!result||
+result.status!=="success"
+){
+
+messageBox.className=
+"message error";
+
+messageBox.textContent=
+result&&result.message
+?result.message
+:"Unable to send participant updates.";
+
+return;
+
+}
+
+messageBox.className=
+"message "+
+(
+result.failed
+?"error"
+:"success"
+);
+
+messageBox.textContent=
+"Participant update completed. Sent: "+
+(result.sent||0)+
+" | Failed: "+
+(result.failed||0);
+
+});
+
+}
+
+
+/* =====================================================
+   INVITED GUEST UPDATES
+   ===================================================== */
+
+function openInvitedUpdates(){
+
+hideAllAdminSections();
+
+document.getElementById(
+"invitedUpdatesSection"
+).classList.remove("hidden");
+
+loadInvitedUpdateCount();
+
+}
+
+
+function closeInvitedUpdates(){
+
+document.getElementById(
+"invitedUpdatesSection"
+).classList.add("hidden");
+
+document.getElementById(
+"dashboardSection"
+).classList.remove("hidden");
+
+}
+
+
+function loadInvitedUpdateCount(){
+
+apiRequest({
+
+action:"getInvitedGuests",
+_cache:Date.now()
+
+},function(result){
+
+if(
+result&&
+result.status==="success"
+){
+
+const guests=
+Array.isArray(result.data)
+?result.data
+:[];
+
+document.getElementById(
+"invitedUpdateCount"
+).textContent=
+guests.length+
+" invited guest(s) will receive this update.";
+
+}
+
+});
+
+}
+
+
+function sendInvitedUpdateEmail(){
+
+const subject=
+document.getElementById(
+"invitedUpdateSubject"
+).value.trim();
+
+const message=
+document.getElementById(
+"invitedUpdateMessage"
+).value.trim();
+
+const messageBox=
+document.getElementById(
+"invitedUpdateMessageBox"
+);
+
+if(!subject){
+
+messageBox.className=
+"message error";
+
+messageBox.textContent=
+"Please enter an email subject.";
+
+return;
+
+}
+
+if(!message){
+
+messageBox.className=
+"message error";
+
+messageBox.textContent=
+"Please enter the email message.";
+
+return;
+
+}
+
+if(!confirm(
+"Send this update individually to all invited guests?"
+)){
+
+return;
+
+}
+
+messageBox.className=
+"message info";
+
+messageBox.textContent=
+"Sending invited guest update emails...";
+
+apiRequest({
+
+action:"sendInvitedGuestUpdate",
+
+subject:subject,
+message:message,
+_cache:Date.now()
+
+},function(result){
+
+if(
+!result||
+result.status!=="success"
+){
+
+messageBox.className=
+"message error";
+
+messageBox.textContent=
+result&&result.message
+?result.message
+:"Unable to send invited guest updates.";
+
+return;
+
+}
+
+messageBox.className=
+"message "+
+(
+result.failed
+?"error"
+:"success"
+);
+
+messageBox.textContent=
+"Invited guest update completed. Sent: "+
+(result.sent||0)+
+" | Failed: "+
+(result.failed||0);
+
+});
+
+}
+
+
+/* =====================================================
+   GENERATE QR CODES
+   ===================================================== */
+
+async function generateQRCodes(){
+
+try{
+
+const participantResult=
+await apiRequestPromise({
+
+action:"guests",
+_cache:Date.now()
+
+});
+
+const invitedResult=
+await apiRequestPromise({
+
+action:"getInvitedGuests",
+_cache:Date.now()
+
+});
+
+if(
+!participantResult||
+participantResult.status!=="success"
 ){
 
 alert(
-"Some guest records do not have a Registration ID.\n\n"+
+participantResult&&
+participantResult.message
+?participantResult.message
+:"Unable to load participants."
+);
+
+return;
+
+}
+
+if(
+!invitedResult||
+invitedResult.status!=="success"
+){
+
+alert(
+invitedResult&&
+invitedResult.message
+?invitedResult.message
+:"Unable to load invited guests."
+);
+
+return;
+
+}
+
+const participants=
+Array.isArray(
+participantResult.data
+)
+?participantResult.data
+:[];
+
+const invited=
+Array.isArray(
+invitedResult.data
+)
+?invitedResult.data
+:[];
+
+if(
+!participants.length&&
+!invited.length
+){
+
+alert(
+"No participant or invited guest records are available.\n\n"+
+"Please upload the Excel files first."
+);
+
+return;
+
+}
+
+const participantRecords=
+participants.map(
+function(guest){
+
+return{
+
+guestType:"GUEST",
+
+id:String(
+guest["Registration ID"]||""
+).trim(),
+
+name:String(
+guest["Name"]||""
+).trim(),
+
+email:String(
+guest["Email"]||""
+).trim(),
+
+institute:String(
+guest["Institute"]||""
+).trim(),
+
+storedQR:String(
+guest["QR Code"]||""
+).trim()
+
+};
+
+});
+
+const invitedRecords=
+invited.map(
+function(guest){
+
+return{
+
+guestType:"INVITED",
+
+id:String(
+guest["ID"]||
+guest["Registration ID"]||
+""
+).trim(),
+
+name:String(
+guest["Name"]||""
+).trim(),
+
+email:String(
+guest["Email"]||""
+).trim(),
+
+institute:String(
+guest["Institute"]||""
+).trim(),
+
+storedQR:String(
+guest["QR Code"]||""
+).trim()
+
+};
+
+});
+
+const invalid=
+participantRecords
+.concat(invitedRecords)
+.filter(
+function(record){
+
+return !record.id;
+
+});
+
+if(invalid.length){
+
+alert(
+"Some records do not have an ID.\n\n"+
 "QR generation cannot continue."
 );
 
 return;
+
 }
 
-showQRGenerationPanel(guests);
+showQRGenerationPanel(
+participantRecords,
+invitedRecords
+);
 
 }catch(error){
 
@@ -2142,7 +4344,11 @@ error.message
 
 }
 
-function showQRGenerationPanel(guests){
+
+function showQRGenerationPanel(
+participants,
+invitedGuests
+){
 
 const oldPanel=
 document.getElementById(
@@ -2151,6 +4357,11 @@ document.getElementById(
 
 if(oldPanel)
 oldPanel.remove();
+
+const records=
+participants.concat(
+invitedGuests
+);
 
 const overlay=
 document.createElement("div");
@@ -2202,8 +4413,10 @@ boxShadow:"0 2px 10px rgba(0,0,0,.08)"
 header.innerHTML=
 '<h2 style="margin:0 0 8px;text-align:center;color:#17365d;font-size:22px;">ICEMD-2026 QR Codes</h2>'+
 '<p style="margin:0;text-align:center;color:#666;font-size:14px;">'+
-guests.length+
-' guest registration(s)'+
+participants.length+
+" participant(s) + "+
+invitedGuests.length+
+" invited guest(s)"+
 '</p>';
 
 container.appendChild(header);
@@ -2228,7 +4441,6 @@ justifyContent:"center"
 
 actions.innerHTML=
 '<button id="qrDownloadButton" style="background:#17365d;color:white;border:none;padding:12px 20px;border-radius:8px;font-size:15px;cursor:pointer;">Download QR PDF</button>'+
-'<button id="qrSendAllButton" style="background:#214a7a;color:white;border:none;padding:12px 20px;border-radius:8px;font-size:15px;cursor:pointer;">Send All Unsent QR Emails</button>'+
 '<button id="qrCloseButton" style="background:#777;color:white;border:none;padding:12px 20px;border-radius:8px;font-size:15px;cursor:pointer;">Close</button>';
 
 container.appendChild(actions);
@@ -2236,7 +4448,8 @@ container.appendChild(actions);
 const grid=
 document.createElement("div");
 
-grid.id="qrPreviewGrid";
+grid.id=
+"qrPreviewGrid";
 
 Object.assign(
 grid.style,
@@ -2253,28 +4466,11 @@ container.appendChild(grid);
 overlay.appendChild(container);
 document.body.appendChild(overlay);
 
-guests.forEach(
-function(guest){
 
-const registrationId=
-String(
-guest["Registration ID"]||""
-).trim();
+records.forEach(
+function(record){
 
-const name=
-String(
-guest["Name"]||""
-).trim();
-
-const institute=
-String(
-guest["Institute"]||""
-).trim();
-
-const storedQR=
-String(
-guest["QR Code"]||""
-).trim();
+const id=record.id;
 
 const card=
 document.createElement("div");
@@ -2282,13 +4478,11 @@ document.createElement("div");
 card.className=
 "icemd-qr-card";
 
-card.dataset.registrationId=
-registrationId;
-
-card.dataset.name=name;
-
-card.dataset.institute=
-institute;
+card.dataset.registrationId=id;
+card.dataset.name=record.name;
+card.dataset.institute=record.institute;
+card.dataset.guestType=
+record.guestType;
 
 Object.assign(
 card.style,
@@ -2300,6 +4494,28 @@ textAlign:"center",
 boxShadow:"0 2px 8px rgba(0,0,0,.08)"
 }
 );
+
+
+const typeElement=
+document.createElement("div");
+
+Object.assign(
+typeElement.style,
+{
+fontSize:"12px",
+fontWeight:"bold",
+color:"#666",
+marginBottom:"4px"
+}
+);
+
+typeElement.textContent=
+record.guestType==="GUEST"
+?"PARTICIPANT"
+:"INVITED GUEST";
+
+card.appendChild(typeElement);
+
 
 const idElement=
 document.createElement("div");
@@ -2314,10 +4530,10 @@ marginBottom:"10px"
 }
 );
 
-idElement.textContent=
-registrationId;
+idElement.textContent=id;
 
 card.appendChild(idElement);
+
 
 const qrContainer=
 document.createElement("div");
@@ -2336,6 +4552,7 @@ margin:"0 auto 12px"
 
 card.appendChild(qrContainer);
 
+
 const nameElement=
 document.createElement("div");
 
@@ -2348,9 +4565,11 @@ marginBottom:"4px"
 }
 );
 
-nameElement.textContent=name;
+nameElement.textContent=
+record.name;
 
 card.appendChild(nameElement);
+
 
 const instituteElement=
 document.createElement("div");
@@ -2364,9 +4583,10 @@ color:"#666"
 );
 
 instituteElement.textContent=
-institute;
+record.institute;
 
 card.appendChild(instituteElement);
+
 
 const saveStatus=
 document.createElement("div");
@@ -2376,18 +4596,20 @@ saveStatus.style,
 {
 fontSize:"12px",
 marginTop:"9px",
-color:storedQR
+color:
+record.storedQR
 ?"#2e7d32"
 :"#666"
 }
 );
 
 saveStatus.textContent=
-storedQR
+record.storedQR
 ?"✓ QR already stored"
 :"QR not stored";
 
 card.appendChild(saveStatus);
+
 
 const saveButton=
 document.createElement("button");
@@ -2395,12 +4617,12 @@ document.createElement("button");
 saveButton.type="button";
 
 saveButton.textContent=
-storedQR
+record.storedQR
 ?"✓ Stored"
 :"Store QR in Sheet";
 
 saveButton.disabled=
-!!storedQR;
+!!record.storedQR;
 
 Object.assign(
 saveButton.style,
@@ -2411,13 +4633,13 @@ padding:"9px",
 border:"none",
 borderRadius:"7px",
 background:
-storedQR
+record.storedQR
 ?"#2e7d32"
 :"#17365d",
 color:"#fff",
 fontSize:"13px",
 cursor:
-storedQR
+record.storedQR
 ?"default"
 :"pointer"
 }
@@ -2425,88 +4647,193 @@ storedQR
 
 card.appendChild(saveButton);
 
-const emailStatus=document.createElement("div");
-emailStatus.className="email-status email-unsent";
-emailStatus.textContent="Checking QR email status...";
+
+const emailStatus=
+document.createElement("div");
+
+emailStatus.className=
+"email-status email-unsent";
+
+emailStatus.textContent=
+"Checking QR email status...";
+
 card.appendChild(emailStatus);
 
-const emailButton=document.createElement("button");
+
+const emailButton=
+document.createElement("button");
+
 emailButton.type="button";
-emailButton.className="qr-email-button";
-emailButton.textContent=storedQR?"Send QR Email":"Store QR before sending";
-emailButton.disabled=!storedQR;
+
+emailButton.className=
+"qr-email-button";
+
+emailButton.textContent=
+record.storedQR
+?"Send QR Email"
+:"Store QR before sending";
+
+emailButton.disabled=
+!record.storedQR;
+
 card.appendChild(emailButton);
 
-emailButton.onclick=function(){
-if(!storedQR){
-saveStatus.textContent="Please store the QR code first.";
-return;
-}
+
+function sendThisQREmail(){
+
 emailButton.disabled=true;
-emailButton.textContent="Sending...";
-apiRequest({
+
+emailButton.textContent=
+"Sending...";
+
+const params=
+record.guestType==="GUEST"
+?
+{
 action:"sendGuestQREmail",
-registrationId:registrationId,
+registrationId:id,
 _cache:Date.now()
-},function(result){
-if(result&&result.status==="success"){
-emailButton.textContent="✓ SENT";
-emailButton.style.background="#2e7d32";
-emailStatus.className="email-status email-sent";
-emailStatus.textContent="✓ QR email SENT";
-}else{
-emailButton.disabled=false;
-emailButton.textContent="Send QR Email";
-emailStatus.className="email-status email-failed";
-emailStatus.textContent=result&&result.message?result.message:"QR email failed. Retry available.";
 }
-});
+:
+{
+action:"sendInvitedGuestQREmail",
+id:id,
+_cache:Date.now()
 };
 
-if(storedQR){
-apiRequest({
-action:"getQREmailStatus",
-id:registrationId,
-guestType:"GUEST",
-_cache:Date.now()
-},function(result){
-if(result&&result.status==="success"){
-const state=String(result.statusText||"UNSENT").toUpperCase();
-if(state==="SENT"){
-emailStatus.className="email-status email-sent";
-emailStatus.textContent="✓ QR email SENT";
-emailButton.textContent="✓ SENT";
-emailButton.style.background="#2e7d32";
-}else if(state==="FAILED"){
-emailStatus.className="email-status email-failed";
-emailStatus.textContent="✗ Previous send FAILED — retry available";
+apiRequest(
+params,
+function(result){
+
+if(
+result&&
+result.status==="success"
+){
+
+emailButton.textContent=
+"✓ SENT";
+
+emailButton.style.background=
+"#2e7d32";
+
+emailStatus.className=
+"email-status email-sent";
+
+emailStatus.textContent=
+"✓ QR email SENT";
+
 }else{
-emailStatus.className="email-status email-unsent";
-emailStatus.textContent="QR email UNSENT";
-}
-}
-});
+
+emailButton.disabled=false;
+
+emailButton.textContent=
+"Send QR Email";
+
+emailStatus.className=
+"email-status email-failed";
+
+emailStatus.textContent=
+result&&result.message
+?result.message
+:"QR email failed. Retry available.";
+
 }
 
-grid.appendChild(card);
+});
+
+}
+
+emailButton.onclick=
+sendThisQREmail;
+
+
+if(record.storedQR){
+
+apiRequest({
+
+action:"getQREmailStatus",
+
+id:id,
+
+guestType:
+record.guestType,
+
+_cache:Date.now()
+
+},function(result){
+
+if(
+result&&
+result.status==="success"
+){
+
+const state=
+String(
+result.statusText||"UNSENT"
+)
+.toUpperCase();
+
+if(state==="SENT"){
+
+emailStatus.className=
+"email-status email-sent";
+
+emailStatus.textContent=
+"✓ QR email SENT";
+
+emailButton.textContent=
+"✓ SENT";
+
+emailButton.style.background=
+"#2e7d32";
+
+}else if(state==="FAILED"){
+
+emailStatus.className=
+"email-status email-failed";
+
+emailStatus.textContent=
+"✗ Previous send FAILED — retry available";
+
+}else{
+
+emailStatus.className=
+"email-status email-unsent";
+
+emailStatus.textContent=
+"QR email UNSENT";
+
+}
+
+}
+
+});
+
+}
+
 
 new QRCode(
 qrContainer,
 {
-text:registrationId,
+text:id,
 width:180,
 height:180,
-correctLevel:QRCode.CorrectLevel.H
+correctLevel:
+QRCode.CorrectLevel.H
 }
 );
 
-function storeQR(){
+
+function storeThisQR(){
 
 saveButton.disabled=true;
-saveButton.textContent="Saving...";
-saveButton.style.opacity=".7";
 
-saveStatus.style.color="#666";
+saveButton.textContent=
+"Saving...";
+
+saveStatus.style.color=
+"#666";
+
 saveStatus.textContent=
 "Saving QR code to Google Sheet...";
 
@@ -2535,28 +4862,39 @@ qrImage.src;
 if(!qrDataURL){
 
 saveButton.disabled=false;
+
 saveButton.textContent=
 "Store QR in Sheet";
 
-saveButton.style.opacity="1";
-
-saveStatus.style.color="#c62828";
+saveStatus.style.color=
+"#c62828";
 
 saveStatus.textContent=
 "Unable to read generated QR image.";
 
 return;
+
 }
 
-apiRequest(
+const params=
+record.guestType==="GUEST"
+?
 {
 action:"saveGuestQR",
-registrationId:
-registrationId,
-qrCode:
-qrDataURL,
+registrationId:id,
+qrCode:qrDataURL,
 _cache:Date.now()
-},
+}
+:
+{
+action:"saveInvitedGuestQR",
+id:id,
+qrCode:qrDataURL,
+_cache:Date.now()
+};
+
+apiRequest(
+params,
 function(result){
 
 if(
@@ -2564,15 +4902,14 @@ result&&
 result.status==="success"
 ){
 
+record.storedQR=
+qrDataURL;
+
 saveButton.textContent=
 "✓ Stored";
 
 saveButton.style.background=
 "#2e7d32";
-
-saveButton.style.opacity="1";
-saveButton.style.cursor=
-"default";
 
 saveButton.disabled=true;
 
@@ -2580,13 +4917,18 @@ saveStatus.style.color=
 "#2e7d32";
 
 saveStatus.textContent=
-"✓ QR stored successfully in GUESTS sheet";
+"✓ QR stored successfully in sheet";
 
 emailButton.disabled=false;
-emailButton.textContent="Send QR Email";
-emailButton.style.background="#214a7a";
-emailStatus.className="email-status email-unsent";
-emailStatus.textContent="QR email UNSENT";
+
+emailButton.textContent=
+"Send QR Email";
+
+emailStatus.className=
+"email-status email-unsent";
+
+emailStatus.textContent=
+"QR email UNSENT";
 
 }else{
 
@@ -2594,8 +4936,6 @@ saveButton.disabled=false;
 
 saveButton.textContent=
 "Store QR in Sheet";
-
-saveButton.style.opacity="1";
 
 saveStatus.style.color=
 "#c62828";
@@ -2607,35 +4947,42 @@ result&&result.message
 
 }
 
-}
-);
+});
 
 }
+
 
 saveButton.addEventListener(
 "click",
-storeQR
+storeThisQR
 );
 
-if(!storedQR){
+
+if(!record.storedQR){
 
 setTimeout(
-storeQR,
+storeThisQR,
 250
 );
 
 }
 
+grid.appendChild(card);
+
 });
+
 
 document.getElementById(
 "qrCloseButton"
 ).addEventListener(
 "click",
 function(){
+
 overlay.remove();
+
 }
 );
+
 
 document.getElementById(
 "qrDownloadButton"
@@ -2644,36 +4991,12 @@ document.getElementById(
 downloadQRPDF
 );
 
-document.getElementById(
-"qrSendAllButton"
-).addEventListener(
-"click",
-function(){
-const button=document.getElementById("qrSendAllButton");
-button.disabled=true;
-button.textContent="Sending...";
-apiRequest({
-action:"sendAllUnsentGuestQREmails",
-_cache:Date.now()
-},function(result){
-button.disabled=false;
-button.textContent="Send All Unsent QR Emails";
-if(!result||result.status!=="success"){
-alert(result&&result.message?result.message:"Unable to send QR emails.");
-return;
 }
-alert("QR email process completed.\n\nSent: "+result.sent+"\nAlready sent: "+result.alreadySent+"\nFailed: "+result.failed);
-loadGuestQRMail();
-}
-);
-}
-);
 
-}
 
 /* =====================================================
    QR PDF
-===================================================== */
+   ===================================================== */
 
 async function downloadQRPDF(){
 
@@ -2691,6 +5014,7 @@ alert(
 );
 
 return;
+
 }
 
 const button=
@@ -2706,6 +5030,7 @@ button.textContent=
 "Preparing PDF...";
 
 button.style.opacity=".7";
+
 button.style.cursor="wait";
 
 }
@@ -2746,6 +5071,7 @@ const marginBottom=10;
 
 const columns=2;
 const rows=3;
+
 const cardsPerPage=6;
 
 const usableWidth=
@@ -2792,6 +5118,11 @@ String(
 card.dataset.institute||""
 ).trim();
 
+const guestType=
+String(
+card.dataset.guestType||""
+).trim();
+
 if(!registrationId)
 continue;
 
@@ -2825,6 +5156,7 @@ registrationId
 );
 
 continue;
+
 }
 
 if(
@@ -2879,10 +5211,30 @@ cardMargin*2,
 "S"
 );
 
+
 pdf.setFont(
 "helvetica",
 "bold"
 );
+
+pdf.setFontSize(8);
+
+pdf.setTextColor(
+90,
+90,
+90
+);
+
+pdf.text(
+guestType==="INVITED"
+?"INVITED GUEST"
+:"PARTICIPANT",
+cellX+
+cellWidth/2,
+cellY+7,
+{align:"center"}
+);
+
 
 pdf.setFontSize(11);
 
@@ -2896,9 +5248,10 @@ pdf.text(
 registrationId,
 cellX+
 cellWidth/2,
-cellY+10,
+cellY+13,
 {align:"center"}
 );
+
 
 const qrX=
 cellX+
@@ -2908,7 +5261,7 @@ qrSize
 )/2;
 
 const qrY=
-cellY+15;
+cellY+18;
 
 pdf.addImage(
 qrDataURL,
@@ -2918,6 +5271,7 @@ qrY,
 qrSize,
 qrSize
 );
+
 
 pdf.setFont(
 "helvetica",
@@ -2945,9 +5299,10 @@ pdf.text(
 nameLines.slice(0,2),
 cellX+
 cellWidth/2,
-cellY+76,
+cellY+79,
 {align:"center"}
 );
+
 
 pdf.setFont(
 "helvetica",
@@ -2972,14 +5327,14 @@ pdf.text(
 instituteLines.slice(0,2),
 cellX+
 cellWidth/2,
-cellY+84,
+cellY+87,
 {align:"center"}
 );
 
 }
 
 pdf.save(
-"ICEMD-2026-Guest-QR-Codes.pdf"
+"ICEMD-2026-All-QR-Codes.pdf"
 );
 
 }catch(error){
@@ -3004,6 +5359,7 @@ button.textContent=
 "Download QR PDF";
 
 button.style.opacity="1";
+
 button.style.cursor="pointer";
 
 }
@@ -3012,9 +5368,10 @@ button.style.cursor="pointer";
 
 }
 
+
 /* =====================================================
    SESSION
-===================================================== */
+   ===================================================== */
 
 (function(){
 
@@ -3040,5 +5397,6 @@ document.getElementById(
 })();
 
 </script>
+
 </body>
 </html>
