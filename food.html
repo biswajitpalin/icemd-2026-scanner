@@ -28,12 +28,20 @@ margin:0;
 padding:20px;
 font-family:Arial,sans-serif;
 background:#f5f5f5;
-color:#222
+color:#222;
 min-height:100vh;
+}
+
+body.login-view{
 display:flex;
 align-items:center;
 justify-content:center;
 }
+
+body.app-view{
+display:block;
+}
+
 .container{
 max-width:500px;
 width:100%;
@@ -247,7 +255,7 @@ display:none!important
 </head>
 
 
-<body>
+<body class="login-view">
 
 
 <div class="container">
@@ -502,6 +510,29 @@ box.className=
 
 
 /* =====================================================
+   VIEW CONTROL
+===================================================== */
+
+function setAppView(){
+
+document.body.classList.remove("login-view");
+
+document.body.classList.add("app-view");
+
+}
+
+
+function setLoginView(){
+
+document.body.classList.remove("app-view");
+
+document.body.classList.add("login-view");
+
+}
+
+
+
+/* =====================================================
    HOME / BACK
 ===================================================== */
 
@@ -729,6 +760,9 @@ document.getElementById(
 document.getElementById(
 "foodScannerPage"
 ).classList.remove("hidden");
+
+
+setAppView();
 
 
 document.getElementById(
@@ -1465,6 +1499,9 @@ document.getElementById(
 ).classList.remove("hidden");
 
 
+setLoginView();
+
+
 document.getElementById(
 "scanResult"
 ).style.display="none";
@@ -1523,6 +1560,9 @@ document.getElementById(
 document.getElementById(
 "foodScannerPage"
 ).classList.remove("hidden");
+
+
+setAppView();
 
 
 loadFoodService();
