@@ -1,532 +1,1545 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
 <title>ICEMD-2026 IIT Jodhpur - Admin</title>
+
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <style>
+
 *{box-sizing:border-box}
-body{margin:0;padding:20px;font-family:Arial,sans-serif;background:#f5f5f5;color:#222;min-height:90vh}
-.container{max-width:500px;width:100%;margin:0 auto}
-body.login-view{display:flex;align-items:center;justify-content:center}
-body.app-view{display:block}
-.card{background:#fff;padding:22px;border-radius:12px;box-shadow:0 3px 12px rgba(0,0,0,.08)}
-h1{text-align:center;font-size:24px;margin:0 0 5px}
-h2{text-align:center;font-size:20px;color:#17365d;margin:10px 0}
-.subtitle{text-align:center;color:#666;margin-bottom:25px;font-size:18px}
-.option{display:block;width:100%;padding:16px;margin-top:15px;background:#17365d;color:#fff;border:none;text-decoration:none;text-align:center;border-radius:8px;font-family:Arial,sans-serif;font-size:17px;font-weight:normal;cursor:pointer;transition:background .15s ease,transform .1s ease}
-.option:hover{background:#214a7a}
-.option:active{transform:scale(.99)}
-.option-title{font-size:18px}
-.back-button{background:#666}
-.back-button:hover{background:#555}
-.logout-button{background:#8b0000}
-.logout-button:hover{background:#a00000}
-.input-group{margin-top:15px}
-.input-group label{display:block;font-size:14px;color:#444;margin-bottom:6px}
-input,select{width:100%;padding:13px;border:1px solid #ccc;border-radius:7px;font-family:Arial,sans-serif;font-size:16px;background:#fff}
-input:focus,select:focus{outline:none;border-color:#17365d}
-.message{display:none;margin-top:15px;padding:11px;border-radius:7px;text-align:center;font-size:14px}
-.success{display:block;background:#e8f5e9;color:#2e7d32}
-.error{display:block;background:#ffebee;color:#c62828}
-.info{display:block;background:#eaf2f8;color:#17365d}
-.summary{display:flex;gap:10px;margin-top:18px;margin-bottom:20px}
-.summary-box{flex:1;background:#f5f5f5;border-radius:8px;padding:12px 5px;text-align:center}
-.summary-number{font-size:22px;font-weight:bold;color:#17365d}
-.summary-label{font-size:12px;color:#666;margin-top:3px}
-.user-list{margin-top:20px}
-.user-item{border:1px solid #ddd;border-radius:8px;padding:13px;margin-top:10px;background:#fff}
-.user-name{font-size:16px;font-weight:bold;color:#17365d}
-.user-email{font-size:14px;color:#666;margin-top:4px;word-break:break-word}
-.user-status{font-size:13px;margin-top:7px}
-.status-active{color:#2e7d32;font-weight:bold}
-.status-inactive{color:#c62828;font-weight:bold}
-.user-actions{display:flex;gap:8px;margin-top:10px}
-.small-button{flex:1;padding:9px 5px;border:none;border-radius:6px;font-family:Arial,sans-serif;font-size:13px;cursor:pointer;color:#fff;background:#17365d}
-.small-button:hover{background:#214a7a}
-.small-button:disabled{opacity:.65;cursor:wait}
-.small-button.delete{background:#8b0000}
-.small-button.delete:hover{background:#a00000}
-.section-title{text-align:center;color:#17365d;font-size:20px;margin:5px 0}
-.section-subtitle{text-align:center;color:#666;font-size:14px;margin-bottom:20px}
-.loading{text-align:center;color:#666;padding:20px 5px;font-size:14px}
-.empty{text-align:center;color:#666;padding:20px 5px;font-size:14px}
-.footer{text-align:center;color:#666;margin-top:25px;font-size:14px;line-height:1.5}
-.hidden{display:none!important}
-.food-day{border:1px solid #ddd;border-radius:10px;padding:15px;margin-top:12px;background:#fff}
-.food-day-title{font-size:16px;font-weight:bold;color:#17365d;margin-bottom:10px}
-.food-current{font-size:13px;color:#666;margin-top:7px}
-.food-save{margin-top:10px;padding:10px;width:100%;border:none;border-radius:7px;background:#17365d;color:#fff;font-size:14px;cursor:pointer}
-.food-save:hover{background:#214a7a}
+
+body{
+margin:0;
+padding:20px;
+font-family:Arial,sans-serif;
+background:#f5f5f5;
+color:#222;
+min-height:90vh;
+}
+
+.container{
+max-width:500px;
+width:100%;
+margin:0 auto;
+}
+
+body.login-view{
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+body.app-view{
+display:block;
+}
+
+.card{
+background:#fff;
+padding:22px;
+border-radius:12px;
+box-shadow:0 3px 12px rgba(0,0,0,.08)
+}
+
+h1{
+text-align:center;
+font-size:24px;
+margin:0 0 5px
+}
+
+h2{
+text-align:center;
+font-size:20px;
+color:#17365d;
+margin:10px 0
+}
+
+.subtitle{
+text-align:center;
+color:#666;
+margin-bottom:25px;
+font-size:18px
+}
+
+.option{
+display:block;
+width:100%;
+padding:16px;
+margin-top:15px;
+background:#17365d;
+color:#fff;
+border:none;
+text-decoration:none;
+text-align:center;
+border-radius:8px;
+font-family:Arial,sans-serif;
+font-size:17px;
+font-weight:normal;
+cursor:pointer;
+transition:background .15s ease,transform .1s ease
+}
+
+.option:hover{
+background:#214a7a
+}
+
+.option:active{
+transform:scale(.99)
+}
+
+.option-title{
+font-size:18px
+}
+
+.back-button{
+background:#666
+}
+
+.back-button:hover{
+background:#555
+}
+
+.logout-button{
+background:#8b0000
+}
+
+.logout-button:hover{
+background:#a00000
+}
+
+.input-group{
+margin-top:15px
+}
+
+.input-group label{
+display:block;
+font-size:14px;
+color:#444;
+margin-bottom:6px
+}
+
+input,select{
+width:100%;
+padding:13px;
+border:1px solid #ccc;
+border-radius:7px;
+font-family:Arial,sans-serif;
+font-size:16px;
+background:#fff
+}
+
+input:focus,select:focus{
+outline:none;
+border-color:#17365d
+}
+
+.message{
+display:none;
+margin-top:15px;
+padding:11px;
+border-radius:7px;
+text-align:center;
+font-size:14px
+}
+
+.success{
+display:block;
+background:#e8f5e9;
+color:#2e7d32
+}
+
+.error{
+display:block;
+background:#ffebee;
+color:#c62828
+}
+
+.info{
+display:block;
+background:#eaf2f8;
+color:#17365d
+}
+
+.summary{
+display:flex;
+gap:10px;
+margin-top:18px;
+margin-bottom:20px
+}
+
+.summary-box{
+flex:1;
+background:#f5f5f5;
+border-radius:8px;
+padding:12px 5px;
+text-align:center
+}
+
+.summary-number{
+font-size:22px;
+font-weight:bold;
+color:#17365d
+}
+
+.summary-label{
+font-size:12px;
+color:#666;
+margin-top:3px
+}
+
+.user-list{
+margin-top:20px
+}
+
+.user-item{
+border:1px solid #ddd;
+border-radius:8px;
+padding:13px;
+margin-top:10px;
+background:#fff
+}
+
+.user-name{
+font-size:16px;
+font-weight:bold;
+color:#17365d
+}
+
+.user-email{
+font-size:14px;
+color:#666;
+margin-top:4px;
+word-break:break-word
+}
+
+.user-status{
+font-size:13px;
+margin-top:7px
+}
+
+.status-active{
+color:#2e7d32;
+font-weight:bold
+}
+
+.status-inactive{
+color:#c62828;
+font-weight:bold
+}
+
+.user-actions{
+display:flex;
+gap:8px;
+margin-top:10px
+}
+
+.small-button{
+flex:1;
+padding:9px 5px;
+border:none;
+border-radius:6px;
+font-family:Arial,sans-serif;
+font-size:13px;
+cursor:pointer;
+color:#fff;
+background:#17365d
+}
+
+.small-button:hover{
+background:#214a7a
+}
+
+.small-button:disabled{
+opacity:.65;
+cursor:wait
+}
+
+.small-button.delete{
+background:#8b0000
+}
+
+.small-button.delete:hover{
+background:#a00000
+}
+
+.section-title{
+text-align:center;
+color:#17365d;
+font-size:20px;
+margin:5px 0
+}
+
+.section-subtitle{
+text-align:center;
+color:#666;
+font-size:14px;
+margin-bottom:20px
+}
+
+.loading{
+text-align:center;
+color:#666;
+padding:20px 5px;
+font-size:14px
+}
+
+.empty{
+text-align:center;
+color:#666;
+padding:20px 5px;
+font-size:14px
+}
+
+.footer{
+text-align:center;
+color:#666;
+margin-top:25px;
+font-size:14px;
+line-height:1.5
+}
+
+.hidden{
+display:none!important
+}
+
+.food-day{
+border:1px solid #ddd;
+border-radius:10px;
+padding:15px;
+margin-top:12px;
+background:#fff
+}
+
+.food-day-title{
+font-size:16px;
+font-weight:bold;
+color:#17365d;
+margin-bottom:10px
+}
+
+.food-current{
+font-size:13px;
+color:#666;
+margin-top:7px
+}
+
+.food-save{
+margin-top:10px;
+padding:10px;
+width:100%;
+border:none;
+border-radius:7px;
+background:#17365d;
+color:#fff;
+font-size:14px;
+cursor:pointer
+}
+
+.food-save:hover{
+background:#214a7a
+}
+
 </style>
+
 </head>
 
 <body class="login-view">
+
 <div class="container">
+
 <div class="card">
 
+<!-- LOGIN -->
+
 <div id="loginSection">
+
 <h1>ICEMD-2026</h1>
+
 <h2>IIT Jodhpur, India</h2>
-<p class="subtitle">Admin Console</p>
 
-<form id="adminLoginForm" onsubmit="adminLogin(event)" autocomplete="on">
+<p class="subtitle">
+Admin Console
+</p>
+
+<form
+id="adminLoginForm"
+onsubmit="adminLogin(event)"
+autocomplete="on"
+>
+
 <div class="input-group">
-<label for="adminEmail">Email</label>
-<input type="text" id="adminEmail" value="pal.17@iitj.ac.in" readonly autocomplete="username">
+
+<label for="adminEmail">
+Email
+</label>
+
+<input
+type="text"
+id="adminEmail"
+value="pal.17@iitj.ac.in"
+readonly
+autocomplete="username"
+>
+
 </div>
 
 <div class="input-group">
-<label for="adminPassword">Password</label>
-<input type="password" id="adminPassword" placeholder="Enter password" autocomplete="current-password" autocapitalize="none" spellcheck="false" required>
+
+<label for="adminPassword">
+Password
+</label>
+
+<input
+type="password"
+id="adminPassword"
+placeholder="Enter password"
+autocomplete="current-password"
+autocapitalize="none"
+spellcheck="false"
+required
+>
+
 </div>
 
-<button type="submit" class="option">Login</button>
+<button
+type="submit"
+class="option"
+>
+Login
+</button>
+
 </form>
 
-<button type="button" class="option back-button" onclick="goHome()">Back</button>
-<div id="loginMessage" class="message"></div>
+<button
+type="button"
+class="option back-button"
+onclick="goHome()"
+>
+Back
+</button>
+
+<div
+id="loginMessage"
+class="message"
+></div>
+
 </div>
 
-<div id="dashboardSection" class="hidden">
-<h1>ICEMD-2026</h1>
-<h2>IIT Jodhpur, India</h2>
-<p class="subtitle">Admin Dashboard</p>
 
-<div style="text-align:center;color:#666;font-size:15px;margin-bottom:20px">
+<!-- DASHBOARD -->
+
+<div
+id="dashboardSection"
+class="hidden"
+>
+
+<h1>ICEMD-2026</h1>
+
+<h2>IIT Jodhpur, India</h2>
+
+<p class="subtitle">
+Admin Dashboard
+</p>
+
+<div
+style="text-align:center;color:#666;font-size:15px;margin-bottom:20px"
+>
 Welcome, Biswajit Pal
 </div>
 
-<button type="button" class="option" onclick="openUsers()">
-<div class="option-title">Manage Users</div>
+<button
+type="button"
+class="option"
+onclick="openUsers()"
+>
+<div class="option-title">
+Manage Users
+</div>
 </button>
 
-<button type="button" class="option" onclick="openFoodService()">
-<div class="option-title">Manage Food Service</div>
+<button
+type="button"
+class="option"
+onclick="openFoodService()"
+>
+<div class="option-title">
+Manage Food Service
+</div>
 </button>
 
-<button type="button" class="option" onclick="uploadGuestExcel()">
-<div class="option-title">Upload Guest Excel</div>
+<button
+type="button"
+class="option"
+onclick="uploadGuestExcel()"
+>
+<div class="option-title">
+Upload Guest Excel
+</div>
 </button>
 
-<button type="button" class="option" onclick="generateQRCodes()">
-<div class="option-title">Generate QR Codes</div>
+<button
+type="button"
+class="option"
+onclick="generateQRCodes()"
+>
+<div class="option-title">
+Generate QR Codes
+</div>
 </button>
 
-<button type="button" class="option" onclick="downloadQRPDF()">
-<div class="option-title">Download QR PDF</div>
+<button
+type="button"
+class="option"
+onclick="downloadQRPDF()"
+>
+<div class="option-title">
+Download QR PDF
+</div>
 </button>
 
-<button type="button" class="option logout-button" onclick="adminLogout()">
-<div class="option-title">Logout</div>
+<button
+type="button"
+class="option logout-button"
+onclick="adminLogout()"
+>
+<div class="option-title">
+Logout
+</div>
 </button>
 
-<button type="button" class="option back-button" onclick="goHome()">Back</button>
+<button
+type="button"
+class="option back-button"
+onclick="goHome()"
+>
+Back
+</button>
+
 </div>
 
-<div id="usersSection" class="hidden">
+
+<!-- USERS -->
+
+<div
+id="usersSection"
+class="hidden"
+>
+
 <h1>ICEMD-2026</h1>
+
 <h2>IIT Jodhpur, India</h2>
 
-<div class="section-title">Manage Users</div>
-<div class="section-subtitle">Registration Desk Users</div>
+<div class="section-title">
+Manage Users
+</div>
+
+<div class="section-subtitle">
+Registration Desk Users
+</div>
 
 <div class="summary">
+
 <div class="summary-box">
-<div id="totalUsers" class="summary-number">0</div>
-<div class="summary-label">Total</div>
+
+<div
+id="totalUsers"
+class="summary-number"
+>
+0
+</div>
+
+<div class="summary-label">
+Total
+</div>
+
 </div>
 
 <div class="summary-box">
-<div id="activeUsers" class="summary-number">0</div>
-<div class="summary-label">Active</div>
+
+<div
+id="activeUsers"
+class="summary-number"
+>
+0
+</div>
+
+<div class="summary-label">
+Active
+</div>
+
 </div>
 
 <div class="summary-box">
-<div id="userLimit" class="summary-number">30</div>
-<div class="summary-label">Limit</div>
-</div>
+
+<div
+id="userLimit"
+class="summary-number"
+>
+30
 </div>
 
-<div style="border-top:1px solid #ddd;padding-top:18px">
-<div style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:5px">
+<div class="summary-label">
+Limit
+</div>
+
+</div>
+
+</div>
+
+
+<div
+style="border-top:1px solid #ddd;padding-top:18px"
+>
+
+<div
+style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:5px"
+>
 Add New User
 </div>
 
-<div style="color:#666;font-size:13px;margin-bottom:15px">
+<div
+style="color:#666;font-size:13px;margin-bottom:15px"
+>
 Any valid email address can be used.
 </div>
 
-<form id="addUserForm" onsubmit="addNewUser(event)">
+<form
+id="addUserForm"
+onsubmit="addNewUser(event)"
+>
+
 <div class="input-group">
-<label for="newUserName">Name</label>
-<input type="text" id="newUserName" placeholder="Enter name" required>
+
+<label for="newUserName">
+Name
+</label>
+
+<input
+type="text"
+id="newUserName"
+placeholder="Enter name"
+required
+>
+
 </div>
 
 <div class="input-group">
-<label for="newUserEmail">Email</label>
-<input type="email" id="newUserEmail" placeholder="Enter email address" autocomplete="email" required>
+
+<label for="newUserEmail">
+Email
+</label>
+
+<input
+type="email"
+id="newUserEmail"
+placeholder="Enter email address"
+autocomplete="email"
+required
+>
+
 </div>
 
-<button type="submit" class="option">Add User</button>
+<button
+type="submit"
+class="option"
+>
+Add User
+</button>
+
 </form>
 
-<div id="userMessage" class="message"></div>
+<div
+id="userMessage"
+class="message"
+></div>
+
 </div>
+
 
 <div class="user-list">
-<div style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:8px">
+
+<div
+style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:8px"
+>
 Current Users
 </div>
-<div id="usersList" class="loading">Loading users...</div>
+
+<div
+id="usersList"
+class="loading"
+>
+Loading users...
 </div>
 
-<button type="button" class="option back-button" onclick="closeUsers()">Back</button>
 </div>
 
-<div id="foodSection" class="hidden">
+<button
+type="button"
+class="option back-button"
+onclick="closeUsers()"
+>
+Back
+</button>
+
+</div>
+
+
+<!-- FOOD -->
+
+<div
+id="foodSection"
+class="hidden"
+>
+
 <h1>ICEMD-2026</h1>
+
 <h2>IIT Jodhpur, India</h2>
 
-<div class="section-title">Manage Food Service</div>
-<div class="section-subtitle">Set the meal available on each conference day</div>
+<div class="section-title">
+Manage Food Service
+</div>
 
-<div style="background:#eaf2f8;color:#17365d;padding:12px;border-radius:8px;font-size:13px;line-height:1.5;margin-bottom:15px;text-align:center">
+<div class="section-subtitle">
+Set the meal available on each conference day
+</div>
+
+<div
+style="
+background:#eaf2f8;
+color:#17365d;
+padding:12px;
+border-radius:8px;
+font-size:13px;
+line-height:1.5;
+margin-bottom:15px;
+text-align:center"
+>
+
 The caterer does not select the meal during scanning.
 The system automatically determines the active meal from these settings.
+
 </div>
 
 <div id="foodSettingsContainer">
-<div class="loading">Loading food settings...</div>
-</div>
 
-<div id="foodMessage" class="message"></div>
-
-<button type="button" class="option back-button" onclick="closeFoodService()">Back</button>
+<div class="loading">
+Loading food settings...
 </div>
 
 </div>
+
+<div
+id="foodMessage"
+class="message"
+></div>
+
+<button
+type="button"
+class="option back-button"
+onclick="closeFoodService()"
+>
+Back
+</button>
+
 </div>
+
+</div>
+
+</div>
+
 
 <script>
-const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbxD0VHRLp17LUYiPlYzxPRWwsZUagkVZycolhHfn6Nyt6XN-N2bQD0_uekzWlZc3iOgrA/exec";
+
+const APPS_SCRIPT_URL =
+"https://script.google.com/macros/s/AKfycbxD0VHRLp17LUYiPlYzxPRWwsZUagkVZycolhHfn6Nyt6XN-N2bQD0_uekzWlZc3iOgrA/exec";
+
 const FIXED_EMAIL="pal.17@iitj.ac.in";
 const FIXED_PASSWORD="icemd@20260317";
 
+
+/* =====================================================
+   VIEW MODE
+===================================================== */
+
 function setAppView(){
+
 document.body.classList.remove("login-view");
+
 document.body.classList.add("app-view");
+
 }
 
 function setLoginView(){
+
 document.body.classList.remove("app-view");
+
 document.body.classList.add("login-view");
+
 }
 
+
+/* =====================================================
+   LOGIN
+===================================================== */
+
 function adminLogin(event){
+
 event.preventDefault();
 
-const email=document.getElementById("adminEmail").value.trim();
-const passwordInput=document.getElementById("adminPassword");
-const password=passwordInput.value;
-const message=document.getElementById("loginMessage");
+const email=
+document.getElementById("adminEmail")
+.value
+.trim();
 
-if(email===FIXED_EMAIL&&password===FIXED_PASSWORD){
-sessionStorage.setItem("icemdAdminLoggedIn","true");
+const passwordInput=
+document.getElementById("adminPassword");
 
-document.getElementById("loginSection").classList.add("hidden");
-document.getElementById("dashboardSection").classList.remove("hidden");
+const password=
+passwordInput.value;
+
+const message=
+document.getElementById("loginMessage");
+
+if(
+email===FIXED_EMAIL&&
+password===FIXED_PASSWORD
+){
+
+sessionStorage.setItem(
+"icemdAdminLoggedIn",
+"true"
+);
+
+document.getElementById(
+"loginSection"
+).classList.add("hidden");
+
+document.getElementById(
+"dashboardSection"
+).classList.remove("hidden");
 
 setAppView();
 
 message.className="message";
+
 message.textContent="";
+
 passwordInput.value="";
+
 }else{
+
 message.className="message error";
-message.textContent="Invalid admin password.";
+
+message.textContent=
+"Invalid admin password.";
+
 passwordInput.value="";
+
 passwordInput.focus();
+
 }
+
 }
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
 
 function adminLogout(){
-sessionStorage.removeItem("icemdAdminLoggedIn");
 
-document.getElementById("adminPassword").value="";
-document.getElementById("dashboardSection").classList.add("hidden");
-document.getElementById("usersSection").classList.add("hidden");
-document.getElementById("foodSection").classList.add("hidden");
-document.getElementById("loginSection").classList.remove("hidden");
+sessionStorage.removeItem(
+"icemdAdminLoggedIn"
+);
+
+document.getElementById(
+"adminPassword"
+).value="";
+
+document.getElementById(
+"dashboardSection"
+).classList.add("hidden");
+
+document.getElementById(
+"usersSection"
+).classList.add("hidden");
+
+document.getElementById(
+"foodSection"
+).classList.add("hidden");
+
+document.getElementById(
+"loginSection"
+).classList.remove("hidden");
 
 setLoginView();
-document.getElementById("adminPassword").focus();
+
+document.getElementById(
+"adminPassword"
+).focus();
+
 }
+
+
+/* =====================================================
+   HOME
+===================================================== */
 
 function goHome(){
+
 window.location.href="index.html";
+
 }
 
+
+/* =====================================================
+   USERS OPEN / CLOSE
+===================================================== */
+
 function openUsers(){
-document.getElementById("dashboardSection").classList.add("hidden");
-document.getElementById("foodSection").classList.add("hidden");
-document.getElementById("usersSection").classList.remove("hidden");
+
+document.getElementById(
+"dashboardSection"
+).classList.add("hidden");
+
+document.getElementById(
+"foodSection"
+).classList.add("hidden");
+
+document.getElementById(
+"usersSection"
+).classList.remove("hidden");
+
 loadUsers();
+
 }
 
 function closeUsers(){
-document.getElementById("usersSection").classList.add("hidden");
-document.getElementById("dashboardSection").classList.remove("hidden");
+
+document.getElementById(
+"usersSection"
+).classList.add("hidden");
+
+document.getElementById(
+"dashboardSection"
+).classList.remove("hidden");
+
 }
 
+
+/* =====================================================
+   FOOD OPEN / CLOSE
+===================================================== */
+
 function openFoodService(){
-document.getElementById("dashboardSection").classList.add("hidden");
-document.getElementById("usersSection").classList.add("hidden");
-document.getElementById("foodSection").classList.remove("hidden");
+
+document.getElementById(
+"dashboardSection"
+).classList.add("hidden");
+
+document.getElementById(
+"usersSection"
+).classList.add("hidden");
+
+document.getElementById(
+"foodSection"
+).classList.remove("hidden");
+
 loadFoodSettings();
+
 }
 
 function closeFoodService(){
-document.getElementById("foodSection").classList.add("hidden");
-document.getElementById("dashboardSection").classList.remove("hidden");
+
+document.getElementById(
+"foodSection"
+).classList.add("hidden");
+
+document.getElementById(
+"dashboardSection"
+).classList.remove("hidden");
+
 }
 
+
+/* =====================================================
+   JSONP API
+===================================================== */
+
 function apiRequest(params,callback){
-const callbackName="icemdCallback_"+Date.now()+"_"+Math.floor(Math.random()*10000);
+
+const callbackName=
+"icemdCallback_"+
+Date.now()+"_"+
+Math.floor(Math.random()*10000);
+
 params.callback=callbackName;
 
-const query=Object.keys(params).map(function(key){
-return encodeURIComponent(key)+"="+encodeURIComponent(params[key]);
-}).join("&");
+const query=
+Object.keys(params)
+.map(function(key){
 
-const script=document.createElement("script");
+return encodeURIComponent(key)+
+"="+
+encodeURIComponent(params[key]);
+
+})
+.join("&");
+
+const script=
+document.createElement("script");
+
 let finished=false;
 
-const timeout=setTimeout(function(){
+const timeout=
+setTimeout(function(){
+
 if(finished)return;
+
 finished=true;
 
-try{delete window[callbackName]}catch(e){}
-if(script.parentNode)script.parentNode.removeChild(script);
+try{
+
+delete window[callbackName];
+
+}catch(e){}
+
+if(script.parentNode)
+script.parentNode.removeChild(script);
 
 callback({
+
 status:"error",
-message:"Unable to connect to the server."
+
+message:
+"Unable to connect to the server."
+
 });
+
 },15000);
 
+
 window[callbackName]=function(data){
+
 if(finished)return;
+
 finished=true;
+
 clearTimeout(timeout);
 
-try{delete window[callbackName]}catch(e){}
-if(script.parentNode)script.parentNode.removeChild(script);
+try{
+
+delete window[callbackName];
+
+}catch(e){}
+
+if(script.parentNode)
+script.parentNode.removeChild(script);
 
 callback(data);
+
 };
 
-script.src=APPS_SCRIPT_URL+"?"+query;
+script.src=
+APPS_SCRIPT_URL+
+"?"+
+query;
 
 script.onerror=function(){
+
 if(finished)return;
+
 finished=true;
+
 clearTimeout(timeout);
 
-try{delete window[callbackName]}catch(e){}
-if(script.parentNode)script.parentNode.removeChild(script);
+try{
+
+delete window[callbackName];
+
+}catch(e){}
+
+if(script.parentNode)
+script.parentNode.removeChild(script);
 
 callback({
+
 status:"error",
-message:"Unable to connect to the server."
+
+message:
+"Unable to connect to the server."
+
 });
+
 };
 
 document.body.appendChild(script);
+
 }
+
+
+/* =====================================================
+   LOAD USERS
+===================================================== */
 
 function loadUsers(){
-const list=document.getElementById("usersList");
-list.className="loading";
-list.innerHTML="Loading users...";
 
-apiRequest({
+const list=
+document.getElementById(
+"usersList"
+);
+
+list.className="loading";
+
+list.innerHTML=
+"Loading users...";
+
+apiRequest(
+{
 action:"users",
 _cache:Date.now()
-},function(result){
+},
+function(result){
 
-if(!result||result.status!=="success"){
-list.className="message error";
-list.textContent=result&&result.message?result.message:"Unable to load users.";
+if(
+!result||
+result.status!=="success"
+){
+
+list.className=
+"message error";
+
+list.textContent=
+result&&result.message
+?result.message
+:"Unable to load users.";
+
 return;
+
 }
 
-const users=Array.isArray(result.data)?result.data:[];
+const users=
+Array.isArray(result.data)
+?result.data
+:[];
+
 renderUsers(users);
 
-apiRequest({
+apiRequest(
+{
 action:"settings",
 _cache:Date.now()
-},function(settingsResult){
+},
+function(settingsResult){
 
 let limit=30;
 
-if(settingsResult&&settingsResult.status==="success"){
-const settings=settingsResult.settings||{};
-limit=Number(settings["Assistant Limit"]||30);
+if(
+settingsResult&&
+settingsResult.status==="success"
+){
+
+const settings=
+settingsResult.settings||{};
+
+limit=
+Number(
+settings["Assistant Limit"]||30
+);
+
 }
 
-updateUserSummary(users,limit);
-});
-});
+updateUserSummary(
+users,
+limit
+);
+
+}
+);
+
+}
+);
+
 }
 
-function updateUserSummary(users,limit){
+
+/* =====================================================
+   SUMMARY
+===================================================== */
+
+function updateUserSummary(
+users,
+limit
+){
+
 const total=users.length;
 
-const active=users.filter(function(user){
-return String(user["Status"]||"").trim().toUpperCase()==="ACTIVE";
+const active=
+users.filter(function(user){
+
+return String(
+user["Status"]||""
+)
+.trim()
+.toUpperCase()==="ACTIVE";
+
 }).length;
 
-document.getElementById("totalUsers").textContent=total;
-document.getElementById("activeUsers").textContent=active;
-document.getElementById("userLimit").textContent=limit;
+document.getElementById(
+"totalUsers"
+).textContent=total;
+
+document.getElementById(
+"activeUsers"
+).textContent=active;
+
+document.getElementById(
+"userLimit"
+).textContent=limit;
+
 }
 
+
+/* =====================================================
+   RENDER USERS
+===================================================== */
+
 function renderUsers(users){
-const list=document.getElementById("usersList");
+
+const list=
+document.getElementById(
+"usersList"
+);
 
 if(!users.length){
+
 list.className="empty";
-list.textContent="No users have been added yet.";
+
+list.textContent=
+"No users have been added yet.";
+
 return;
+
 }
 
 list.className="user-list";
+
 list.innerHTML="";
 
 users.forEach(function(user){
 
-const name=String(user["Name"]||"").trim();
-const email=String(user["Email"]||"").trim().toLowerCase();
+const name=
+String(
+user["Name"]||""
+).trim();
 
-const userStatus=String(user["Status"]||"").trim().toUpperCase();
-const isActive=userStatus==="ACTIVE";
+const email=
+String(
+user["Email"]||""
+).trim()
+.toLowerCase();
 
-const item=document.createElement("div");
+const userStatus=
+String(
+user["Status"]||""
+)
+.trim()
+.toUpperCase();
+
+const isActive=
+userStatus==="ACTIVE";
+
+const item=
+document.createElement("div");
+
 item.className="user-item";
 
-const nameElement=document.createElement("div");
+const nameElement=
+document.createElement("div");
+
 nameElement.className="user-name";
+
 nameElement.textContent=name;
 
-const emailElement=document.createElement("div");
+const emailElement=
+document.createElement("div");
+
 emailElement.className="user-email";
-emailElement.textContent=email||"Email not available";
 
-const statusElement=document.createElement("div");
-statusElement.className="user-status "+(isActive?"status-active":"status-inactive");
-statusElement.textContent="Status: "+(isActive?"ACTIVE":"INACTIVE");
+emailElement.textContent=
+email||"Email not available";
 
-const actions=document.createElement("div");
+const statusElement=
+document.createElement("div");
+
+statusElement.className=
+"user-status "+
+(
+isActive
+?"status-active"
+:"status-inactive"
+);
+
+statusElement.textContent=
+"Status: "+
+(
+isActive
+?"ACTIVE"
+:"INACTIVE"
+);
+
+const actions=
+document.createElement("div");
+
 actions.className="user-actions";
 
-const statusButton=document.createElement("button");
+const statusButton=
+document.createElement("button");
+
 statusButton.type="button";
-statusButton.className="small-button";
-statusButton.textContent=isActive?"Deactivate":"Activate";
+
+statusButton.className=
+"small-button";
+
+statusButton.textContent=
+isActive
+?"Deactivate"
+:"Activate";
 
 statusButton.onclick=function(){
-const newStatus=isActive?"INACTIVE":"ACTIVE";
-changeUserStatus(email,newStatus,statusButton);
+
+const newStatus=
+isActive
+?"INACTIVE"
+:"ACTIVE";
+
+changeUserStatus(
+email,
+newStatus,
+statusButton
+);
+
 };
 
-const deleteButton=document.createElement("button");
+const deleteButton=
+document.createElement("button");
+
 deleteButton.type="button";
-deleteButton.className="small-button delete";
+
+deleteButton.className=
+"small-button delete";
+
 deleteButton.textContent="Delete";
 
 deleteButton.onclick=function(){
-deleteExistingUser(email,deleteButton);
+
+deleteExistingUser(
+email,
+deleteButton
+);
+
 };
 
-actions.appendChild(statusButton);
-actions.appendChild(deleteButton);
+actions.appendChild(
+statusButton
+);
 
-item.appendChild(nameElement);
-item.appendChild(emailElement);
-item.appendChild(statusElement);
-item.appendChild(actions);
+actions.appendChild(
+deleteButton
+);
+
+item.appendChild(
+nameElement
+);
+
+item.appendChild(
+emailElement
+);
+
+item.appendChild(
+statusElement
+);
+
+item.appendChild(
+actions
+);
 
 list.appendChild(item);
+
 });
+
 }
+
+
+/* =====================================================
+   ADD USER
+===================================================== */
 
 function addNewUser(event){
+
 event.preventDefault();
 
-const name=document.getElementById("newUserName").value.trim();
-const email=document.getElementById("newUserEmail").value.trim().toLowerCase();
+const name=
+document.getElementById(
+"newUserName"
+).value.trim();
+
+const email=
+document.getElementById(
+"newUserEmail"
+).value.trim()
+.toLowerCase();
 
 if(!name){
-showUserMessage("Please enter the user's name.","error");
+
+showUserMessage(
+"Please enter the user's name.",
+"error"
+);
+
 return;
+
 }
 
-const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const emailPattern=
+/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 if(!emailPattern.test(email)){
-showUserMessage("Please enter a valid email address.","error");
+
+showUserMessage(
+"Please enter a valid email address.",
+"error"
+);
+
 return;
+
 }
 
-showUserMessage("Adding user...","info");
+showUserMessage(
+"Adding user...",
+"info"
+);
 
-apiRequest({
+apiRequest(
+{
 action:"addUser",
 name:name,
 email:email,
 _cache:Date.now()
-},function(result){
+},
+function(result){
 
-if(!result||result.status!=="success"){
+if(
+!result||
+result.status!=="success"
+){
+
 showUserMessage(
-result&&result.message?result.message:"Unable to add user.",
+result&&result.message
+?result.message
+:"Unable to add user.",
 "error"
 );
+
 return;
+
 }
 
-showUserMessage("User added successfully.","success");
-document.getElementById("addUserForm").reset();
+showUserMessage(
+"User added successfully.",
+"success"
+);
+
+document.getElementById(
+"addUserForm"
+).reset();
+
 loadUsers();
-});
+
+}
+);
+
 }
 
-function showUserMessage(text,type){
-const message=document.getElementById("userMessage");
-message.className="message "+type;
+
+/* =====================================================
+   USER MESSAGE
+===================================================== */
+
+function showUserMessage(
+text,
+type
+){
+
+const message=
+document.getElementById(
+"userMessage"
+);
+
+message.className=
+"message "+
+type;
+
 message.textContent=text;
+
 }
 
-function changeUserStatus(email,status,button){
-email=String(email||"").trim().toLowerCase();
-status=String(status||"").trim().toUpperCase();
+
+/* =====================================================
+   ACTIVATE / DEACTIVATE USER
+===================================================== */
+
+function changeUserStatus(
+email,
+status,
+button
+){
+
+email=
+String(email||"")
+.trim()
+.toLowerCase();
+
+status=
+String(status||"")
+.trim()
+.toUpperCase();
 
 if(!email){
-showUserMessage("User email is missing.","error");
+
+showUserMessage(
+"User email is missing.",
+"error"
+);
+
 return;
+
 }
 
-if(status!=="ACTIVE"&&status!=="INACTIVE"){
-showUserMessage("Invalid user status.","error");
+if(
+status!=="ACTIVE"&&
+status!=="INACTIVE"
+){
+
+showUserMessage(
+"Invalid user status.",
+"error"
+);
+
 return;
+
 }
 
-const actionText=status==="ACTIVE"?"activate":"deactivate";
+const actionText=
+status==="ACTIVE"
+?"activate"
+:"deactivate";
 
 if(!confirm(
 "Are you sure you want to "+
@@ -534,38 +1547,63 @@ actionText+
 " this user?\n\n"+
 email
 )){
+
 return;
+
 }
 
 if(button){
+
 button.disabled=true;
-button.textContent=status==="ACTIVE"?"Activating...":"Deactivating...";
+
+button.textContent=
+status==="ACTIVE"
+?"Activating..."
+:"Deactivating...";
+
 }
 
 showUserMessage(
-status==="ACTIVE"?"Activating user...":"Deactivating user...",
+status==="ACTIVE"
+?"Activating user..."
+:"Deactivating user...",
 "info"
 );
 
-apiRequest({
+apiRequest(
+{
 action:"updateUser",
 email:email,
 status:status,
 _cache:Date.now()
-},function(result){
+},
+function(result){
 
-if(!result||result.status!=="success"){
+if(
+!result||
+result.status!=="success"
+){
 
 if(button){
+
 button.disabled=false;
-button.textContent=status==="ACTIVE"?"Activate":"Deactivate";
+
+button.textContent=
+status==="ACTIVE"
+?"Activate"
+:"Deactivate";
+
 }
 
 showUserMessage(
-result&&result.message?result.message:"Unable to update user.",
+result&&result.message
+?result.message
+:"Unable to update user.",
 "error"
 );
+
 return;
+
 }
 
 showUserMessage(
@@ -576,17 +1614,40 @@ status==="ACTIVE"
 );
 
 setTimeout(function(){
+
 loadUsers();
+
 },300);
-});
+
+}
+);
+
 }
 
-function deleteExistingUser(email,button){
-email=String(email||"").trim().toLowerCase();
+
+/* =====================================================
+   DELETE USER
+===================================================== */
+
+function deleteExistingUser(
+email,
+button
+){
+
+email=
+String(email||"")
+.trim()
+.toLowerCase();
 
 if(!email){
-showUserMessage("User email is missing.","error");
+
+showUserMessage(
+"User email is missing.",
+"error"
+);
+
 return;
+
 }
 
 if(!confirm(
@@ -594,55 +1655,98 @@ if(!confirm(
 email+
 "\n\nThis action cannot be undone."
 )){
+
 return;
+
 }
 
 if(button){
+
 button.disabled=true;
+
 button.textContent="Deleting...";
-}
 
-showUserMessage("Deleting user...","info");
-
-apiRequest({
-action:"deleteUser",
-email:email,
-_cache:Date.now()
-},function(result){
-
-if(!result||result.status!=="success"){
-
-if(button){
-button.disabled=false;
-button.textContent="Delete";
 }
 
 showUserMessage(
-result&&result.message?result.message:"Unable to delete user.",
+"Deleting user...",
+"info"
+);
+
+apiRequest(
+{
+action:"deleteUser",
+email:email,
+_cache:Date.now()
+},
+function(result){
+
+if(
+!result||
+result.status!=="success"
+){
+
+if(button){
+
+button.disabled=false;
+
+button.textContent="Delete";
+
+}
+
+showUserMessage(
+result&&result.message
+?result.message
+:"Unable to delete user.",
 "error"
 );
+
 return;
+
 }
 
-showUserMessage("User deleted successfully.","success");
+showUserMessage(
+"User deleted successfully.",
+"success"
+);
 
 setTimeout(function(){
+
 loadUsers();
+
 },300);
-});
+
+}
+);
+
 }
 
+
+/* =====================================================
+   FOOD SERVICE
+===================================================== */
+
 function loadFoodSettings(){
-const container=document.getElementById("foodSettingsContainer");
 
-container.innerHTML='<div class="loading">Loading food settings...</div>';
+const container=
+document.getElementById(
+"foodSettingsContainer"
+);
 
-apiRequest({
+container.innerHTML=
+'<div class="loading">Loading food settings...</div>';
+
+apiRequest(
+{
 action:"foodSettings",
 _cache:Date.now()
-},function(result){
+},
+function(result){
 
-if(!result||result.status!=="success"){
+if(
+!result||
+result.status!=="success"
+){
 
 container.innerHTML=
 '<div class="message error">'+
@@ -654,148 +1758,280 @@ result&&result.message
 '</div>';
 
 return;
+
 }
 
-renderFoodSettings(result.dates||{});
-});
+renderFoodSettings(
+result.dates||{}
+);
+
 }
+);
+
+}
+
 
 function renderFoodSettings(dates){
-const container=document.getElementById("foodSettingsContainer");
+
+const container=
+document.getElementById(
+"foodSettingsContainer"
+);
+
 container.innerHTML="";
 
-["21","22","23"].forEach(function(day){
+["21","22","23"].forEach(
+function(day){
 
-const current=dates[day]||"OFF";
+const current=
+dates[day]||"OFF";
 
-const box=document.createElement("div");
+const box=
+document.createElement("div");
+
 box.className="food-day";
 
-const title=document.createElement("div");
-title.className="food-day-title";
-title.textContent="December "+day+", 2026";
+const title=
+document.createElement("div");
 
-const select=document.createElement("select");
-select.id="foodSelect_"+day;
+title.className=
+"food-day-title";
 
-["OFF","Breakfast","Lunch","Dinner"].forEach(function(meal){
+title.textContent=
+"December "+
+day+
+", 2026";
 
-const option=document.createElement("option");
+const select=
+document.createElement("select");
+
+select.id=
+"foodSelect_"+
+day;
+
+[
+"OFF",
+"Breakfast",
+"Lunch",
+"Dinner"
+].forEach(
+function(meal){
+
+const option=
+document.createElement("option");
 
 option.value=meal;
+
 option.textContent=meal;
 
-if(meal.toLowerCase()===String(current).toLowerCase()){
+if(
+meal.toLowerCase()===
+String(current).toLowerCase()
+){
+
 option.selected=true;
+
 }
 
 select.appendChild(option);
+
 });
 
-const currentText=document.createElement("div");
-currentText.className="food-current";
-currentText.id="foodCurrent_"+day;
-currentText.textContent="Current setting: "+current;
+const currentText=
+document.createElement("div");
 
-const button=document.createElement("button");
+currentText.className=
+"food-current";
+
+currentText.id=
+"foodCurrent_"+
+day;
+
+currentText.textContent=
+"Current setting: "+
+current;
+
+const button=
+document.createElement("button");
+
 button.type="button";
+
 button.className="food-save";
-button.textContent="Save "+day+" December";
+
+button.textContent=
+"Save "+
+day+
+" December";
 
 button.onclick=function(){
-saveFoodSetting(day,select.value,button);
+
+saveFoodSetting(
+day,
+select.value,
+button
+);
+
 };
 
 box.appendChild(title);
+
 box.appendChild(select);
+
 box.appendChild(currentText);
+
 box.appendChild(button);
 
 container.appendChild(box);
+
 });
+
 }
 
-function saveFoodSetting(day,meal,button){
-const message=document.getElementById("foodMessage");
+
+function saveFoodSetting(
+day,
+meal,
+button
+){
+
+const message=
+document.getElementById(
+"foodMessage"
+);
 
 if(button){
+
 button.disabled=true;
+
 button.textContent="Saving...";
+
 }
 
 message.className="message";
+
 message.textContent="";
 
-apiRequest({
+apiRequest(
+{
 action:"updateFoodSetting",
 day:day,
 meal:meal,
 _cache:Date.now()
-},function(result){
+},
+function(result){
 
 if(button){
+
 button.disabled=false;
-button.textContent="Save "+day+" December";
+
+button.textContent=
+"Save "+
+day+
+" December";
+
 }
 
-if(!result||result.status!=="success"){
+if(
+!result||
+result.status!=="success"
+){
 
-message.className="message error";
+message.className=
+"message error";
+
 message.textContent=
 result&&result.message
 ?result.message
 :"Unable to update food setting.";
 
 return;
+
 }
 
-const current=document.getElementById("foodCurrent_"+day);
+const current=
+document.getElementById(
+"foodCurrent_"+
+day
+);
 
 if(current){
-current.textContent="Current setting: "+meal;
+
+current.textContent=
+"Current setting: "+
+meal;
+
 }
 
-message.className="message success";
+message.className=
+"message success";
+
 message.textContent=
 "Food service updated successfully for December "+
-day+".";
-});
+day+
+".";
+
+}
+);
+
 }
 
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
 function escapeHTML(value){
+
 return String(value||"")
 .replace(/&/g,"&amp;")
 .replace(/</g,"&lt;")
 .replace(/>/g,"&gt;")
 .replace(/"/g,"&quot;")
 .replace(/'/g,"&#039;");
+
 }
+
+
+/* =====================================================
+   EXCEL UPLOAD
+===================================================== */
 
 function uploadGuestExcel(){
 
-const input=document.createElement("input");
+const input=
+document.createElement("input");
 
 input.type="file";
+
 input.accept=".xlsx,.xls";
 
-input.onchange=async function(event){
+input.onchange=
+async function(event){
 
-const file=event.target.files[0];
+const file=
+event.target.files[0];
 
 if(!file)return;
 
 try{
 
-const arrayBuffer=await file.arrayBuffer();
+const arrayBuffer=
+await file.arrayBuffer();
 
-const workbook=XLSX.read(
+const workbook=
+XLSX.read(
 arrayBuffer,
 {type:"array"}
 );
 
 if(!workbook.SheetNames.length){
-alert("The Excel file does not contain any worksheet.");
+
+alert(
+"The Excel file does not contain any worksheet."
+);
+
 return;
+
 }
 
 const worksheet=
@@ -810,12 +2046,20 @@ worksheet,
 );
 
 if(!rawRows.length){
-alert("The Excel file is empty.");
+
+alert(
+"The Excel file is empty."
+);
+
 return;
+
 }
 
-const firstRow=rawRows[0];
-const columns=Object.keys(firstRow);
+const firstRow=
+rawRows[0];
+
+const columns=
+Object.keys(firstRow);
 
 const requiredColumns=[
 "Name",
@@ -850,6 +2094,7 @@ missingColumns.join(", ")+
 );
 
 return;
+
 }
 
 const guests=
@@ -915,6 +2160,7 @@ invalidRows.join(", ")
 );
 
 return;
+
 }
 
 const confirmed=
@@ -929,10 +2175,15 @@ if(!confirmed)return;
 
 const BATCH_SIZE=20;
 
-let totalRecords=guests.length;
+let totalRecords=
+guests.length;
+
 let newRegistrations=0;
+
 let skippedDuplicates=0;
+
 let errors=0;
+
 const allErrors=[];
 
 const totalBatches=
@@ -990,6 +2241,7 @@ reason:
 });
 
 continue;
+
 }
 
 if(result.status!=="success"){
@@ -1004,6 +2256,7 @@ result.message||
 });
 
 continue;
+
 }
 
 newRegistrations+=
@@ -1128,6 +2381,11 @@ input.click();
 
 }
 
+
+/* =====================================================
+   API PROMISE
+===================================================== */
+
 function apiRequestPromise(params){
 
 return new Promise(
@@ -1145,6 +2403,11 @@ resolve(result);
 });
 
 }
+
+
+/* =====================================================
+   UPLOAD PROGRESS
+===================================================== */
 
 function showGuestUploadProgress(
 currentBatch,
@@ -1166,17 +2429,25 @@ overlay.id=
 "guestUploadProgress";
 
 overlay.style.position="fixed";
+
 overlay.style.left="0";
+
 overlay.style.top="0";
+
 overlay.style.width="100%";
+
 overlay.style.height="100%";
 
 overlay.style.background=
 "rgba(0,0,0,.45)";
 
 overlay.style.display="flex";
+
 overlay.style.alignItems="center";
-overlay.style.justifyContent="center";
+
+overlay.style.justifyContent=
+"center";
+
 overlay.style.zIndex="99999";
 
 overlay.innerHTML=
@@ -1188,6 +2459,7 @@ overlay.innerHTML=
 '</div></div>';
 
 document.body.appendChild(overlay);
+
 }
 
 const percentage=
@@ -1230,6 +2502,7 @@ percentage+
 
 }
 
+
 function hideGuestUploadProgress(){
 
 const overlay=
@@ -1242,8 +2515,9 @@ overlay.remove();
 
 }
 
+
 /* =====================================================
-   GENERATE QR + STORE QR IN GUESTS
+   GENERATE QR
 ===================================================== */
 
 async function generateQRCodes(){
@@ -1251,22 +2525,32 @@ async function generateQRCodes(){
 try{
 
 const result=
-await apiRequestPromise({
+await apiRequestPromise(
+{
 action:"guests",
 _cache:Date.now()
-});
+}
+);
 
 if(!result){
-alert("Unable to connect to the server.");
+
+alert(
+"Unable to connect to the server."
+);
+
 return;
+
 }
 
 if(result.status!=="success"){
+
 alert(
 result.message||
 "Unable to load guest records."
 );
+
 return;
+
 }
 
 const guests=
@@ -1274,7 +2558,7 @@ Array.isArray(result.data)
 ?result.data
 :[];
 
-if(!guests.length){
+if(guests.length===0){
 
 alert(
 "No guest registrations are available.\n\n"+
@@ -1282,17 +2566,20 @@ alert(
 );
 
 return;
+
 }
 
-if(
-guests.some(
+const invalidGuests=
+guests.filter(
 function(guest){
+
 return !String(
 guest["Registration ID"]||""
 ).trim();
-}
-)
-){
+
+});
+
+if(invalidGuests.length>0){
 
 alert(
 "Some guest records do not have a Registration ID.\n\n"+
@@ -1300,6 +2587,7 @@ alert(
 );
 
 return;
+
 }
 
 showQRGenerationPanel(guests);
@@ -1320,6 +2608,11 @@ error.message
 
 }
 
+
+/* =====================================================
+   QR PANEL
+===================================================== */
+
 function showQRGenerationPanel(guests){
 
 const oldPanel=
@@ -1336,46 +2629,47 @@ document.createElement("div");
 overlay.id=
 "qrGenerationPanel";
 
-Object.assign(
-overlay.style,
-{
-position:"fixed",
-left:"0",
-top:"0",
-width:"100%",
-height:"100%",
-background:"#f5f5f5",
-zIndex:"99998",
-overflowY:"auto"
-}
-);
+overlay.style.position="fixed";
+
+overlay.style.left="0";
+
+overlay.style.top="0";
+
+overlay.style.width="100%";
+
+overlay.style.height="100%";
+
+overlay.style.background="#f5f5f5";
+
+overlay.style.zIndex="99998";
+
+overlay.style.overflowY="auto";
 
 const container=
 document.createElement("div");
 
-Object.assign(
-container.style,
-{
-maxWidth:"900px",
-margin:"0 auto",
-padding:"20px",
-boxSizing:"border-box"
-}
-);
+container.style.maxWidth="900px";
+
+container.style.margin="0 auto";
+
+container.style.padding="20px";
+
+container.style.boxSizing=
+"border-box";
 
 const header=
 document.createElement("div");
 
-Object.assign(
-header.style,
-{
-background:"#fff",
-borderRadius:"12px",
-padding:"20px",
-marginBottom:"15px",
-boxShadow:"0 2px 10px rgba(0,0,0,.08)"
-}
-);
+header.style.background="#fff";
+
+header.style.borderRadius="12px";
+
+header.style.padding="20px";
+
+header.style.marginBottom="15px";
+
+header.style.boxShadow=
+"0 2px 10px rgba(0,0,0,.08)";
 
 header.innerHTML=
 '<h2 style="margin:0 0 8px;text-align:center;color:#17365d;font-size:22px;">ICEMD-2026 QR Codes</h2>'+
@@ -1389,20 +2683,25 @@ container.appendChild(header);
 const actions=
 document.createElement("div");
 
-Object.assign(
-actions.style,
-{
-background:"#fff",
-padding:"15px",
-borderRadius:"12px",
-marginBottom:"15px",
-boxShadow:"0 2px 10px rgba(0,0,0,.08)",
-display:"flex",
-gap:"10px",
-flexWrap:"wrap",
-justifyContent:"center"
-}
-);
+actions.style.background="#fff";
+
+actions.style.padding="15px";
+
+actions.style.borderRadius="12px";
+
+actions.style.marginBottom="15px";
+
+actions.style.boxShadow=
+"0 2px 10px rgba(0,0,0,.08)";
+
+actions.style.display="flex";
+
+actions.style.gap="10px";
+
+actions.style.flexWrap="wrap";
+
+actions.style.justifyContent=
+"center";
 
 actions.innerHTML=
 '<button id="qrDownloadButton" style="background:#17365d;color:white;border:none;padding:12px 20px;border-radius:8px;font-size:15px;cursor:pointer;">Download QR PDF</button>'+
@@ -1415,19 +2714,17 @@ document.createElement("div");
 
 grid.id="qrPreviewGrid";
 
-Object.assign(
-grid.style,
-{
-display:"grid",
-gridTemplateColumns:
-"repeat(auto-fit,minmax(220px,1fr))",
-gap:"15px"
-}
-);
+grid.style.display="grid";
+
+grid.style.gridTemplateColumns=
+"repeat(auto-fit,minmax(220px,1fr))";
+
+grid.style.gap="15px";
 
 container.appendChild(grid);
 
 overlay.appendChild(container);
+
 document.body.appendChild(overlay);
 
 guests.forEach(
@@ -1448,16 +2745,10 @@ String(
 guest["Institute"]||""
 ).trim();
 
-const storedQR=
-String(
-guest["QR Code"]||""
-).trim();
-
 const card=
 document.createElement("div");
 
-card.className=
-"icemd-qr-card";
+card.className="icemd-qr-card";
 
 card.dataset.registrationId=
 registrationId;
@@ -1467,29 +2758,27 @@ card.dataset.name=name;
 card.dataset.institute=
 institute;
 
-Object.assign(
-card.style,
-{
-background:"#fff",
-borderRadius:"12px",
-padding:"18px",
-textAlign:"center",
-boxShadow:"0 2px 8px rgba(0,0,0,.08)"
-}
-);
+card.style.background="#fff";
+
+card.style.borderRadius="12px";
+
+card.style.padding="18px";
+
+card.style.textAlign="center";
+
+card.style.boxShadow=
+"0 2px 8px rgba(0,0,0,.08)";
 
 const idElement=
 document.createElement("div");
 
-Object.assign(
-idElement.style,
-{
-fontWeight:"bold",
-color:"#17365d",
-fontSize:"16px",
-marginBottom:"10px"
-}
-);
+idElement.style.fontWeight="bold";
+
+idElement.style.color="#17365d";
+
+idElement.style.fontSize="16px";
+
+idElement.style.marginBottom="10px";
 
 idElement.textContent=
 registrationId;
@@ -1502,28 +2791,23 @@ document.createElement("div");
 qrContainer.className=
 "icemd-qr-code";
 
-Object.assign(
-qrContainer.style,
-{
-width:"180px",
-height:"180px",
-margin:"0 auto 12px"
-}
-);
+qrContainer.style.width="180px";
+
+qrContainer.style.height="180px";
+
+qrContainer.style.margin=
+"0 auto 12px";
 
 card.appendChild(qrContainer);
 
 const nameElement=
 document.createElement("div");
 
-Object.assign(
-nameElement.style,
-{
-fontWeight:"bold",
-fontSize:"15px",
-marginBottom:"4px"
-}
-);
+nameElement.style.fontWeight="bold";
+
+nameElement.style.fontSize="15px";
+
+nameElement.style.marginBottom="4px";
 
 nameElement.textContent=name;
 
@@ -1532,75 +2816,14 @@ card.appendChild(nameElement);
 const instituteElement=
 document.createElement("div");
 
-Object.assign(
-instituteElement.style,
-{
-fontSize:"13px",
-color:"#666"
-}
-);
+instituteElement.style.fontSize="13px";
+
+instituteElement.style.color="#666";
 
 instituteElement.textContent=
 institute;
 
 card.appendChild(instituteElement);
-
-const saveStatus=
-document.createElement("div");
-
-Object.assign(
-saveStatus.style,
-{
-fontSize:"12px",
-marginTop:"9px",
-color:storedQR
-?"#2e7d32"
-:"#666"
-}
-);
-
-saveStatus.textContent=
-storedQR
-?"✓ QR already stored"
-:"QR not stored";
-
-card.appendChild(saveStatus);
-
-const saveButton=
-document.createElement("button");
-
-saveButton.type="button";
-
-saveButton.textContent=
-storedQR
-?"✓ Stored"
-:"Store QR in Sheet";
-
-saveButton.disabled=
-!!storedQR;
-
-Object.assign(
-saveButton.style,
-{
-marginTop:"10px",
-width:"100%",
-padding:"9px",
-border:"none",
-borderRadius:"7px",
-background:
-storedQR
-?"#2e7d32"
-:"#17365d",
-color:"#fff",
-fontSize:"13px",
-cursor:
-storedQR
-?"default"
-:"pointer"
-}
-);
-
-card.appendChild(saveButton);
 
 grid.appendChild(card);
 
@@ -1614,126 +2837,6 @@ correctLevel:QRCode.CorrectLevel.H
 }
 );
 
-function storeQR(){
-
-saveButton.disabled=true;
-saveButton.textContent="Saving...";
-saveButton.style.opacity=".7";
-
-saveStatus.style.color="#666";
-saveStatus.textContent=
-"Saving QR code to Google Sheet...";
-
-const qrCanvas=
-qrContainer.querySelector("canvas");
-
-const qrImage=
-qrContainer.querySelector("img");
-
-let qrDataURL="";
-
-if(qrCanvas){
-
-qrDataURL=
-qrCanvas.toDataURL(
-"image/png"
-);
-
-}else if(qrImage){
-
-qrDataURL=
-qrImage.src;
-
-}
-
-if(!qrDataURL){
-
-saveButton.disabled=false;
-saveButton.textContent=
-"Store QR in Sheet";
-
-saveButton.style.opacity="1";
-
-saveStatus.style.color="#c62828";
-
-saveStatus.textContent=
-"Unable to read generated QR image.";
-
-return;
-}
-
-apiRequest(
-{
-action:"saveGuestQR",
-registrationId:
-registrationId,
-qrCode:
-qrDataURL,
-_cache:Date.now()
-},
-function(result){
-
-if(
-result&&
-result.status==="success"
-){
-
-saveButton.textContent=
-"✓ Stored";
-
-saveButton.style.background=
-"#2e7d32";
-
-saveButton.style.opacity="1";
-saveButton.style.cursor=
-"default";
-
-saveButton.disabled=true;
-
-saveStatus.style.color=
-"#2e7d32";
-
-saveStatus.textContent=
-"✓ QR stored successfully in GUESTS sheet";
-
-}else{
-
-saveButton.disabled=false;
-
-saveButton.textContent=
-"Store QR in Sheet";
-
-saveButton.style.opacity="1";
-
-saveStatus.style.color=
-"#c62828";
-
-saveStatus.textContent=
-result&&result.message
-?result.message
-:"Unable to store QR code.";
-
-}
-
-}
-);
-
-}
-
-saveButton.addEventListener(
-"click",
-storeQR
-);
-
-if(!storedQR){
-
-setTimeout(
-storeQR,
-250
-);
-
-}
-
 });
 
 document.getElementById(
@@ -1741,7 +2844,9 @@ document.getElementById(
 ).addEventListener(
 "click",
 function(){
+
 overlay.remove();
+
 }
 );
 
@@ -1753,6 +2858,7 @@ downloadQRPDF
 );
 
 }
+
 
 /* =====================================================
    QR PDF
@@ -1774,6 +2880,7 @@ alert(
 );
 
 return;
+
 }
 
 const button=
@@ -1789,6 +2896,7 @@ button.textContent=
 "Preparing PDF...";
 
 button.style.opacity=".7";
+
 button.style.cursor="wait";
 
 }
@@ -1820,15 +2928,21 @@ compress:true
 );
 
 const pageWidth=210;
+
 const pageHeight=297;
 
 const marginLeft=10;
+
 const marginRight=10;
+
 const marginTop=10;
+
 const marginBottom=10;
 
 const columns=2;
+
 const rows=3;
+
 const cardsPerPage=6;
 
 const usableWidth=
@@ -1895,8 +3009,7 @@ qrCanvas.toDataURL(
 
 }else if(qrImage){
 
-qrDataURL=
-qrImage.src;
+qrDataURL=qrImage.src;
 
 }
 
@@ -1908,6 +3021,7 @@ registrationId
 );
 
 continue;
+
 }
 
 if(
@@ -2087,6 +3201,7 @@ button.textContent=
 "Download QR PDF";
 
 button.style.opacity="1";
+
 button.style.cursor="pointer";
 
 }
@@ -2094,6 +3209,7 @@ button.style.cursor="pointer";
 }
 
 }
+
 
 /* =====================================================
    SESSION
@@ -2123,5 +3239,6 @@ document.getElementById(
 })();
 
 </script>
+
 </body>
 </html>
