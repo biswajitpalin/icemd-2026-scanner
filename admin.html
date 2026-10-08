@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
 <title>ICEMD-2026 IIT Jodhpur - Admin</title>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -10,32 +12,60 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
+
 *{box-sizing:border-box}
+
 body{
 margin:0;
 padding:20px;
 font-family:Arial,sans-serif;
 background:#f5f5f5;
-color:#222
+color:#222;
 min-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
 }
+
 .container{
 max-width:500px;
 width:100%;
 margin:0 auto;
 }
+
+body.login-view{
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+body.app-view{
+display:block;
+}
+
 .card{
 background:#fff;
 padding:22px;
 border-radius:12px;
 box-shadow:0 3px 12px rgba(0,0,0,.08)
 }
-h1{text-align:center;font-size:24px;margin:0 0 5px}
-h2{text-align:center;font-size:20px;color:#17365d;margin:10px 0}
-.subtitle{text-align:center;color:#666;margin-bottom:25px;font-size:18px}
+
+h1{
+text-align:center;
+font-size:24px;
+margin:0 0 5px
+}
+
+h2{
+text-align:center;
+font-size:20px;
+color:#17365d;
+margin:10px 0
+}
+
+.subtitle{
+text-align:center;
+color:#666;
+margin-bottom:25px;
+font-size:18px
+}
 
 .option{
 display:block;
@@ -54,21 +84,46 @@ font-weight:normal;
 cursor:pointer;
 transition:background .15s ease,transform .1s ease
 }
-.option:hover{background:#214a7a}
-.option:active{transform:scale(.99)}
-.option-title{font-size:18px}
-.back-button{background:#666}
-.back-button:hover{background:#555}
-.logout-button{background:#8b0000}
-.logout-button:hover{background:#a00000}
 
-.input-group{margin-top:15px}
+.option:hover{
+background:#214a7a
+}
+
+.option:active{
+transform:scale(.99)
+}
+
+.option-title{
+font-size:18px
+}
+
+.back-button{
+background:#666
+}
+
+.back-button:hover{
+background:#555
+}
+
+.logout-button{
+background:#8b0000
+}
+
+.logout-button:hover{
+background:#a00000
+}
+
+.input-group{
+margin-top:15px
+}
+
 .input-group label{
 display:block;
 font-size:14px;
 color:#444;
 margin-bottom:6px
 }
+
 input,select{
 width:100%;
 padding:13px;
@@ -78,6 +133,7 @@ font-family:Arial,sans-serif;
 font-size:16px;
 background:#fff
 }
+
 input:focus,select:focus{
 outline:none;
 border-color:#17365d
@@ -91,9 +147,24 @@ border-radius:7px;
 text-align:center;
 font-size:14px
 }
-.success{display:block;background:#e8f5e9;color:#2e7d32}
-.error{display:block;background:#ffebee;color:#c62828}
-.info{display:block;background:#eaf2f8;color:#17365d}
+
+.success{
+display:block;
+background:#e8f5e9;
+color:#2e7d32
+}
+
+.error{
+display:block;
+background:#ffebee;
+color:#c62828
+}
+
+.info{
+display:block;
+background:#eaf2f8;
+color:#17365d
+}
 
 .summary{
 display:flex;
@@ -101,6 +172,7 @@ gap:10px;
 margin-top:18px;
 margin-bottom:20px
 }
+
 .summary-box{
 flex:1;
 background:#f5f5f5;
@@ -108,18 +180,23 @@ border-radius:8px;
 padding:12px 5px;
 text-align:center
 }
+
 .summary-number{
 font-size:22px;
 font-weight:bold;
 color:#17365d
 }
+
 .summary-label{
 font-size:12px;
 color:#666;
 margin-top:3px
 }
 
-.user-list{margin-top:20px}
+.user-list{
+margin-top:20px
+}
+
 .user-item{
 border:1px solid #ddd;
 border-radius:8px;
@@ -127,34 +204,41 @@ padding:13px;
 margin-top:10px;
 background:#fff
 }
+
 .user-name{
 font-size:16px;
 font-weight:bold;
 color:#17365d
 }
+
 .user-email{
 font-size:14px;
 color:#666;
 margin-top:4px;
 word-break:break-word
 }
+
 .user-status{
 font-size:13px;
 margin-top:7px
 }
+
 .status-active{
 color:#2e7d32;
 font-weight:bold
 }
+
 .status-inactive{
 color:#c62828;
 font-weight:bold
 }
+
 .user-actions{
 display:flex;
 gap:8px;
 margin-top:10px
 }
+
 .small-button{
 flex:1;
 padding:9px 5px;
@@ -166,13 +250,23 @@ cursor:pointer;
 color:#fff;
 background:#17365d
 }
-.small-button:hover{background:#214a7a}
+
+.small-button:hover{
+background:#214a7a
+}
+
 .small-button:disabled{
 opacity:.65;
 cursor:wait
 }
-.small-button.delete{background:#8b0000}
-.small-button.delete:hover{background:#a00000}
+
+.small-button.delete{
+background:#8b0000
+}
+
+.small-button.delete:hover{
+background:#a00000
+}
 
 .section-title{
 text-align:center;
@@ -180,24 +274,28 @@ color:#17365d;
 font-size:20px;
 margin:5px 0
 }
+
 .section-subtitle{
 text-align:center;
 color:#666;
 font-size:14px;
 margin-bottom:20px
 }
+
 .loading{
 text-align:center;
 color:#666;
 padding:20px 5px;
 font-size:14px
 }
+
 .empty{
 text-align:center;
 color:#666;
 padding:20px 5px;
 font-size:14px
 }
+
 .footer{
 text-align:center;
 color:#666;
@@ -205,7 +303,10 @@ margin-top:25px;
 font-size:14px;
 line-height:1.5
 }
-.hidden{display:none!important}
+
+.hidden{
+display:none!important
+}
 
 .food-day{
 border:1px solid #ddd;
@@ -214,17 +315,20 @@ padding:15px;
 margin-top:12px;
 background:#fff
 }
+
 .food-day-title{
 font-size:16px;
 font-weight:bold;
 color:#17365d;
 margin-bottom:10px
 }
+
 .food-current{
 font-size:13px;
 color:#666;
 margin-top:7px
 }
+
 .food-save{
 margin-top:10px;
 padding:10px;
@@ -236,36 +340,61 @@ color:#fff;
 font-size:14px;
 cursor:pointer
 }
-.food-save:hover{background:#214a7a}
+
+.food-save:hover{
+background:#214a7a
+}
+
 </style>
+
 </head>
 
-<body>
+<body class="login-view">
 
 <div class="container">
+
 <div class="card">
 
 <!-- LOGIN -->
+
 <div id="loginSection">
 
 <h1>ICEMD-2026</h1>
-<h2>IIT Jodhpur, India</h2>
-<p class="subtitle">Admin Console</p>
 
-<form id="adminLoginForm" onsubmit="adminLogin(event)" autocomplete="on">
+<h2>IIT Jodhpur, India</h2>
+
+<p class="subtitle">
+Admin Console
+</p>
+
+<form
+id="adminLoginForm"
+onsubmit="adminLogin(event)"
+autocomplete="on"
+>
 
 <div class="input-group">
-<label for="adminEmail">Email</label>
+
+<label for="adminEmail">
+Email
+</label>
+
 <input
 type="text"
 id="adminEmail"
 value="pal.17@iitj.ac.in"
 readonly
-autocomplete="username">
+autocomplete="username"
+>
+
 </div>
 
 <div class="input-group">
-<label for="adminPassword">Password</label>
+
+<label for="adminPassword">
+Password
+</label>
+
 <input
 type="password"
 id="adminPassword"
@@ -273,82 +402,122 @@ placeholder="Enter password"
 autocomplete="current-password"
 autocapitalize="none"
 spellcheck="false"
-required>
+required
+>
+
 </div>
 
-<button type="submit" class="option">Login</button>
+<button
+type="submit"
+class="option"
+>
+Login
+</button>
 
 </form>
 
 <button
 type="button"
 class="option back-button"
-onclick="goHome()">
+onclick="goHome()"
+>
 Back
 </button>
 
-<div id="loginMessage" class="message"></div>
+<div
+id="loginMessage"
+class="message"
+></div>
 
 </div>
 
 
 <!-- DASHBOARD -->
-<div id="dashboardSection" class="hidden">
+
+<div
+id="dashboardSection"
+class="hidden"
+>
 
 <h1>ICEMD-2026</h1>
-<h2>IIT Jodhpur, India</h2>
-<p class="subtitle">Admin Dashboard</p>
 
-<div style="text-align:center;color:#666;font-size:15px;margin-bottom:20px">
+<h2>IIT Jodhpur, India</h2>
+
+<p class="subtitle">
+Admin Dashboard
+</p>
+
+<div
+style="text-align:center;color:#666;font-size:15px;margin-bottom:20px"
+>
 Welcome, Biswajit Pal
 </div>
 
 <button
 type="button"
 class="option"
-onclick="openUsers()">
-<div class="option-title">Manage Users</div>
+onclick="openUsers()"
+>
+<div class="option-title">
+Manage Users
+</div>
 </button>
 
 <button
 type="button"
 class="option"
-onclick="openFoodService()">
-<div class="option-title">Manage Food Service</div>
+onclick="openFoodService()"
+>
+<div class="option-title">
+Manage Food Service
+</div>
 </button>
 
 <button
 type="button"
 class="option"
-onclick="uploadGuestExcel()">
-<div class="option-title">Upload Guest Excel</div>
+onclick="uploadGuestExcel()"
+>
+<div class="option-title">
+Upload Guest Excel
+</div>
 </button>
 
 <button
 type="button"
 class="option"
-onclick="generateQRCodes()">
-<div class="option-title">Generate QR Codes</div>
+onclick="generateQRCodes()"
+>
+<div class="option-title">
+Generate QR Codes
+</div>
 </button>
 
 <button
 type="button"
 class="option"
-onclick="downloadQRPDF()">
-<div class="option-title">Download QR PDF</div>
+onclick="downloadQRPDF()"
+>
+<div class="option-title">
+Download QR PDF
+</div>
 </button>
 
 <button
 type="button"
 class="option logout-button"
-onclick="adminLogout()">
-<div class="option-title">Logout</div>
+onclick="adminLogout()"
+>
+<div class="option-title">
+Logout
+</div>
 </button>
 
 <button
 type="button"
 class="option back-button"
-onclick="goHome()">
+onclick="goHome()"
+>
 Back
 </button>
 
@@ -356,83 +525,155 @@ Back
 
 
 <!-- USERS -->
-<div id="usersSection" class="hidden">
+
+<div
+id="usersSection"
+class="hidden"
+>
 
 <h1>ICEMD-2026</h1>
+
 <h2>IIT Jodhpur, India</h2>
 
-<div class="section-title">Manage Users</div>
-<div class="section-subtitle">Registration Desk Users</div>
+<div class="section-title">
+Manage Users
+</div>
+
+<div class="section-subtitle">
+Registration Desk Users
+</div>
 
 <div class="summary">
 
 <div class="summary-box">
-<div id="totalUsers" class="summary-number">0</div>
-<div class="summary-label">Total</div>
+
+<div
+id="totalUsers"
+class="summary-number"
+>
+0
+</div>
+
+<div class="summary-label">
+Total
+</div>
+
 </div>
 
 <div class="summary-box">
-<div id="activeUsers" class="summary-number">0</div>
-<div class="summary-label">Active</div>
+
+<div
+id="activeUsers"
+class="summary-number"
+>
+0
+</div>
+
+<div class="summary-label">
+Active
+</div>
+
 </div>
 
 <div class="summary-box">
-<div id="userLimit" class="summary-number">30</div>
-<div class="summary-label">Limit</div>
+
+<div
+id="userLimit"
+class="summary-number"
+>
+30
+</div>
+
+<div class="summary-label">
+Limit
 </div>
 
 </div>
 
+</div>
 
-<div style="border-top:1px solid #ddd;padding-top:18px">
 
-<div style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:5px">
+<div
+style="border-top:1px solid #ddd;padding-top:18px"
+>
+
+<div
+style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:5px"
+>
 Add New User
 </div>
 
-<div style="color:#666;font-size:13px;margin-bottom:15px">
+<div
+style="color:#666;font-size:13px;margin-bottom:15px"
+>
 Any valid email address can be used.
 </div>
 
-<form id="addUserForm" onsubmit="addNewUser(event)">
+<form
+id="addUserForm"
+onsubmit="addNewUser(event)"
+>
 
 <div class="input-group">
-<label for="newUserName">Name</label>
+
+<label for="newUserName">
+Name
+</label>
+
 <input
 type="text"
 id="newUserName"
 placeholder="Enter name"
-required>
+required
+>
+
 </div>
 
 <div class="input-group">
-<label for="newUserEmail">Email</label>
+
+<label for="newUserEmail">
+Email
+</label>
+
 <input
 type="email"
 id="newUserEmail"
 placeholder="Enter email address"
 autocomplete="email"
-required>
+required
+>
+
 </div>
 
-<button type="submit" class="option">
+<button
+type="submit"
+class="option"
+>
 Add User
 </button>
 
 </form>
 
-<div id="userMessage" class="message"></div>
+<div
+id="userMessage"
+class="message"
+></div>
 
 </div>
 
 
 <div class="user-list">
 
-<div style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:8px">
+<div
+style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:8px"
+>
 Current Users
 </div>
 
-<div id="usersList" class="loading">
+<div
+id="usersList"
+class="loading"
+>
 Loading users...
 </div>
 
@@ -441,7 +682,8 @@ Loading users...
 <button
 type="button"
 class="option back-button"
-onclick="closeUsers()">
+onclick="closeUsers()"
+>
 Back
 </button>
 
@@ -449,18 +691,26 @@ Back
 
 
 <!-- FOOD -->
-<div id="foodSection" class="hidden">
+
+<div
+id="foodSection"
+class="hidden"
+>
 
 <h1>ICEMD-2026</h1>
+
 <h2>IIT Jodhpur, India</h2>
 
-<div class="section-title">Manage Food Service</div>
+<div class="section-title">
+Manage Food Service
+</div>
 
 <div class="section-subtitle">
 Set the meal available on each conference day
 </div>
 
-<div style="
+<div
+style="
 background:#eaf2f8;
 color:#17365d;
 padding:12px;
@@ -468,7 +718,8 @@ border-radius:8px;
 font-size:13px;
 line-height:1.5;
 margin-bottom:15px;
-text-align:center">
+text-align:center"
+>
 
 The caterer does not select the meal during scanning.
 The system automatically determines the active meal from these settings.
@@ -476,23 +727,30 @@ The system automatically determines the active meal from these settings.
 </div>
 
 <div id="foodSettingsContainer">
+
 <div class="loading">
 Loading food settings...
 </div>
+
 </div>
 
-<div id="foodMessage" class="message"></div>
+<div
+id="foodMessage"
+class="message"
+></div>
 
 <button
 type="button"
 class="option back-button"
-onclick="closeFoodService()">
+onclick="closeFoodService()"
+>
 Back
 </button>
 
 </div>
 
 </div>
+
 </div>
 
 
@@ -506,6 +764,27 @@ const FIXED_PASSWORD="icemd@20260317";
 
 
 /* =====================================================
+   VIEW MODE
+===================================================== */
+
+function setAppView(){
+
+document.body.classList.remove("login-view");
+
+document.body.classList.add("app-view");
+
+}
+
+function setLoginView(){
+
+document.body.classList.remove("app-view");
+
+document.body.classList.add("login-view");
+
+}
+
+
+/* =====================================================
    LOGIN
 ===================================================== */
 
@@ -513,19 +792,42 @@ function adminLogin(event){
 
 event.preventDefault();
 
-const email=document.getElementById("adminEmail").value.trim();
-const passwordInput=document.getElementById("adminPassword");
-const password=passwordInput.value;
-const message=document.getElementById("loginMessage");
+const email=
+document.getElementById("adminEmail")
+.value
+.trim();
 
-if(email===FIXED_EMAIL&&password===FIXED_PASSWORD){
+const passwordInput=
+document.getElementById("adminPassword");
 
-sessionStorage.setItem("icemdAdminLoggedIn","true");
+const password=
+passwordInput.value;
 
-document.getElementById("loginSection").classList.add("hidden");
-document.getElementById("dashboardSection").classList.remove("hidden");
+const message=
+document.getElementById("loginMessage");
+
+if(
+email===FIXED_EMAIL&&
+password===FIXED_PASSWORD
+){
+
+sessionStorage.setItem(
+"icemdAdminLoggedIn",
+"true"
+);
+
+document.getElementById(
+"loginSection"
+).classList.add("hidden");
+
+document.getElementById(
+"dashboardSection"
+).classList.remove("hidden");
+
+setAppView();
 
 message.className="message";
+
 message.textContent="";
 
 passwordInput.value="";
@@ -533,9 +835,12 @@ passwordInput.value="";
 }else{
 
 message.className="message error";
-message.textContent="Invalid admin password.";
+
+message.textContent=
+"Invalid admin password.";
 
 passwordInput.value="";
+
 passwordInput.focus();
 
 }
@@ -549,17 +854,35 @@ passwordInput.focus();
 
 function adminLogout(){
 
-sessionStorage.removeItem("icemdAdminLoggedIn");
+sessionStorage.removeItem(
+"icemdAdminLoggedIn"
+);
 
-document.getElementById("adminPassword").value="";
+document.getElementById(
+"adminPassword"
+).value="";
 
-document.getElementById("dashboardSection").classList.add("hidden");
-document.getElementById("usersSection").classList.add("hidden");
-document.getElementById("foodSection").classList.add("hidden");
+document.getElementById(
+"dashboardSection"
+).classList.add("hidden");
 
-document.getElementById("loginSection").classList.remove("hidden");
+document.getElementById(
+"usersSection"
+).classList.add("hidden");
 
-document.getElementById("adminPassword").focus();
+document.getElementById(
+"foodSection"
+).classList.add("hidden");
+
+document.getElementById(
+"loginSection"
+).classList.remove("hidden");
+
+setLoginView();
+
+document.getElementById(
+"adminPassword"
+).focus();
 
 }
 
@@ -569,7 +892,9 @@ document.getElementById("adminPassword").focus();
 ===================================================== */
 
 function goHome(){
+
 window.location.href="index.html";
+
 }
 
 
@@ -579,9 +904,17 @@ window.location.href="index.html";
 
 function openUsers(){
 
-document.getElementById("dashboardSection").classList.add("hidden");
-document.getElementById("foodSection").classList.add("hidden");
-document.getElementById("usersSection").classList.remove("hidden");
+document.getElementById(
+"dashboardSection"
+).classList.add("hidden");
+
+document.getElementById(
+"foodSection"
+).classList.add("hidden");
+
+document.getElementById(
+"usersSection"
+).classList.remove("hidden");
 
 loadUsers();
 
@@ -589,8 +922,13 @@ loadUsers();
 
 function closeUsers(){
 
-document.getElementById("usersSection").classList.add("hidden");
-document.getElementById("dashboardSection").classList.remove("hidden");
+document.getElementById(
+"usersSection"
+).classList.add("hidden");
+
+document.getElementById(
+"dashboardSection"
+).classList.remove("hidden");
 
 }
 
@@ -601,9 +939,17 @@ document.getElementById("dashboardSection").classList.remove("hidden");
 
 function openFoodService(){
 
-document.getElementById("dashboardSection").classList.add("hidden");
-document.getElementById("usersSection").classList.add("hidden");
-document.getElementById("foodSection").classList.remove("hidden");
+document.getElementById(
+"dashboardSection"
+).classList.add("hidden");
+
+document.getElementById(
+"usersSection"
+).classList.add("hidden");
+
+document.getElementById(
+"foodSection"
+).classList.remove("hidden");
 
 loadFoodSettings();
 
@@ -611,8 +957,13 @@ loadFoodSettings();
 
 function closeFoodService(){
 
-document.getElementById("foodSection").classList.add("hidden");
-document.getElementById("dashboardSection").classList.remove("hidden");
+document.getElementById(
+"foodSection"
+).classList.add("hidden");
+
+document.getElementById(
+"dashboardSection"
+).classList.remove("hidden");
 
 }
 
@@ -631,29 +982,44 @@ Math.floor(Math.random()*10000);
 params.callback=callbackName;
 
 const query=
-Object.keys(params).map(function(key){
-return encodeURIComponent(key)+"="+encodeURIComponent(params[key]);
-}).join("&");
+Object.keys(params)
+.map(function(key){
 
-const script=document.createElement("script");
+return encodeURIComponent(key)+
+"="+
+encodeURIComponent(params[key]);
+
+})
+.join("&");
+
+const script=
+document.createElement("script");
+
 let finished=false;
 
-const timeout=setTimeout(function(){
+const timeout=
+setTimeout(function(){
 
 if(finished)return;
 
 finished=true;
 
 try{
+
 delete window[callbackName];
+
 }catch(e){}
 
 if(script.parentNode)
 script.parentNode.removeChild(script);
 
 callback({
+
 status:"error",
-message:"Unable to connect to the server."
+
+message:
+"Unable to connect to the server."
+
 });
 
 },15000);
@@ -668,7 +1034,9 @@ finished=true;
 clearTimeout(timeout);
 
 try{
+
 delete window[callbackName];
+
 }catch(e){}
 
 if(script.parentNode)
@@ -678,7 +1046,10 @@ callback(data);
 
 };
 
-script.src=APPS_SCRIPT_URL+"?"+query;
+script.src=
+APPS_SCRIPT_URL+
+"?"+
+query;
 
 script.onerror=function(){
 
@@ -689,15 +1060,21 @@ finished=true;
 clearTimeout(timeout);
 
 try{
+
 delete window[callbackName];
+
 }catch(e){}
 
 if(script.parentNode)
 script.parentNode.removeChild(script);
 
 callback({
+
 status:"error",
-message:"Unable to connect to the server."
+
+message:
+"Unable to connect to the server."
+
 });
 
 };
@@ -713,10 +1090,15 @@ document.body.appendChild(script);
 
 function loadUsers(){
 
-const list=document.getElementById("usersList");
+const list=
+document.getElementById(
+"usersList"
+);
 
 list.className="loading";
-list.innerHTML="Loading users...";
+
+list.innerHTML=
+"Loading users...";
 
 apiRequest(
 {
@@ -725,9 +1107,14 @@ _cache:Date.now()
 },
 function(result){
 
-if(!result||result.status!=="success"){
+if(
+!result||
+result.status!=="success"
+){
 
-list.className="message error";
+list.className=
+"message error";
+
 list.textContent=
 result&&result.message
 ?result.message
@@ -753,15 +1140,25 @@ function(settingsResult){
 
 let limit=30;
 
-if(settingsResult&&settingsResult.status==="success"){
+if(
+settingsResult&&
+settingsResult.status==="success"
+){
 
-const settings=settingsResult.settings||{};
+const settings=
+settingsResult.settings||{};
 
-limit=Number(settings["Assistant Limit"]||30);
+limit=
+Number(
+settings["Assistant Limit"]||30
+);
 
 }
 
-updateUserSummary(users,limit);
+updateUserSummary(
+users,
+limit
+);
 
 }
 );
@@ -776,21 +1173,35 @@ updateUserSummary(users,limit);
    SUMMARY
 ===================================================== */
 
-function updateUserSummary(users,limit){
+function updateUserSummary(
+users,
+limit
+){
 
 const total=users.length;
 
-const active=users.filter(function(user){
+const active=
+users.filter(function(user){
 
-return String(user["Status"]||"")
+return String(
+user["Status"]||""
+)
 .trim()
 .toUpperCase()==="ACTIVE";
 
 }).length;
 
-document.getElementById("totalUsers").textContent=total;
-document.getElementById("activeUsers").textContent=active;
-document.getElementById("userLimit").textContent=limit;
+document.getElementById(
+"totalUsers"
+).textContent=total;
+
+document.getElementById(
+"activeUsers"
+).textContent=active;
+
+document.getElementById(
+"userLimit"
+).textContent=limit;
 
 }
 
@@ -801,76 +1212,112 @@ document.getElementById("userLimit").textContent=limit;
 
 function renderUsers(users){
 
-const list=document.getElementById("usersList");
+const list=
+document.getElementById(
+"usersList"
+);
 
 if(!users.length){
 
 list.className="empty";
-list.textContent="No users have been added yet.";
+
+list.textContent=
+"No users have been added yet.";
 
 return;
 
 }
 
 list.className="user-list";
+
 list.innerHTML="";
 
 users.forEach(function(user){
 
-const name=String(user["Name"]||"").trim();
+const name=
+String(
+user["Name"]||""
+).trim();
 
-/*
- IMPORTANT:
- Google Sheet header is "Email", NOT "Email ID".
-*/
-const email=String(user["Email"]||"").trim().toLowerCase();
+const email=
+String(
+user["Email"]||""
+).trim()
+.toLowerCase();
 
 const userStatus=
-String(user["Status"]||"")
+String(
+user["Status"]||""
+)
 .trim()
 .toUpperCase();
 
-/*
- Treat only ACTIVE as active.
- Everything else is displayed as INACTIVE.
-*/
-const isActive=userStatus==="ACTIVE";
+const isActive=
+userStatus==="ACTIVE";
 
-const item=document.createElement("div");
+const item=
+document.createElement("div");
+
 item.className="user-item";
 
-const nameElement=document.createElement("div");
+const nameElement=
+document.createElement("div");
+
 nameElement.className="user-name";
+
 nameElement.textContent=name;
 
-const emailElement=document.createElement("div");
-emailElement.className="user-email";
-emailElement.textContent=email||"Email not available";
+const emailElement=
+document.createElement("div");
 
-const statusElement=document.createElement("div");
+emailElement.className="user-email";
+
+emailElement.textContent=
+email||"Email not available";
+
+const statusElement=
+document.createElement("div");
 
 statusElement.className=
 "user-status "+
-(isActive?"status-active":"status-inactive");
+(
+isActive
+?"status-active"
+:"status-inactive"
+);
 
 statusElement.textContent=
-"Status: "+(isActive?"ACTIVE":"INACTIVE");
+"Status: "+
+(
+isActive
+?"ACTIVE"
+:"INACTIVE"
+);
 
-const actions=document.createElement("div");
+const actions=
+document.createElement("div");
+
 actions.className="user-actions";
 
-const statusButton=document.createElement("button");
+const statusButton=
+document.createElement("button");
 
 statusButton.type="button";
-statusButton.className="small-button";
+
+statusButton.className=
+"small-button";
 
 statusButton.textContent=
-isActive?"Deactivate":"Activate";
+isActive
+?"Deactivate"
+:"Activate";
 
 statusButton.onclick=function(){
 
 const newStatus=
-isActive?"INACTIVE":"ACTIVE";
+isActive
+?"INACTIVE"
+:"ACTIVE";
 
 changeUserStatus(
 email,
@@ -880,10 +1327,14 @@ statusButton
 
 };
 
-const deleteButton=document.createElement("button");
+const deleteButton=
+document.createElement("button");
 
 deleteButton.type="button";
-deleteButton.className="small-button delete";
+
+deleteButton.className=
+"small-button delete";
+
 deleteButton.textContent="Delete";
 
 deleteButton.onclick=function(){
@@ -895,13 +1346,29 @@ deleteButton
 
 };
 
-actions.appendChild(statusButton);
-actions.appendChild(deleteButton);
+actions.appendChild(
+statusButton
+);
 
-item.appendChild(nameElement);
-item.appendChild(emailElement);
-item.appendChild(statusElement);
-item.appendChild(actions);
+actions.appendChild(
+deleteButton
+);
+
+item.appendChild(
+nameElement
+);
+
+item.appendChild(
+emailElement
+);
+
+item.appendChild(
+statusElement
+);
+
+item.appendChild(
+actions
+);
 
 list.appendChild(item);
 
@@ -919,12 +1386,14 @@ function addNewUser(event){
 event.preventDefault();
 
 const name=
-document.getElementById("newUserName")
-.value.trim();
+document.getElementById(
+"newUserName"
+).value.trim();
 
 const email=
-document.getElementById("newUserEmail")
-.value.trim()
+document.getElementById(
+"newUserEmail"
+).value.trim()
 .toLowerCase();
 
 if(!name){
@@ -938,7 +1407,8 @@ return;
 
 }
 
-const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const emailPattern=
+/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 if(!emailPattern.test(email)){
 
@@ -965,7 +1435,10 @@ _cache:Date.now()
 },
 function(result){
 
-if(!result||result.status!=="success"){
+if(
+!result||
+result.status!=="success"
+){
 
 showUserMessage(
 result&&result.message
@@ -983,7 +1456,9 @@ showUserMessage(
 "success"
 );
 
-document.getElementById("addUserForm").reset();
+document.getElementById(
+"addUserForm"
+).reset();
 
 loadUsers();
 
@@ -997,11 +1472,20 @@ loadUsers();
    USER MESSAGE
 ===================================================== */
 
-function showUserMessage(text,type){
+function showUserMessage(
+text,
+type
+){
 
-const message=document.getElementById("userMessage");
+const message=
+document.getElementById(
+"userMessage"
+);
 
-message.className="message "+type;
+message.className=
+"message "+
+type;
+
 message.textContent=text;
 
 }
@@ -1011,11 +1495,21 @@ message.textContent=text;
    ACTIVATE / DEACTIVATE USER
 ===================================================== */
 
-function changeUserStatus(email,status,button){
+function changeUserStatus(
+email,
+status,
+button
+){
 
-email=String(email||"").trim().toLowerCase();
+email=
+String(email||"")
+.trim()
+.toLowerCase();
 
-status=String(status||"").trim().toUpperCase();
+status=
+String(status||"")
+.trim()
+.toUpperCase();
 
 if(!email){
 
@@ -1028,7 +1522,10 @@ return;
 
 }
 
-if(status!=="ACTIVE"&&status!=="INACTIVE"){
+if(
+status!=="ACTIVE"&&
+status!=="INACTIVE"
+){
 
 showUserMessage(
 "Invalid user status.",
@@ -1082,7 +1579,10 @@ _cache:Date.now()
 },
 function(result){
 
-if(!result||result.status!=="success"){
+if(
+!result||
+result.status!=="success"
+){
 
 if(button){
 
@@ -1114,7 +1614,9 @@ status==="ACTIVE"
 );
 
 setTimeout(function(){
+
 loadUsers();
+
 },300);
 
 }
@@ -1127,9 +1629,15 @@ loadUsers();
    DELETE USER
 ===================================================== */
 
-function deleteExistingUser(email,button){
+function deleteExistingUser(
+email,
+button
+){
 
-email=String(email||"").trim().toLowerCase();
+email=
+String(email||"")
+.trim()
+.toLowerCase();
 
 if(!email){
 
@@ -1155,6 +1663,7 @@ return;
 if(button){
 
 button.disabled=true;
+
 button.textContent="Deleting...";
 
 }
@@ -1172,11 +1681,15 @@ _cache:Date.now()
 },
 function(result){
 
-if(!result||result.status!=="success"){
+if(
+!result||
+result.status!=="success"
+){
 
 if(button){
 
 button.disabled=false;
+
 button.textContent="Delete";
 
 }
@@ -1198,7 +1711,9 @@ showUserMessage(
 );
 
 setTimeout(function(){
+
 loadUsers();
+
 },300);
 
 }
@@ -1214,7 +1729,9 @@ loadUsers();
 function loadFoodSettings(){
 
 const container=
-document.getElementById("foodSettingsContainer");
+document.getElementById(
+"foodSettingsContainer"
+);
 
 container.innerHTML=
 '<div class="loading">Loading food settings...</div>';
@@ -1226,7 +1743,10 @@ _cache:Date.now()
 },
 function(result){
 
-if(!result||result.status!=="success"){
+if(
+!result||
+result.status!=="success"
+){
 
 container.innerHTML=
 '<div class="message error">'+
@@ -1241,7 +1761,9 @@ return;
 
 }
 
-renderFoodSettings(result.dates||{});
+renderFoodSettings(
+result.dates||{}
+);
 
 }
 );
@@ -1252,53 +1774,94 @@ renderFoodSettings(result.dates||{});
 function renderFoodSettings(dates){
 
 const container=
-document.getElementById("foodSettingsContainer");
+document.getElementById(
+"foodSettingsContainer"
+);
 
 container.innerHTML="";
 
-["21","22","23"].forEach(function(day){
+["21","22","23"].forEach(
+function(day){
 
-const current=dates[day]||"OFF";
+const current=
+dates[day]||"OFF";
 
-const box=document.createElement("div");
+const box=
+document.createElement("div");
+
 box.className="food-day";
 
-const title=document.createElement("div");
-title.className="food-day-title";
-title.textContent="December "+day+", 2026";
+const title=
+document.createElement("div");
 
-const select=document.createElement("select");
-select.id="foodSelect_"+day;
+title.className=
+"food-day-title";
 
-["OFF","Breakfast","Lunch","Dinner"].forEach(function(meal){
+title.textContent=
+"December "+
+day+
+", 2026";
 
-const option=document.createElement("option");
+const select=
+document.createElement("select");
+
+select.id=
+"foodSelect_"+
+day;
+
+[
+"OFF",
+"Breakfast",
+"Lunch",
+"Dinner"
+].forEach(
+function(meal){
+
+const option=
+document.createElement("option");
 
 option.value=meal;
+
 option.textContent=meal;
 
 if(
 meal.toLowerCase()===
 String(current).toLowerCase()
 ){
+
 option.selected=true;
+
 }
 
 select.appendChild(option);
 
 });
 
-const currentText=document.createElement("div");
+const currentText=
+document.createElement("div");
 
-currentText.className="food-current";
-currentText.id="foodCurrent_"+day;
-currentText.textContent="Current setting: "+current;
+currentText.className=
+"food-current";
 
-const button=document.createElement("button");
+currentText.id=
+"foodCurrent_"+
+day;
+
+currentText.textContent=
+"Current setting: "+
+current;
+
+const button=
+document.createElement("button");
 
 button.type="button";
+
 button.className="food-save";
-button.textContent="Save "+day+" December";
+
+button.textContent=
+"Save "+
+day+
+" December";
 
 button.onclick=function(){
 
@@ -1311,8 +1874,11 @@ button
 };
 
 box.appendChild(title);
+
 box.appendChild(select);
+
 box.appendChild(currentText);
+
 box.appendChild(button);
 
 container.appendChild(box);
@@ -1322,19 +1888,27 @@ container.appendChild(box);
 }
 
 
-function saveFoodSetting(day,meal,button){
+function saveFoodSetting(
+day,
+meal,
+button
+){
 
 const message=
-document.getElementById("foodMessage");
+document.getElementById(
+"foodMessage"
+);
 
 if(button){
 
 button.disabled=true;
+
 button.textContent="Saving...";
 
 }
 
 message.className="message";
+
 message.textContent="";
 
 apiRequest(
@@ -1349,13 +1923,21 @@ function(result){
 if(button){
 
 button.disabled=false;
-button.textContent="Save "+day+" December";
+
+button.textContent=
+"Save "+
+day+
+" December";
 
 }
 
-if(!result||result.status!=="success"){
+if(
+!result||
+result.status!=="success"
+){
 
-message.className="message error";
+message.className=
+"message error";
 
 message.textContent=
 result&&result.message
@@ -1367,17 +1949,26 @@ return;
 }
 
 const current=
-document.getElementById("foodCurrent_"+day);
+document.getElementById(
+"foodCurrent_"+
+day
+);
 
 if(current){
-current.textContent="Current setting: "+meal;
+
+current.textContent=
+"Current setting: "+
+meal;
+
 }
 
-message.className="message success";
+message.className=
+"message success";
 
 message.textContent=
 "Food service updated successfully for December "+
-day+".";
+day+
+".";
 
 }
 );
@@ -1407,22 +1998,28 @@ return String(value||"")
 
 function uploadGuestExcel(){
 
-const input=document.createElement("input");
+const input=
+document.createElement("input");
 
 input.type="file";
+
 input.accept=".xlsx,.xls";
 
-input.onchange=async function(event){
+input.onchange=
+async function(event){
 
-const file=event.target.files[0];
+const file=
+event.target.files[0];
 
 if(!file)return;
 
 try{
 
-const arrayBuffer=await file.arrayBuffer();
+const arrayBuffer=
+await file.arrayBuffer();
 
-const workbook=XLSX.read(
+const workbook=
+XLSX.read(
 arrayBuffer,
 {type:"array"}
 );
@@ -1442,21 +2039,27 @@ workbook.Sheets[
 workbook.SheetNames[0]
 ];
 
-const rawRows=XLSX.utils.sheet_to_json(
+const rawRows=
+XLSX.utils.sheet_to_json(
 worksheet,
 {defval:""}
 );
 
 if(!rawRows.length){
 
-alert("The Excel file is empty.");
+alert(
+"The Excel file is empty."
+);
 
 return;
 
 }
 
-const firstRow=rawRows[0];
-const columns=Object.keys(firstRow);
+const firstRow=
+rawRows[0];
+
+const columns=
+Object.keys(firstRow);
 
 const requiredColumns=[
 "Name",
@@ -1465,9 +2068,11 @@ const requiredColumns=[
 ];
 
 const missingColumns=
-requiredColumns.filter(function(column){
+requiredColumns.filter(
+function(column){
 
-return !columns.some(function(existingColumn){
+return !columns.some(
+function(existingColumn){
 
 return String(existingColumn)
 .trim()
@@ -1492,13 +2097,16 @@ return;
 
 }
 
-const guests=rawRows.map(function(row){
+const guests=
+rawRows.map(
+function(row){
 
 let name="";
 let email="";
 let institute="";
 
-Object.keys(row).forEach(function(key){
+Object.keys(row).forEach(
+function(key){
 
 const normalizedKey=
 String(key)
@@ -1506,13 +2114,16 @@ String(key)
 .toLowerCase();
 
 if(normalizedKey==="name")
-name=String(row[key]||"").trim();
+name=
+String(row[key]||"").trim();
 
 if(normalizedKey==="email")
-email=String(row[key]||"").trim();
+email=
+String(row[key]||"").trim();
 
 if(normalizedKey==="institute")
-institute=String(row[key]||"").trim();
+institute=
+String(row[key]||"").trim();
 
 });
 
@@ -1526,10 +2137,16 @@ Institute:institute
 
 const invalidRows=[];
 
-guests.forEach(function(guest,index){
+guests.forEach(
+function(guest,index){
 
-if(!guest.Name||!guest.Email){
+if(
+!guest.Name||
+!guest.Email
+){
+
 invalidRows.push(index+2);
+
 }
 
 });
@@ -1546,7 +2163,8 @@ return;
 
 }
 
-const confirmed=confirm(
+const confirmed=
+confirm(
 "Excel file loaded successfully.\n\n"+
 "Total records: "+
 guests.length+
@@ -1557,14 +2175,22 @@ if(!confirmed)return;
 
 const BATCH_SIZE=20;
 
-let totalRecords=guests.length;
+let totalRecords=
+guests.length;
+
 let newRegistrations=0;
+
 let skippedDuplicates=0;
+
 let errors=0;
+
 const allErrors=[];
 
 const totalBatches=
-Math.ceil(guests.length/BATCH_SIZE);
+Math.ceil(
+guests.length/
+BATCH_SIZE
+);
 
 showGuestUploadProgress(
 0,
@@ -1585,7 +2211,9 @@ start+BATCH_SIZE
 );
 
 const batchNumber=
-Math.floor(start/BATCH_SIZE)+1;
+Math.floor(
+start/BATCH_SIZE
+)+1;
 
 showGuestUploadProgress(
 batchNumber,
@@ -1608,7 +2236,8 @@ errors+=batch.length;
 
 allErrors.push({
 batch:batchNumber,
-reason:"No response received from server."
+reason:
+"No response received from server."
 });
 
 continue;
@@ -1631,21 +2260,32 @@ continue;
 }
 
 newRegistrations+=
-Number(result.newRegistrations||0);
+Number(
+result.newRegistrations||0
+);
 
 skippedDuplicates+=
-Number(result.skippedDuplicates||0);
+Number(
+result.skippedDuplicates||0
+);
 
 errors+=
-Number(result.errors||0);
+Number(
+result.errors||0
+);
 
 if(
-Array.isArray(result.errorDetails)&&
+Array.isArray(
+result.errorDetails
+)&&
 result.errorDetails.length
 ){
 
-result.errorDetails.forEach(function(error){
+result.errorDetails.forEach(
+function(error){
+
 allErrors.push(error);
+
 });
 
 }
@@ -1667,9 +2307,13 @@ errors;
 
 if(allErrors.length>0){
 
-message+="\n\nError details:";
+message+=
+"\n\nError details:";
 
-allErrors.slice(0,10).forEach(function(error){
+allErrors
+.slice(0,10)
+.forEach(
+function(error){
 
 if(error.row){
 
@@ -1704,7 +2348,9 @@ if(allErrors.length>10){
 
 message+=
 "\n...and "+
-(allErrors.length-10)+
+(
+allErrors.length-10
+)+
 " more error(s).";
 
 }
@@ -1742,12 +2388,15 @@ input.click();
 
 function apiRequestPromise(params){
 
-return new Promise(function(resolve){
+return new Promise(
+function(resolve){
 
 apiRequest(
 params,
 function(result){
+
 resolve(result);
+
 }
 );
 
@@ -1773,19 +2422,32 @@ document.getElementById(
 
 if(!overlay){
 
-overlay=document.createElement("div");
+overlay=
+document.createElement("div");
 
-overlay.id="guestUploadProgress";
+overlay.id=
+"guestUploadProgress";
 
 overlay.style.position="fixed";
+
 overlay.style.left="0";
+
 overlay.style.top="0";
+
 overlay.style.width="100%";
+
 overlay.style.height="100%";
-overlay.style.background="rgba(0,0,0,.45)";
+
+overlay.style.background=
+"rgba(0,0,0,.45)";
+
 overlay.style.display="flex";
+
 overlay.style.alignItems="center";
-overlay.style.justifyContent="center";
+
+overlay.style.justifyContent=
+"center";
+
 overlay.style.zIndex="99999";
 
 overlay.innerHTML=
@@ -1802,7 +2464,9 @@ document.body.appendChild(overlay);
 
 const percentage=
 totalBatches>0
-?Math.round((currentBatch/totalBatches)*100)
+?Math.round(
+(currentBatch/totalBatches)*100
+)
 :0;
 
 const text=
@@ -1829,7 +2493,11 @@ percentage+
 }
 
 if(bar){
-bar.style.width=percentage+"%";
+
+bar.style.width=
+percentage+
+"%";
+
 }
 
 }
@@ -1902,7 +2570,8 @@ return;
 }
 
 const invalidGuests=
-guests.filter(function(guest){
+guests.filter(
+function(guest){
 
 return !String(
 guest["Registration ID"]||""
@@ -1954,33 +2623,53 @@ document.getElementById(
 if(oldPanel)
 oldPanel.remove();
 
-const overlay=document.createElement("div");
+const overlay=
+document.createElement("div");
 
-overlay.id="qrGenerationPanel";
+overlay.id=
+"qrGenerationPanel";
 
 overlay.style.position="fixed";
+
 overlay.style.left="0";
+
 overlay.style.top="0";
+
 overlay.style.width="100%";
+
 overlay.style.height="100%";
+
 overlay.style.background="#f5f5f5";
+
 overlay.style.zIndex="99998";
+
 overlay.style.overflowY="auto";
 
-const container=document.createElement("div");
+const container=
+document.createElement("div");
 
 container.style.maxWidth="900px";
-container.style.margin="0 auto";
-container.style.padding="20px";
-container.style.boxSizing="border-box";
 
-const header=document.createElement("div");
+container.style.margin="0 auto";
+
+container.style.padding="20px";
+
+container.style.boxSizing=
+"border-box";
+
+const header=
+document.createElement("div");
 
 header.style.background="#fff";
+
 header.style.borderRadius="12px";
+
 header.style.padding="20px";
+
 header.style.marginBottom="15px";
-header.style.boxShadow="0 2px 10px rgba(0,0,0,.08)";
+
+header.style.boxShadow=
+"0 2px 10px rgba(0,0,0,.08)";
 
 header.innerHTML=
 '<h2 style="margin:0 0 8px;text-align:center;color:#17365d;font-size:22px;">ICEMD-2026 QR Codes</h2>'+
@@ -1991,17 +2680,28 @@ guests.length+
 
 container.appendChild(header);
 
-const actions=document.createElement("div");
+const actions=
+document.createElement("div");
 
 actions.style.background="#fff";
+
 actions.style.padding="15px";
+
 actions.style.borderRadius="12px";
+
 actions.style.marginBottom="15px";
-actions.style.boxShadow="0 2px 10px rgba(0,0,0,.08)";
+
+actions.style.boxShadow=
+"0 2px 10px rgba(0,0,0,.08)";
+
 actions.style.display="flex";
+
 actions.style.gap="10px";
+
 actions.style.flexWrap="wrap";
-actions.style.justifyContent="center";
+
+actions.style.justifyContent=
+"center";
 
 actions.innerHTML=
 '<button id="qrDownloadButton" style="background:#17365d;color:white;border:none;padding:12px 20px;border-radius:8px;font-size:15px;cursor:pointer;">Download QR PDF</button>'+
@@ -2009,74 +2709,119 @@ actions.innerHTML=
 
 container.appendChild(actions);
 
-const grid=document.createElement("div");
+const grid=
+document.createElement("div");
 
 grid.id="qrPreviewGrid";
+
 grid.style.display="grid";
-grid.style.gridTemplateColumns="repeat(auto-fit,minmax(220px,1fr))";
+
+grid.style.gridTemplateColumns=
+"repeat(auto-fit,minmax(220px,1fr))";
+
 grid.style.gap="15px";
 
 container.appendChild(grid);
+
 overlay.appendChild(container);
+
 document.body.appendChild(overlay);
 
-guests.forEach(function(guest){
+guests.forEach(
+function(guest){
 
 const registrationId=
-String(guest["Registration ID"]||"").trim();
+String(
+guest["Registration ID"]||""
+).trim();
 
 const name=
-String(guest["Name"]||"").trim();
+String(
+guest["Name"]||""
+).trim();
 
 const institute=
-String(guest["Institute"]||"").trim();
+String(
+guest["Institute"]||""
+).trim();
 
-const card=document.createElement("div");
+const card=
+document.createElement("div");
 
 card.className="icemd-qr-card";
-card.dataset.registrationId=registrationId;
+
+card.dataset.registrationId=
+registrationId;
+
 card.dataset.name=name;
-card.dataset.institute=institute;
+
+card.dataset.institute=
+institute;
 
 card.style.background="#fff";
-card.style.borderRadius="12px";
-card.style.padding="18px";
-card.style.textAlign="center";
-card.style.boxShadow="0 2px 8px rgba(0,0,0,.08)";
 
-const idElement=document.createElement("div");
+card.style.borderRadius="12px";
+
+card.style.padding="18px";
+
+card.style.textAlign="center";
+
+card.style.boxShadow=
+"0 2px 8px rgba(0,0,0,.08)";
+
+const idElement=
+document.createElement("div");
 
 idElement.style.fontWeight="bold";
+
 idElement.style.color="#17365d";
+
 idElement.style.fontSize="16px";
+
 idElement.style.marginBottom="10px";
-idElement.textContent=registrationId;
+
+idElement.textContent=
+registrationId;
 
 card.appendChild(idElement);
 
-const qrContainer=document.createElement("div");
+const qrContainer=
+document.createElement("div");
 
-qrContainer.className="icemd-qr-code";
+qrContainer.className=
+"icemd-qr-code";
+
 qrContainer.style.width="180px";
+
 qrContainer.style.height="180px";
-qrContainer.style.margin="0 auto 12px";
+
+qrContainer.style.margin=
+"0 auto 12px";
 
 card.appendChild(qrContainer);
 
-const nameElement=document.createElement("div");
+const nameElement=
+document.createElement("div");
 
 nameElement.style.fontWeight="bold";
+
 nameElement.style.fontSize="15px";
+
 nameElement.style.marginBottom="4px";
+
 nameElement.textContent=name;
 
 card.appendChild(nameElement);
 
-const instituteElement=document.createElement("div");
+const instituteElement=
+document.createElement("div");
 
 instituteElement.style.fontSize="13px";
+
 instituteElement.style.color="#666";
-instituteElement.textContent=institute;
+
+instituteElement.textContent=
+institute;
 
 card.appendChild(instituteElement);
 
@@ -2094,16 +2839,20 @@ correctLevel:QRCode.CorrectLevel.H
 
 });
 
-document.getElementById("qrCloseButton")
-.addEventListener(
+document.getElementById(
+"qrCloseButton"
+).addEventListener(
 "click",
 function(){
+
 overlay.remove();
+
 }
 );
 
-document.getElementById("qrDownloadButton")
-.addEventListener(
+document.getElementById(
+"qrDownloadButton"
+).addEventListener(
 "click",
 downloadQRPDF
 );
@@ -2117,8 +2866,11 @@ downloadQRPDF
 
 async function downloadQRPDF(){
 
-const qrCards=Array.from(
-document.querySelectorAll(".icemd-qr-card")
+const qrCards=
+Array.from(
+document.querySelectorAll(
+".icemd-qr-card"
+)
 );
 
 if(!qrCards.length){
@@ -2139,15 +2891,22 @@ document.getElementById(
 if(button){
 
 button.disabled=true;
-button.textContent="Preparing PDF...";
+
+button.textContent=
+"Preparing PDF...";
+
 button.style.opacity=".7";
+
 button.style.cursor="wait";
 
 }
 
 try{
 
-if(!window.jspdf||!window.jspdf.jsPDF){
+if(
+!window.jspdf||
+!window.jspdf.jsPDF
+){
 
 throw new Error(
 "PDF library could not be loaded. Please refresh the page and try again."
@@ -2155,38 +2914,54 @@ throw new Error(
 
 }
 
-const jsPDF=window.jspdf.jsPDF;
+const jsPDF=
+window.jspdf.jsPDF;
 
-const pdf=new jsPDF({
+const pdf=
+new jsPDF(
+{
 orientation:"portrait",
 unit:"mm",
 format:"a4",
 compress:true
-});
+}
+);
 
 const pageWidth=210;
+
 const pageHeight=297;
 
 const marginLeft=10;
+
 const marginRight=10;
+
 const marginTop=10;
+
 const marginBottom=10;
 
 const columns=2;
+
 const rows=3;
+
 const cardsPerPage=6;
 
 const usableWidth=
-pageWidth-marginLeft-marginRight;
+pageWidth-
+marginLeft-
+marginRight;
 
 const usableHeight=
-pageHeight-marginTop-marginBottom;
+pageHeight-
+marginTop-
+marginBottom;
 
 const cellWidth=
-usableWidth/columns;
+usableWidth/
+columns;
 
 const cellHeight=
-usableHeight/rows;
+usableHeight/
+rows;
 
 const qrSize=55;
 
@@ -2196,28 +2971,41 @@ i<qrCards.length;
 i++
 ){
 
-const card=qrCards[i];
+const card=
+qrCards[i];
 
 const registrationId=
-String(card.dataset.registrationId||"").trim();
+String(
+card.dataset.registrationId||""
+).trim();
 
 const name=
-String(card.dataset.name||"").trim();
+String(
+card.dataset.name||""
+).trim();
 
 const institute=
-String(card.dataset.institute||"").trim();
+String(
+card.dataset.institute||""
+).trim();
 
 if(!registrationId)
 continue;
 
-const qrCanvas=card.querySelector("canvas");
-const qrImage=card.querySelector("img");
+const qrCanvas=
+card.querySelector("canvas");
+
+const qrImage=
+card.querySelector("img");
 
 let qrDataURL="";
 
 if(qrCanvas){
 
-qrDataURL=qrCanvas.toDataURL("image/png");
+qrDataURL=
+qrCanvas.toDataURL(
+"image/png"
+);
 
 }else if(qrImage){
 
@@ -2236,51 +3024,88 @@ continue;
 
 }
 
-if(i>0&&i%cardsPerPage===0){
+if(
+i>0&&
+i%cardsPerPage===0
+){
+
 pdf.addPage();
+
 }
 
-const position=i%cardsPerPage;
+const position=
+i%cardsPerPage;
 
-const column=position%columns;
-const row=Math.floor(position/columns);
+const column=
+position%columns;
+
+const row=
+Math.floor(
+position/columns
+);
 
 const cellX=
-marginLeft+column*cellWidth;
+marginLeft+
+column*
+cellWidth;
 
 const cellY=
-marginTop+row*cellHeight;
+marginTop+
+row*
+cellHeight;
 
 const cardMargin=2;
 
-pdf.setDrawColor(210,210,210);
+pdf.setDrawColor(
+210,
+210,
+210
+);
+
 pdf.setLineWidth(.3);
 
 pdf.roundedRect(
 cellX+cardMargin,
 cellY+cardMargin,
-cellWidth-cardMargin*2,
-cellHeight-cardMargin*2,
+cellWidth-
+cardMargin*2,
+cellHeight-
+cardMargin*2,
 2,
 2,
 "S"
 );
 
-pdf.setFont("helvetica","bold");
+pdf.setFont(
+"helvetica",
+"bold"
+);
+
 pdf.setFontSize(11);
-pdf.setTextColor(23,54,93);
+
+pdf.setTextColor(
+23,
+54,
+93
+);
 
 pdf.text(
 registrationId,
-cellX+cellWidth/2,
+cellX+
+cellWidth/2,
 cellY+10,
 {align:"center"}
 );
 
 const qrX=
-cellX+(cellWidth-qrSize)/2;
+cellX+
+(
+cellWidth-
+qrSize
+)/2;
 
-const qrY=cellY+15;
+const qrY=
+cellY+15;
 
 pdf.addImage(
 qrDataURL,
@@ -2291,11 +3116,21 @@ qrSize,
 qrSize
 );
 
-pdf.setFont("helvetica","bold");
-pdf.setFontSize(9);
-pdf.setTextColor(30,30,30);
+pdf.setFont(
+"helvetica",
+"bold"
+);
 
-const textWidth=cellWidth-10;
+pdf.setFontSize(9);
+
+pdf.setTextColor(
+30,
+30,
+30
+);
+
+const textWidth=
+cellWidth-10;
 
 const nameLines=
 pdf.splitTextToSize(
@@ -2305,14 +3140,24 @@ textWidth
 
 pdf.text(
 nameLines.slice(0,2),
-cellX+cellWidth/2,
+cellX+
+cellWidth/2,
 cellY+76,
 {align:"center"}
 );
 
-pdf.setFont("helvetica","normal");
+pdf.setFont(
+"helvetica",
+"normal"
+);
+
 pdf.setFontSize(7.5);
-pdf.setTextColor(90,90,90);
+
+pdf.setTextColor(
+90,
+90,
+90
+);
 
 const instituteLines=
 pdf.splitTextToSize(
@@ -2322,7 +3167,8 @@ textWidth
 
 pdf.text(
 instituteLines.slice(0,2),
-cellX+cellWidth/2,
+cellX+
+cellWidth/2,
 cellY+84,
 {align:"center"}
 );
@@ -2350,8 +3196,12 @@ error.message
 if(button){
 
 button.disabled=false;
-button.textContent="Download QR PDF";
+
+button.textContent=
+"Download QR PDF";
+
 button.style.opacity="1";
+
 button.style.cursor="pointer";
 
 }
@@ -2373,6 +3223,8 @@ sessionStorage.getItem(
 );
 
 if(loggedIn==="true"){
+
+setAppView();
 
 document.getElementById(
 "loginSection"
