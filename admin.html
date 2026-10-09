@@ -4266,12 +4266,13 @@ function showQRGenerationPanel(participants,invitedGuests){
 
   function makeCard(record,index){
     const card=document.createElement("div");card.className="icemd-qr-card";card.dataset.registrationId=record.id;card.dataset.name=record.name;card.dataset.institute=record.institute;card.dataset.guestType=record.guestType;
-    card.style.cssText="background:#fff;border:none;border-radius:0;padding:20px;text-align:center;box-shadow:none;min-width:0";
+    card.style.cssText="background:#fff;border:none;border-radius:0;padding:0;text-align:center;box-shadow:none;min-width:0";
+    const printCard=document.createElement("div");printCard.style.cssText="background:#fff;border:1px solid #000;padding:20px;text-align:center;box-sizing:border-box";
     const typeLabel=document.createElement("div");typeLabel.textContent=record.type==="PARTICIPANT"?"PARTICIPANT":"INVITED GUEST";typeLabel.style.cssText="font-size:16px;font-weight:700;letter-spacing:.45px;color:"+(record.type==="PARTICIPANT"?"#218838":"#c62828")+";margin-bottom:6px";
-    const idElement=document.createElement("div");idElement.textContent=record.id||"NO REGISTRATION ID";idElement.style.cssText="font-weight:bold;color:#17365d;font-size:21px;margin-bottom:12px;overflow-wrap:anywhere;line-height:1.25";card.append(typeLabel,idElement);
-    const qrContainer=document.createElement("div");qrContainer.className="icemd-qr-code";qrContainer.style.cssText="width:180px;height:180px;margin:0 auto 12px;overflow:hidden;display:flex;align-items:center;justify-content:center";card.appendChild(qrContainer);
+    const idElement=document.createElement("div");idElement.textContent=record.id||"NO REGISTRATION ID";idElement.style.cssText="font-weight:bold;color:#17365d;font-size:21px;margin-bottom:12px;overflow-wrap:anywhere;line-height:1.25";printCard.append(typeLabel,idElement);
+    const qrContainer=document.createElement("div");qrContainer.className="icemd-qr-code";qrContainer.style.cssText="width:180px;height:180px;margin:0 auto 12px;overflow:hidden;display:flex;align-items:center;justify-content:center";printCard.appendChild(qrContainer);
     const nameElement=document.createElement("div");nameElement.textContent=record.name||"Name missing";nameElement.style.cssText="font-weight:bold;font-size:17px;margin-bottom:4px;overflow-wrap:anywhere";
-    const instituteElement=document.createElement("div");instituteElement.textContent=record.institute||"";instituteElement.style.cssText="font-size:14px;color:#666;overflow-wrap:anywhere";card.append(nameElement,instituteElement);
+    const instituteElement=document.createElement("div");instituteElement.textContent=record.institute||"";instituteElement.style.cssText="font-size:14px;color:#666;overflow-wrap:anywhere";printCard.append(nameElement,instituteElement);card.appendChild(printCard);
     const saveStatus=document.createElement("div");saveStatus.style.cssText="font-size:13px;margin-top:10px;color:#666;line-height:1.4";
     const saveButton=document.createElement("button");saveButton.type="button";saveButton.style.cssText="margin-top:10px;width:100%;padding:11px;border:none;border-radius:8px;background:#17365d;color:#fff;font-size:14px;cursor:pointer";
     const emailStatus=document.createElement("div");emailStatus.className="email-status email-unsent";emailStatus.textContent="Checking QR email status...";
