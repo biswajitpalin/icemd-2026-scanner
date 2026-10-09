@@ -4245,12 +4245,14 @@ function showQRGenerationPanel(participants,invitedGuests){
 
   function makeCard(record,index){
     const card=document.createElement("div");card.className="icemd-qr-card";card.dataset.registrationId=record.id;card.dataset.name=record.name;card.dataset.institute=record.institute;card.dataset.guestType=record.guestType;
-    card.style.cssText="background:#fff;border-radius:15px;padding:20px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.08);min-width:0";
+    card.style.cssText="background:transparent;border-radius:0;padding:8px;text-align:center;box-shadow:none;min-width:0";
+    /* The printable guest details are grouped inside one simple, thin black box. */
+    const ticket=document.createElement("div");ticket.className="icemd-qr-ticket";ticket.style.cssText="background:#fff;border:1px solid #111;border-radius:2px;padding:12px 10px 10px;text-align:center;min-width:0;box-sizing:border-box";
     const typeLabel=document.createElement("div");typeLabel.textContent=record.type==="PARTICIPANT"?"PARTICIPANT":"INVITED GUEST";typeLabel.style.cssText="font-size:16px;font-weight:700;letter-spacing:.45px;color:"+(record.type==="PARTICIPANT"?"#218838":"#c62828")+";margin-bottom:6px";
-    const idElement=document.createElement("div");idElement.textContent=record.id||"NO REGISTRATION ID";idElement.style.cssText="font-weight:bold;color:#17365d;font-size:21px;margin-bottom:12px;overflow-wrap:anywhere;line-height:1.25";card.append(typeLabel,idElement);
-    const qrContainer=document.createElement("div");qrContainer.className="icemd-qr-code";qrContainer.style.cssText="width:180px;height:180px;margin:0 auto 12px;overflow:hidden;display:flex;align-items:center;justify-content:center";card.appendChild(qrContainer);
+    const idElement=document.createElement("div");idElement.textContent=record.id||"NO REGISTRATION ID";idElement.style.cssText="font-weight:bold;color:#17365d;font-size:21px;margin-bottom:12px;overflow-wrap:anywhere;line-height:1.25";ticket.append(typeLabel,idElement);
+    const qrContainer=document.createElement("div");qrContainer.className="icemd-qr-code";qrContainer.style.cssText="width:180px;height:180px;margin:0 auto 12px;overflow:hidden;display:flex;align-items:center;justify-content:center";ticket.appendChild(qrContainer);
     const nameElement=document.createElement("div");nameElement.textContent=record.name||"Name missing";nameElement.style.cssText="font-weight:bold;font-size:17px;margin-bottom:4px;overflow-wrap:anywhere";
-    const instituteElement=document.createElement("div");instituteElement.textContent=record.institute||"";instituteElement.style.cssText="font-size:14px;color:#666;overflow-wrap:anywhere";card.append(nameElement,instituteElement);
+    const instituteElement=document.createElement("div");instituteElement.textContent=record.institute||"";instituteElement.style.cssText="font-size:14px;color:#666;overflow-wrap:anywhere";ticket.append(nameElement,instituteElement);card.appendChild(ticket);
     const saveStatus=document.createElement("div");saveStatus.style.cssText="font-size:13px;margin-top:10px;color:#666;line-height:1.4";
     const saveButton=document.createElement("button");saveButton.type="button";saveButton.style.cssText="margin-top:10px;width:100%;padding:11px;border:none;border-radius:8px;background:#17365d;color:#fff;font-size:14px;cursor:pointer";
     const emailStatus=document.createElement("div");emailStatus.className="email-status email-unsent";emailStatus.textContent="Checking QR email status...";
@@ -4485,23 +4487,14 @@ cellHeight;
 
 const cardMargin=2;
 
-pdf.setDrawColor(
-210,
-210,
-210
-);
-
-pdf.setLineWidth(.3);
-
-pdf.roundedRect(
+/* Thin black rectangular border around each complete QR ticket. */
+pdf.setDrawColor(0,0,0);
+pdf.setLineWidth(.25);
+pdf.rect(
 cellX+cardMargin,
 cellY+cardMargin,
-cellWidth-
-cardMargin*2,
-cellHeight-
-cardMargin*2,
-2,
-2,
+cellWidth-cardMargin*2,
+cellHeight-cardMargin*2,
 "S"
 );
 
@@ -4513,11 +4506,11 @@ pdf.setFont(
 
 pdf.setFontSize(8);
 
-pdf.setTextColor(
-90,
-90,
-90
-);
+if(guestType==="INVITED"){
+pdf.setTextColor(198,40,40);
+}else{
+pdf.setTextColor(33,136,56);
+}
 
 pdf.text(
 guestType==="INVITED"
