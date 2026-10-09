@@ -1356,6 +1356,102 @@ resolve(result);
 
 
 /* =====================================================
+   EMAIL ATTACHMENT ONLY: render the existing QR as a full card PNG
+   QR generation and Google Sheet storage remain unchanged.
+   ===================================================== */
+function makeEmailQRCardPNG(record, qrDataURL){
+  return new Promise(function(resolve,reject){
+    const source=String(qrDataURL||record.storedQR||"").trim();
+    if(!source){reject(new Error("No stored QR image is available for this email."));return;}
+    const qrImage=new Image();
+    qrImage.onload=function(){
+      try{
+        const width=480,height=440;
+        const canvas=document.createElement("canvas");
+        canvas.width=width;canvas.height=height;
+        const ctx=canvas.getContext("2d");
+        ctx.fillStyle="#ffffff";ctx.fillRect(0,0,width,height);
+        ctx.strokeStyle="#222222";ctx.lineWidth=2;ctx.strokeRect(12,12,width-24,height-24);
+        const invited=String(record.guestType||record.type||"").toUpperCase()==="INVITED";
+        const category=invited?"INVITED GUEST":"PARTICIPANT";
+        ctx.textAlign="center";ctx.textBaseline="middle";
+        ctx.fillStyle=invited?"#c62828":"#218838";
+        ctx.font="bold 29px Arial";ctx.fillText(category,width/2,43);
+        ctx.fillStyle="#17365d";
+        let idFont=31;ctx.font="bold "+idFont+"px Arial";
+        while(ctx.measureText(String(record.id||"")).width>width-48&&idFont>18){idFont--;ctx.font="bold "+idFont+"px Arial";}
+        ctx.fillText(String(record.id||""),width/2,79);
+        ctx.drawImage(qrImage,125,103,230,230);
+        ctx.fillStyle="#222222";
+        let nameFont=24;ctx.font="bold "+nameFont+"px Arial";
+        while(ctx.measureText(String(record.name||"")).width>width-48&&nameFont>15){nameFont--;ctx.font="bold "+nameFont+"px Arial";}
+        ctx.fillText(String(record.name||""),width/2,360);
+        ctx.fillStyle="#666666";
+        let instituteFont=19;ctx.font=instituteFont+"px Arial";
+        while(ctx.measureText(String(record.institute||"")).width>width-48&&instituteFont>12){instituteFont--;ctx.font=instituteFont+"px Arial";}
+        ctx.fillText(String(record.institute||""),width/2,389);
+        const png=canvas.toDataURL("image/png");
+        if(png.length>60000)throw new Error("The QR card image is too large to send. Please retry.");
+        resolve(png);
+      }catch(e){reject(e);}
+    };
+    qrImage.onerror=function(){reject(new Error("Could not read the stored QR image."));};
+    qrImage.src=source;
+  });
+}
+
+async function sendQRCardEmail(record, force){
+  const type=String(record.guestType||record.type||"").toUpperCase()==="INVITED"?"INVITED":"GUEST";
+  const qrDataURL=record.qrDataURL||record.storedQR||"";
+  const cardPNG=await makeEmailQRCardPNG({guestType:type,id:record.id,name:record.name,institute:record.institute},qrDataURL);
+  const params=type==="GUEST"
+    ?{action:"sendGuestQREmail",registrationId:record.id}
+    :{action:"sendInvitedGuestQREmail",id:record.id};
+  params.qrCard=cardPNG;
+  if(force)params.force="true";
+  params._timeoutMs=60000;params._cache=Date.now();
+  const result=await apiRequestPromise(params);
+  if(!result||result.status!=="success")throw new Error(result&&result.message?result.message:"QR email failed.");
+  return result;
+}
+
+async function sendBulkQRCardEmails(guestType, force){
+  const type=String(guestType||"").toUpperCase()==="INVITED"?"INVITED":"GUEST";
+  const message=document.getElementById(type==="GUEST"?"guestQRMailMessage":"invitedQRMailMessage");
+  message.className="message info";
+  message.textContent="Preparing complete QR cards and sending emails...";
+  const loaded=await apiRequestPromise({action:type==="GUEST"?"guests":"getInvitedGuests",_cache:Date.now()});
+  if(!loaded||loaded.status!=="success"){
+    message.className="message error";message.textContent=loaded&&loaded.message?loaded.message:"Unable to load guest records.";return;
+  }
+  const rows=Array.isArray(loaded.data)?loaded.data:[];
+  let sent=0,alreadySent=0,failed=0;const failures=[];
+  for(let i=0;i<rows.length;i++){
+    const row=rows[i]||{};
+    const id=String(type==="GUEST"?(row["Registration ID"]||""):(row["ID"]||row["Registration ID"]||"")).trim();
+    const name=String(row["Name"]||"").trim();
+    const email=String(row["Email"]||"").trim();
+    const institute=String(row["Institute"]||"").trim();
+    const storedQR=String(row["QR Code"]||"").trim();
+    if(!id||!storedQR){failed++;failures.push({id:id||"(missing ID)",message:"QR code is not stored."});continue;}
+    if(!force){
+      const status=await apiRequestPromise({action:"getQREmailStatus",id:id,guestType:type,_cache:Date.now()});
+      if(status&&status.status==="success"&&String(status.statusText||"").toUpperCase()==="SENT"){alreadySent++;continue;}
+    }
+    message.textContent="Preparing and sending "+(i+1)+" of "+rows.length+": "+id;
+    try{
+      const result=await sendQRCardEmail({guestType:type,id:id,name:name,email:email,institute:institute,storedQR:storedQR},force);
+      if(result.alreadySent)alreadySent++;else sent++;
+    }catch(e){failed++;failures.push({id:id,message:e.message||String(e)});}
+  }
+  message.className="message "+(failed?"error":"success");
+  message.textContent=(force?"Force-send":"QR email")+" process completed. Sent: "+sent+" | Already sent: "+alreadySent+" | Failed: "+failed+(failures.length?" | First failure: "+failures[0].id+" — "+failures[0].message:"");
+  if(failures.length)console.warn("QR card email failures:",failures);
+  if(type==="GUEST")loadGuestQRMail();else loadInvitedQRMail();
+}
+
+
+/* =====================================================
    USERS
    ===================================================== */
 
@@ -3371,83 +3467,25 @@ guests.length-sent,
 
 }
 
-button.onclick=function(){
-
-button.disabled=true;
-button.textContent="Sending...";
-
-apiRequest({
-
-action:"sendGuestQREmail",
-registrationId:id,
-_timeoutMs:60000,
-_cache:Date.now()
-
-},function(sendResult){
-
-if(
-sendResult&&
-sendResult.status==="success"
-){
-
-button.textContent="✓ SENT";
-button.style.background="#2e7d32";
-button.disabled=true;
-forceButton.style.display="block";
-
-emailStatus.className=
-"email-status email-sent";
-
-emailStatus.textContent=
-"✓ QR email SENT";
-
-loadGuestQRMail();
-
-}else{
-
-button.disabled=false;
-
-button.textContent=
-"Send QR Email";
-
-emailStatus.className=
-"email-status email-failed";
-
-emailStatus.textContent=
-sendResult&&sendResult.message
-?sendResult.message
-:"QR email failed. Retry available.";
-
-}
-
-});
-
+button.onclick=async function(){
+  button.disabled=true;button.textContent="Preparing card...";
+  try{
+    await sendQRCardEmail({guestType:"GUEST",id:id,name:name,email:email,institute:institute,storedQR:storedQR},false);
+    button.textContent="✓ SENT";button.style.background="#2e7d32";button.disabled=true;forceButton.style.display="block";
+    emailStatus.className="email-status email-sent";emailStatus.textContent="✓ QR card email SENT";loadGuestQRMail();
+  }catch(sendError){
+    button.disabled=false;button.textContent="Send QR Email";emailStatus.className="email-status email-failed";emailStatus.textContent=sendError.message||"QR email failed. Retry available.";
+  }
 };
 
-forceButton.onclick=function(){
-  if(!confirm("Resend the QR email to "+name+" ("+id+") even though it may already have been sent?")) return;
-  forceButton.disabled=true;
-  forceButton.textContent="Force Sending...";
-  apiRequest({
-    action:"sendGuestQREmail",
-    registrationId:id,
-    force:"true",
-    _timeoutMs:60000,
-    _cache:Date.now()
-  },function(forceResult){
-    forceButton.disabled=false;
-    forceButton.textContent="Force Send QR Email";
-    if(forceResult&&forceResult.status==="success"){
-      emailStatus.className="email-status email-sent";
-      emailStatus.textContent="✓ QR email SENT (force resent)";
-      button.textContent="✓ SENT";
-      button.style.background="#2e7d32";
-      button.disabled=true;
-    }else{
-      emailStatus.className="email-status email-failed";
-      emailStatus.textContent=forceResult&&forceResult.message?forceResult.message:"Forced resend failed.";
-    }
-  });
+forceButton.onclick=async function(){
+  if(!confirm("Resend the QR email to "+name+" ("+id+") even though it may already have been sent?"))return;
+  forceButton.disabled=true;forceButton.textContent="Preparing card...";
+  try{
+    await sendQRCardEmail({guestType:"GUEST",id:id,name:name,email:email,institute:institute,storedQR:storedQR},true);
+    emailStatus.className="email-status email-sent";emailStatus.textContent="✓ QR card email SENT (force resent)";button.textContent="✓ SENT";button.style.background="#2e7d32";button.disabled=true;
+  }catch(forceError){emailStatus.className="email-status email-failed";emailStatus.textContent=forceError.message||"Forced resend failed.";}
+  finally{forceButton.disabled=false;forceButton.textContent="Force Send QR Email";}
 };
 
 });
@@ -3458,86 +3496,13 @@ forceButton.onclick=function(){
 
 
 function forceSendAllGuestQREmails(){
-  if(!confirm("Force send QR emails to ALL participants with stored QR codes, including those already marked SENT? This may send duplicate emails.")) return;
-  const message=document.getElementById("guestQRMailMessage");
-  message.className="message info";
-  message.textContent="Force sending QR emails to all participants...";
-  apiRequest({
-    action:"forceSendAllGuestQREmails",
-    _timeoutMs:240000,
-    _cache:Date.now()
-  },function(result){
-    if(!result||result.status!=="success"){
-      message.className="message error";
-      message.textContent=result&&result.message?result.message:"Unable to force-send participant QR emails.";
-      return;
-    }
-    message.className="message "+(result.failed?"error":"success");
-    message.textContent="Force-send completed. Sent: "+result.sent+" | Failed: "+result.failed+(result.failures&&result.failures.length?" | Check details in console.":"");
-    if(result.failures&&result.failures.length) console.warn("Participant QR force-send failures:",result.failures);
-    loadGuestQRMail();
-  });
+  if(!confirm("Force send QR emails to ALL participants with stored QR codes, including those already marked SENT? This may send duplicate emails."))return;
+  sendBulkQRCardEmails("GUEST",true);
 }
 
 
 function sendAllGuestQREmails(){
-
-const message=
-document.getElementById(
-"guestQRMailMessage"
-);
-
-message.className=
-"message info";
-
-message.textContent=
-"Sending all unsent participant QR emails...";
-
-apiRequest({
-
-action:"sendAllUnsentGuestQREmails",
-_timeoutMs:180000,
-_cache:Date.now()
-
-},function(result){
-
-if(
-!result||
-result.status!=="success"
-){
-
-message.className=
-"message error";
-
-message.textContent=
-result&&result.message
-?result.message
-:"Unable to send participant QR emails.";
-
-return;
-
-}
-
-message.className=
-"message "+
-(
-result.failed
-?"error"
-:"success"
-);
-
-message.textContent=
-"QR email process completed. Sent: "+
-result.sent+
-" | Already sent: "+
-result.alreadySent+
-" | Failed: "+
-result.failed;
-
-loadGuestQRMail();
-
-});
-
+  sendBulkQRCardEmails("GUEST",false);
 }
 
 
@@ -3827,84 +3792,25 @@ guests.length-sent,
 
 }
 
-button.onclick=function(){
-
-button.disabled=true;
-
-button.textContent="Sending...";
-
-apiRequest({
-
-action:"sendInvitedGuestQREmail",
-id:id,
-_timeoutMs:60000,
-_cache:Date.now()
-
-},function(sendResult){
-
-if(
-sendResult&&
-sendResult.status==="success"
-){
-
-button.textContent="✓ SENT";
-button.style.background="#2e7d32";
-button.disabled=true;
-forceButton.style.display="block";
-
-emailStatus.className=
-"email-status email-sent";
-
-emailStatus.textContent=
-"✓ QR email SENT";
-
-loadInvitedQRMail();
-
-}else{
-
-button.disabled=false;
-
-button.textContent=
-"Send QR Email";
-
-emailStatus.className=
-"email-status email-failed";
-
-emailStatus.textContent=
-sendResult&&sendResult.message
-?sendResult.message
-:"QR email failed. Retry available.";
-
-}
-
-});
-
+button.onclick=async function(){
+  button.disabled=true;button.textContent="Preparing card...";
+  try{
+    await sendQRCardEmail({guestType:"INVITED",id:id,name:name,email:email,institute:institute,storedQR:storedQR},false);
+    button.textContent="✓ SENT";button.style.background="#2e7d32";button.disabled=true;forceButton.style.display="block";
+    emailStatus.className="email-status email-sent";emailStatus.textContent="✓ QR card email SENT";loadInvitedQRMail();
+  }catch(sendError){
+    button.disabled=false;button.textContent="Send QR Email";emailStatus.className="email-status email-failed";emailStatus.textContent=sendError.message||"QR email failed. Retry available.";
+  }
 };
 
-forceButton.onclick=function(){
-  if(!confirm("Resend the QR email to "+name+" ("+id+") even though it may already have been sent?")) return;
-  forceButton.disabled=true;
-  forceButton.textContent="Force Sending...";
-  apiRequest({
-    action:"sendInvitedGuestQREmail",
-    id:id,
-    force:"true",
-    _timeoutMs:60000,
-    _cache:Date.now()
-  },function(forceResult){
-    forceButton.disabled=false;
-    forceButton.textContent="Force Send QR Email";
-    if(forceResult&&forceResult.status==="success"){
-      emailStatus.className="email-status email-sent";
-      emailStatus.textContent="✓ QR email SENT (force resent)";
-      button.textContent="✓ SENT";
-      button.style.background="#2e7d32";
-      button.disabled=true;
-    }else{
-      emailStatus.className="email-status email-failed";
-      emailStatus.textContent=forceResult&&forceResult.message?forceResult.message:"Forced resend failed.";
-    }
-  });
+forceButton.onclick=async function(){
+  if(!confirm("Resend the QR email to "+name+" ("+id+") even though it may already have been sent?"))return;
+  forceButton.disabled=true;forceButton.textContent="Preparing card...";
+  try{
+    await sendQRCardEmail({guestType:"INVITED",id:id,name:name,email:email,institute:institute,storedQR:storedQR},true);
+    emailStatus.className="email-status email-sent";emailStatus.textContent="✓ QR card email SENT (force resent)";button.textContent="✓ SENT";button.style.background="#2e7d32";button.disabled=true;
+  }catch(forceError){emailStatus.className="email-status email-failed";emailStatus.textContent=forceError.message||"Forced resend failed.";}
+  finally{forceButton.disabled=false;forceButton.textContent="Force Send QR Email";}
 };
 
 });
@@ -3915,89 +3821,13 @@ forceButton.onclick=function(){
 
 
 function forceSendAllInvitedQREmails(){
-  if(!confirm("Force send QR emails to ALL invited guests with stored QR codes, including those already marked SENT? This may send duplicate emails.")) return;
-  const message=document.getElementById("invitedQRMailMessage");
-  message.className="message info";
-  message.textContent="Force sending QR emails to all invited guests...";
-  apiRequest({
-    action:"forceSendAllInvitedQREmails",
-    _timeoutMs:240000,
-    _cache:Date.now()
-  },function(result){
-    if(!result||result.status!=="success"){
-      message.className="message error";
-      message.textContent=result&&result.message?result.message:"Unable to force-send invited guest QR emails.";
-      return;
-    }
-    message.className="message "+(result.failed?"error":"success");
-    message.textContent="Force-send completed. Sent: "+result.sent+" | Failed: "+result.failed+(result.failures&&result.failures.length?" | Check details in console.":"");
-    if(result.failures&&result.failures.length) console.warn("Invited guest QR force-send failures:",result.failures);
-    loadInvitedQRMail();
-  });
+  if(!confirm("Force send QR emails to ALL invited guests with stored QR codes, including those already marked SENT? This may send duplicate emails."))return;
+  sendBulkQRCardEmails("INVITED",true);
 }
 
 
 function sendAllInvitedQREmails(){
-
-const message=
-document.getElementById(
-"invitedQRMailMessage"
-);
-
-message.className=
-"message info";
-
-message.textContent=
-"Sending all unsent invited guest QR emails...";
-
-apiRequest({
-
-action:
-"sendAllUnsentInvitedGuestQREmails",
-_timeoutMs:180000,
-_cache:Date.now()
-
-},function(result){
-
-if(
-!result||
-result.status!=="success"
-){
-
-message.className=
-"message error";
-
-message.textContent=
-result&&result.message
-?result.message
-:"Unable to send invited guest QR emails.";
-
-return;
-
-}
-
-const text=
-"QR email process completed. Sent: "+
-result.sent+
-" | Already sent: "+
-result.alreadySent+
-" | Failed: "+
-result.failed;
-
-message.className=
-"message "+
-(
-result.failed
-?"error"
-:"success"
-);
-
-message.textContent=text;
-
-loadInvitedQRMail();
-
-});
-
+  sendBulkQRCardEmails("INVITED",false);
 }
 
 
@@ -4418,7 +4248,7 @@ function showQRGenerationPanel(participants,invitedGuests){
       apiRequest(params,function(result){isSaving=false;if(result&&result.status==="success"){if(isFailed){const st=stats[record.type];st.failed=Math.max(0,st.failed-1);st.failures=st.failures.filter(function(f){return f.id!==record.id;});}stats[record.type].success++;markStored();}else{markFailed(result&&result.message?result.message:"Server rejected the QR storage request.");}});
     }
     saveButton.onclick=generateAndStore;
-    emailButton.onclick=function(){if(!isStored)return;emailButton.disabled=true;emailButton.textContent="Sending...";const params=record.guestType==="GUEST"?{action:"sendGuestQREmail",registrationId:record.id,_timeoutMs:60000,_cache:Date.now()}:{action:"sendInvitedGuestQREmail",id:record.id,_timeoutMs:60000,_cache:Date.now()};apiRequest(params,function(result){if(result&&result.status==="success"){emailButton.textContent="✓ SENT";emailButton.style.background="#2e7d32";emailStatus.className="email-status email-sent";emailStatus.textContent="✓ QR email SENT";}else{emailButton.disabled=false;emailButton.textContent="Send QR Email";emailStatus.className="email-status email-failed";emailStatus.textContent=result&&result.message?result.message:"QR email failed; retry is available.";}});};
+    emailButton.onclick=async function(){if(!isStored)return;emailButton.disabled=true;emailButton.textContent="Preparing card...";emailStatus.textContent="Preparing full bordered QR card...";try{const qrCanvas=qrContainer.querySelector("canvas");const qrDataURL=qrCanvas?qrCanvas.toDataURL("image/png"):record.storedQR;await sendQRCardEmail({guestType:record.guestType,id:record.id,name:record.name,email:record.email,institute:record.institute,storedQR:record.storedQR,qrDataURL:qrDataURL},false);emailButton.textContent="✓ SENT";emailButton.style.background="#2e7d32";emailStatus.className="email-status email-sent";emailStatus.textContent="✓ QR card email SENT";}catch(error){emailButton.disabled=false;emailButton.textContent="Send QR Email";emailStatus.className="email-status email-failed";emailStatus.textContent=error.message||"QR email failed; retry is available.";}};
     if(isStored){saveStatus.style.color="#2e7d32";saveStatus.textContent="✓ QR already stored — will not be overwritten";saveButton.textContent="✓ Stored";saveButton.disabled=true;saveButton.style.background="#2e7d32";emailButton.disabled=false;stats[record.type].success++;
       apiRequest({action:"getQREmailStatus",id:record.id,guestType:record.guestType,_cache:Date.now()},function(result){if(result&&result.status==="success"){const state=String(result.statusText||"UNSENT").toUpperCase();if(state==="SENT"){emailStatus.className="email-status email-sent";emailStatus.textContent="✓ QR email SENT";emailButton.textContent="✓ SENT";emailButton.style.background="#2e7d32";}else if(state==="FAILED"){emailStatus.className="email-status email-failed";emailStatus.textContent="✗ Previous send FAILED — retry available";}else{emailStatus.className="email-status email-unsent";emailStatus.textContent="QR email UNSENT";}}});
     }else if(!record.id){stats[record.type].failed++;isFailed=true;stats[record.type].failures.push({row:record.row,rowLabel:record.rowLabel,id:record.id,name:record.name,reason:"Registration ID is missing."});saveStatus.style.color="#c62828";saveStatus.textContent="✗ Registration ID is missing.";saveButton.textContent="Cannot generate QR";saveButton.disabled=true;
