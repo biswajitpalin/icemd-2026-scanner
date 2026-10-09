@@ -8,6 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <style>
 *{box-sizing:border-box}
@@ -4295,366 +4296,81 @@ function showQRGenerationPanel(participants,invitedGuests){
    ===================================================== */
 
 async function downloadQRPDF(){
+  const qrCards=Array.from(document.querySelectorAll(".icemd-qr-card .icemd-qr-ticket"));
+  if(!qrCards.length){
+    alert('Please click "Generate QR Codes" first.');
+    return;
+  }
 
-const qrCards=
-Array.from(
-document.querySelectorAll(
-".icemd-qr-card"
-)
-);
+  const button=document.getElementById("qrDownloadButton");
+  if(button){
+    button.disabled=true;
+    button.textContent="Preparing high-resolution PDF...";
+    button.style.opacity=".7";
+    button.style.cursor="wait";
+  }
 
-if(!qrCards.length){
+  try{
+    if(!window.jspdf||!window.jspdf.jsPDF){
+      throw new Error("PDF library could not be loaded. Please refresh the page and try again.");
+    }
+    if(typeof window.html2canvas!=="function"){
+      throw new Error("High-resolution PDF renderer could not be loaded. Please refresh the page and try again.");
+    }
+    if(document.fonts&&document.fonts.ready) await document.fonts.ready;
 
-alert(
-'Please click "Generate QR Codes" first.'
-);
+    /* Capture the actual QR ticket DOM instead of rebuilding text in PDF.
+       This preserves the border, spacing, colours, font sizes, wrapping,
+       and QR appearance from Generate QR Codes without stretching. */
+    const captures=[];
+    for(let i=0;i<qrCards.length;i++){
+      const ticket=qrCards[i];
+      if(button) button.textContent="Rendering QR card "+(i+1)+" of "+qrCards.length+"...";
+      const canvas=await window.html2canvas(ticket,{
+        scale:3,
+        backgroundColor:"#ffffff",
+        useCORS:true,
+        allowTaint:false,
+        logging:false,
+        imageTimeout:15000,
+        width:ticket.scrollWidth,
+        height:ticket.scrollHeight,
+        windowWidth:Math.max(document.documentElement.clientWidth,ticket.scrollWidth)
+      });
+      captures.push({data:canvas.toDataURL("image/png"),width:canvas.width,height:canvas.height});
+    }
 
-return;
+    const jsPDF=window.jspdf.jsPDF;
+    const pdf=new jsPDF({orientation:"landscape",unit:"mm",format:"a4",compress:true});
+    const pageWidth=297,pageHeight=210;
+    const margin=7,gap=5,perPage=2;
+    const slotWidth=(pageWidth-margin*2-gap)/2;
+    const slotHeight=pageHeight-margin*2;
 
+    captures.forEach(function(capture,index){
+      if(index>0&&index%perPage===0) pdf.addPage("a4","landscape");
+      const slot=index%perPage;
+      const slotX=margin+slot*(slotWidth+gap);
+      const ratio=capture.width/capture.height;
+      let drawWidth=slotWidth,drawHeight=drawWidth/ratio;
+      if(drawHeight>slotHeight){drawHeight=slotHeight;drawWidth=drawHeight*ratio;}
+      const drawX=slotX+(slotWidth-drawWidth)/2;
+      const drawY=margin+(slotHeight-drawHeight)/2;
+      pdf.addImage(capture.data,"PNG",drawX,drawY,drawWidth,drawHeight,undefined,"FAST");
+    });
+    pdf.save("ICEMD-2026-All-QR-Codes.pdf");
+  }catch(error){
+    console.error("High-resolution QR PDF error:",error);
+    alert("Unable to create the QR PDF.\n\n"+(error&&error.message?error.message:String(error)));
+  }finally{
+    if(button){
+      button.disabled=false;
+      button.textContent="Download QR PDF";
+      button.style.opacity="1";
+      button.style.cursor="pointer";
+    }
+  }
 }
-
-const button=
-document.getElementById(
-"qrDownloadButton"
-);
-
-if(button){
-
-button.disabled=true;
-
-button.textContent=
-"Preparing PDF...";
-
-button.style.opacity=".7";
-
-button.style.cursor="wait";
-
-}
-
-try{
-
-if(
-!window.jspdf||
-!window.jspdf.jsPDF
-){
-
-throw new Error(
-"PDF library could not be loaded. Please refresh the page and try again."
-);
-
-}
-
-const jsPDF=
-window.jspdf.jsPDF;
-
-const pdf=
-new jsPDF(
-{
-orientation:"portrait",
-unit:"mm",
-format:"a4",
-compress:true
-}
-);
-
-const pageWidth=210;
-const pageHeight=297;
-
-const marginLeft=10;
-const marginRight=10;
-const marginTop=10;
-const marginBottom=10;
-
-const columns=2;
-const rows=3;
-
-const cardsPerPage=6;
-
-const usableWidth=
-pageWidth-
-marginLeft-
-marginRight;
-
-const usableHeight=
-pageHeight-
-marginTop-
-marginBottom;
-
-const cellWidth=
-usableWidth/
-columns;
-
-const cellHeight=
-usableHeight/
-rows;
-
-const qrSize=55;
-
-for(
-let i=0;
-i<qrCards.length;
-i++
-){
-
-const card=
-qrCards[i];
-
-const registrationId=
-String(
-card.dataset.registrationId||""
-).trim();
-
-const name=
-String(
-card.dataset.name||""
-).trim();
-
-const institute=
-String(
-card.dataset.institute||""
-).trim();
-
-const guestType=
-String(
-card.dataset.guestType||""
-).trim();
-
-if(!registrationId)
-continue;
-
-const qrCanvas=
-card.querySelector("canvas");
-
-const qrImage=
-card.querySelector("img");
-
-let qrDataURL="";
-
-if(qrCanvas){
-
-qrDataURL=
-qrCanvas.toDataURL(
-"image/png"
-);
-
-}else if(qrImage){
-
-qrDataURL=
-qrImage.src;
-
-}
-
-if(!qrDataURL){
-
-console.warn(
-"QR image not found:",
-registrationId
-);
-
-continue;
-
-}
-
-if(
-i>0&&
-i%cardsPerPage===0
-){
-
-pdf.addPage();
-
-}
-
-const position=
-i%cardsPerPage;
-
-const column=
-position%columns;
-
-const row=
-Math.floor(
-position/columns
-);
-
-const cellX=
-marginLeft+
-column*
-cellWidth;
-
-const cellY=
-marginTop+
-row*
-cellHeight;
-
-const cardMargin=2;
-
-/* Thin black rectangular border around each complete QR ticket. */
-pdf.setDrawColor(0,0,0);
-pdf.setLineWidth(.25);
-pdf.rect(
-cellX+cardMargin,
-cellY+cardMargin,
-cellWidth-cardMargin*2,
-cellHeight-cardMargin*2,
-"S"
-);
-
-
-pdf.setFont(
-"helvetica",
-"bold"
-);
-
-pdf.setFontSize(8);
-
-if(guestType==="INVITED"){
-pdf.setTextColor(198,40,40);
-}else{
-pdf.setTextColor(33,136,56);
-}
-
-pdf.text(
-guestType==="INVITED"
-?"INVITED GUEST"
-:"PARTICIPANT",
-cellX+
-cellWidth/2,
-cellY+7,
-{align:"center"}
-);
-
-
-pdf.setFontSize(11);
-
-pdf.setTextColor(
-23,
-54,
-93
-);
-
-pdf.text(
-registrationId,
-cellX+
-cellWidth/2,
-cellY+13,
-{align:"center"}
-);
-
-
-const qrX=
-cellX+
-(
-cellWidth-
-qrSize
-)/2;
-
-const qrY=
-cellY+18;
-
-pdf.addImage(
-qrDataURL,
-"PNG",
-qrX,
-qrY,
-qrSize,
-qrSize
-);
-
-
-pdf.setFont(
-"helvetica",
-"bold"
-);
-
-pdf.setFontSize(9);
-
-pdf.setTextColor(
-30,
-30,
-30
-);
-
-const textWidth=
-cellWidth-10;
-
-const nameLines=
-pdf.splitTextToSize(
-name,
-textWidth
-);
-
-pdf.text(
-nameLines.slice(0,2),
-cellX+
-cellWidth/2,
-cellY+79,
-{align:"center"}
-);
-
-
-pdf.setFont(
-"helvetica",
-"normal"
-);
-
-pdf.setFontSize(7.5);
-
-pdf.setTextColor(
-90,
-90,
-90
-);
-
-const instituteLines=
-pdf.splitTextToSize(
-institute,
-textWidth
-);
-
-pdf.text(
-instituteLines.slice(0,2),
-cellX+
-cellWidth/2,
-cellY+87,
-{align:"center"}
-);
-
-}
-
-pdf.save(
-"ICEMD-2026-All-QR-Codes.pdf"
-);
-
-}catch(error){
-
-console.error(
-"QR PDF generation error:",
-error
-);
-
-alert(
-"Unable to generate the QR PDF.\n\n"+
-error.message
-);
-
-}finally{
-
-if(button){
-
-button.disabled=false;
-
-button.textContent=
-"Download QR PDF";
-
-button.style.opacity="1";
-
-button.style.cursor="pointer";
-
-}
-
-}
-
-}
-
 
 /* =====================================================
    SESSION
