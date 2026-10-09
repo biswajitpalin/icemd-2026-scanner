@@ -1354,10 +1354,53 @@ resolve(result);
 
 }
 
+/* Send large PNG payloads in short JSONP requests to avoid URL-length failures.
+   The queue prevents many QR uploads from overwhelming Apps Script at once. */
+let icemdPayloadUploadQueue=Promise.resolve();
+function uploadPayloadInChunks(payload,kind){
+  const task=async function(){
+    const data=String(payload||"");
+    if(!data)throw new Error("No image data was produced.");
+    const token="icemd"+Date.now().toString(36)+Math.random().toString(36).slice(2,10);
+    const chunkSize=1800;
+    const total=Math.ceil(data.length/chunkSize);
+    for(let index=0;index<total;index++){
+      const result=await apiRequestPromise({
+        action:"storePayloadChunk",
+        token:token,
+        kind:kind,
+        index:index,
+        total:total,
+        chunk:data.slice(index*chunkSize,(index+1)*chunkSize),
+        _timeoutMs:30000,
+        _cache:Date.now()
+      });
+      if(!result||result.status!=="success"){
+        throw new Error(result&&result.message?result.message:"Could not upload image data.");
+      }
+    }
+    return {token:token,total:total};
+  };
+  const queued=icemdPayloadUploadQueue.then(task,task);
+  icemdPayloadUploadQueue=queued.catch(function(){});
+  return queued;
+}
+
+function compactQRDataURL(sourceNode){
+  if(!sourceNode)throw new Error("QR image was not created.");
+  const canvas=document.createElement("canvas");
+  canvas.width=300;canvas.height=300;
+  const ctx=canvas.getContext("2d");
+  ctx.fillStyle="#ffffff";ctx.fillRect(0,0,300,300);
+  ctx.imageSmoothingEnabled=false;
+  ctx.drawImage(sourceNode,0,0,300,300);
+  return canvas.toDataURL("image/png");
+}
+
 
 /* =====================================================
-   EMAIL ATTACHMENT ONLY: render the existing QR as a full card PNG
-   QR generation and Google Sheet storage remain unchanged.
+   QR email card rendering and safe image transfer.
+   The visible QR preview and PDF continue using the original QR canvas.
    ===================================================== */
 function makeEmailQRCardPNG(record, qrDataURL){
   return new Promise(function(resolve,reject){
@@ -1407,9 +1450,11 @@ async function sendQRCardEmail(record, force){
   const params=type==="GUEST"
     ?{action:"sendGuestQREmail",registrationId:record.id}
     :{action:"sendInvitedGuestQREmail",id:record.id};
-  params.qrCard=cardPNG;
+  const uploaded=await uploadPayloadInChunks(cardPNG,"CARD");
+  params.qrCardToken=uploaded.token;
+  params.qrCardChunks=uploaded.total;
   if(force)params.force="true";
-  params._timeoutMs=60000;params._cache=Date.now();
+  params._timeoutMs=30000;params._cache=Date.now();
   const result=await apiRequestPromise(params);
   if(!result||result.status!=="success")throw new Error(result&&result.message?result.message:"QR email failed.");
   return result;
@@ -4229,7 +4274,7 @@ function showQRGenerationPanel(participants,invitedGuests){
 
   function makeCard(record,index){
     const card=document.createElement("div");card.className="icemd-qr-card";card.dataset.registrationId=record.id;card.dataset.name=record.name;card.dataset.institute=record.institute;card.dataset.guestType=record.guestType;
-    card.style.cssText="background:#fff;border-radius:15px;padding:20px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.08);min-width:0";
+    card.style.cssText="background:#fff;border:1px solid #000;border-radius:0;padding:20px;text-align:center;box-shadow:none;min-width:0";
     const typeLabel=document.createElement("div");typeLabel.textContent=record.type==="PARTICIPANT"?"PARTICIPANT":"INVITED GUEST";typeLabel.style.cssText="font-size:16px;font-weight:700;letter-spacing:.45px;color:"+(record.type==="PARTICIPANT"?"#218838":"#c62828")+";margin-bottom:6px";
     const idElement=document.createElement("div");idElement.textContent=record.id||"NO REGISTRATION ID";idElement.style.cssText="font-weight:bold;color:#17365d;font-size:21px;margin-bottom:12px;overflow-wrap:anywhere;line-height:1.25";card.append(typeLabel,idElement);
     const qrContainer=document.createElement("div");qrContainer.className="icemd-qr-code";qrContainer.style.cssText="width:180px;height:180px;margin:0 auto 12px;overflow:hidden;display:flex;align-items:center;justify-content:center";card.appendChild(qrContainer);
@@ -4243,9 +4288,41 @@ function showQRGenerationPanel(participants,invitedGuests){
     const item={record:record,card:card,saveButton:saveButton,get isStored(){return isStored;},get isFailed(){return isFailed;},get isSaving(){return isSaving;}};records.push(item);
     function markStored(){isStored=true;isFailed=false;saveStatus.style.color="#2e7d32";saveStatus.textContent="✓ QR generated and stored successfully";saveButton.textContent="✓ Stored";saveButton.disabled=true;saveButton.style.background="#2e7d32";saveButton.style.cursor="default";emailButton.disabled=false;emailButton.textContent="Send QR Email";renderSummary();}
     function markFailed(reason){const alreadyFailed=isFailed;isSaving=false;isFailed=true;saveStatus.style.color="#c62828";saveStatus.textContent="✗ QR generation/storage failed: "+reason;saveButton.disabled=false;saveButton.textContent="Retry QR Generation";saveButton.style.background="#b91c1c";saveButton.style.cursor="pointer";const stat=stats[record.type];if(!alreadyFailed)stat.failed++;stat.failures=stat.failures.filter(function(f){return f.id!==record.id;});stat.failures.push({row:record.row,rowLabel:record.rowLabel,id:record.id,name:record.name,reason:reason});renderSummary();}
-    function generateAndStore(){if(isSaving||isStored)return;if(!record.id){markFailed("Registration ID is missing.");return;}isSaving=true;saveButton.disabled=true;saveButton.textContent="Generating...";saveStatus.style.color="#17365d";saveStatus.textContent="Generating QR and saving to Google Sheet...";let dataURL="";try{const canvas=qrContainer.querySelector("canvas"),img=qrContainer.querySelector("img");if(canvas)dataURL=canvas.toDataURL("image/png");else if(img)dataURL=img.src;}catch(e){markFailed("Could not read the QR image: "+(e.message||String(e)));return;}if(!dataURL){markFailed("QR image was not created by the QR library.");return;}
-      const params={action:record.guestType==="GUEST"?"saveGuestQR":"saveInvitedGuestQR",qrCode:dataURL,_cache:Date.now()};if(record.guestType==="GUEST")params.registrationId=record.id;else params.id=record.id;
-      apiRequest(params,function(result){isSaving=false;if(result&&result.status==="success"){if(isFailed){const st=stats[record.type];st.failed=Math.max(0,st.failed-1);st.failures=st.failures.filter(function(f){return f.id!==record.id;});}stats[record.type].success++;markStored();}else{markFailed(result&&result.message?result.message:"Server rejected the QR storage request.");}});
+    async function generateAndStore(){
+      if(isSaving||isStored)return;
+      if(!record.id){markFailed("Registration ID is missing.");return;}
+      isSaving=true;saveButton.disabled=true;saveButton.textContent="Generating...";
+      saveStatus.style.color="#17365d";saveStatus.textContent="Generating QR and saving to Google Sheet...";
+      try{
+        const sourceNode=qrContainer.querySelector("canvas")||qrContainer.querySelector("img");
+        const dataURL=compactQRDataURL(sourceNode);
+        const uploaded=await uploadPayloadInChunks(dataURL,"QR");
+        const params={
+          action:record.guestType==="GUEST"?"saveGuestQR":"saveInvitedGuestQR",
+          qrCodeToken:uploaded.token,
+          qrCodeChunks:uploaded.total,
+          _timeoutMs:30000,
+          _cache:Date.now()
+        };
+        if(record.guestType==="GUEST")params.registrationId=record.id;
+        else params.id=record.id;
+        const result=await apiRequestPromise(params);
+        isSaving=false;
+        if(result&&result.status==="success"){
+          if(isFailed){
+            const st=stats[record.type];
+            st.failed=Math.max(0,st.failed-1);
+            st.failures=st.failures.filter(function(f){return f.id!==record.id;});
+          }
+          stats[record.type].success++;
+          markStored();
+        }else{
+          markFailed(result&&result.message?result.message:"Server rejected the QR storage request.");
+        }
+      }catch(error){
+        isSaving=false;
+        markFailed(error&&error.message?error.message:"Unable to save QR image.");
+      }
     }
     saveButton.onclick=generateAndStore;
     emailButton.onclick=async function(){if(!isStored)return;emailButton.disabled=true;emailButton.textContent="Preparing card...";emailStatus.textContent="Preparing full bordered QR card...";try{const qrCanvas=qrContainer.querySelector("canvas");const qrDataURL=qrCanvas?qrCanvas.toDataURL("image/png"):record.storedQR;await sendQRCardEmail({guestType:record.guestType,id:record.id,name:record.name,email:record.email,institute:record.institute,storedQR:record.storedQR,qrDataURL:qrDataURL},false);emailButton.textContent="✓ SENT";emailButton.style.background="#2e7d32";emailStatus.className="email-status email-sent";emailStatus.textContent="✓ QR card email SENT";}catch(error){emailButton.disabled=false;emailButton.textContent="Send QR Email";emailStatus.className="email-status email-failed";emailStatus.textContent=error.message||"QR email failed; retry is available.";}};
