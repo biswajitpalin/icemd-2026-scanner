@@ -298,26 +298,17 @@ Counter
      password.
 -->
 
-<input
-type="text"
+<select
 id="scannerName"
 name="username"
-list="scannerOptions"
-placeholder="Select Counter"
 autocomplete="username"
 required
 >
-
-
-<datalist id="scannerOptions">
-
-<option value="Food Counter 1">
-
-<option value="Food Counter 2">
-
-<option value="Food Counter 3">
-
-</datalist>
+<option value="" selected disabled>Select Counter</option>
+<option value="Food Counter 1">Food Counter 1</option>
+<option value="Food Counter 2">Food Counter 2</option>
+<option value="Food Counter 3">Food Counter 3</option>
+</select>
 
 
 <label for="scannerPassword">
@@ -622,7 +613,7 @@ callback({
 status:"error",
 
 message:
-"Unable to connect to the attendance server."
+"Unable to connect to the food login server. Check the Apps Script deployment and try again."
 
 });
 
