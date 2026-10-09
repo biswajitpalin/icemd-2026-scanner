@@ -4344,10 +4344,10 @@ async function generateQRCodes(){
       alert(results[1]&&results[1].message?results[1].message:"Unable to load invited guests.");return;
     }
     const participants=(Array.isArray(results[0].data)?results[0].data:[]).map(function(g){return{
-      guestType:"GUEST",id:String(g["Registration ID"]||"").trim(),name:String(g["Name"]||"").trim(),email:String(g["Email"]||"").trim(),institute:String(g["Institute"]||"").trim(),storedQR:String(g["QR Code"]||"").trim(),storedCardImage:String(g["QR Card Image"]||"").trim()
+      guestType:"GUEST",id:String(g["Registration ID"]||"").trim(),name:String(g["Name"]||"").trim(),email:String(g["Email"]||"").trim(),institute:String(g["Institute"]||"").trim(),storedQR:String(g["QR Code"]||"").trim()
     };});
     const invited=(Array.isArray(results[1].data)?results[1].data:[]).map(function(g){return{
-      guestType:"INVITED",id:String(g["ID"]||g["Registration ID"]||"").trim(),name:String(g["Name"]||"").trim(),email:String(g["Email"]||"").trim(),institute:String(g["Institute"]||"").trim(),storedQR:String(g["QR Code"]||"").trim(),storedCardImage:String(g["QR Card Image"]||"").trim()
+      guestType:"INVITED",id:String(g["ID"]||g["Registration ID"]||"").trim(),name:String(g["Name"]||"").trim(),email:String(g["Email"]||"").trim(),institute:String(g["Institute"]||"").trim(),storedQR:String(g["QR Code"]||"").trim()
     };});
     if(!participants.length&&!invited.length){alert("No participant or invited guest records are available. Please upload the Excel files first.");return;}
     showQRGenerationPanel(participants,invited);
@@ -4397,72 +4397,6 @@ function showQRGenerationPanel(participants,invitedGuests){
     });
   }
 
-  function createFullQRCardPNG(record,qrSource){
-    const canvas=document.createElement("canvas");
-    canvas.width=1286;
-    canvas.height=1156;
-    const ctx=canvas.getContext("2d");
-    ctx.fillStyle="#ffffff";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.strokeStyle="#111111";
-    ctx.lineWidth=3;
-    ctx.strokeRect(3,3,1280,1150);
-
-    function fitFont(text,weight,startSize,minSize,maxWidth){
-      let size=startSize;
-      ctx.font=weight+" "+size+"px Arial";
-      while(size>minSize && ctx.measureText(String(text||"")).width>maxWidth){
-        size-=2;
-        ctx.font=weight+" "+size+"px Arial";
-      }
-      return size;
-    }
-
-    const center=canvas.width/2;
-    const maxTextWidth=canvas.width-100;
-    const label=record.type==="PARTICIPANT"?"PARTICIPANT":"INVITED GUEST";
-    ctx.textAlign="center";
-    ctx.textBaseline="alphabetic";
-    ctx.font="bold 80px Arial";
-    ctx.fillStyle=record.type==="PARTICIPANT"?"#218838":"#c62828";
-    ctx.fillText(label,center,102);
-
-    const id=String(record.id||"NO REGISTRATION ID");
-    fitFont(id,"bold",105,52,maxTextWidth);
-    ctx.fillStyle="#17365d";
-    ctx.fillText(id,center,208);
-
-    let source=qrSource;
-    if(source && source.tagName && source.tagName.toLowerCase()==="img"){
-      const temp=document.createElement("canvas");
-      temp.width=600;temp.height=600;
-      const tctx=temp.getContext("2d");
-      tctx.fillStyle="#ffffff";tctx.fillRect(0,0,600,600);
-      tctx.drawImage(source,0,0,600,600);
-      source=temp;
-    }
-    if(!source || typeof source.getContext!=="function"){
-      throw new Error("The QR canvas is not available for creating the full card image.");
-    }
-    ctx.fillStyle="#ffffff";
-    ctx.fillRect(348,260,590,590);
-    ctx.drawImage(source,348,260,590,590);
-
-    const name=String(record.name||"Name missing");
-    fitFont(name,"bold",87,48,maxTextWidth);
-    ctx.fillStyle="#222222";
-    ctx.fillText(name,center,940);
-
-    const institute=String(record.institute||"");
-    if(institute){
-      fitFont(institute,"normal",73,40,maxTextWidth);
-      ctx.fillStyle="#5a5a5a";
-      ctx.fillText(institute,center,1042);
-    }
-
-    return canvas.toDataURL("image/png");
-  }
-
   function makeCard(record,index){
     const card=document.createElement("div");card.className="icemd-qr-card";card.dataset.registrationId=record.id;card.dataset.name=record.name;card.dataset.institute=record.institute;card.dataset.guestType=record.guestType;
     card.style.cssText="background:#fff;border-radius:15px;padding:20px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.08);min-width:0";
@@ -4472,70 +4406,21 @@ function showQRGenerationPanel(participants,invitedGuests){
     const nameElement=document.createElement("div");nameElement.textContent=record.name||"Name missing";nameElement.style.cssText="font-weight:bold;font-size:17px;margin-bottom:4px;overflow-wrap:anywhere";
     const instituteElement=document.createElement("div");instituteElement.textContent=record.institute||"";instituteElement.style.cssText="font-size:14px;color:#666;overflow-wrap:anywhere";card.append(nameElement,instituteElement);
     const saveStatus=document.createElement("div");saveStatus.style.cssText="font-size:13px;margin-top:10px;color:#666;line-height:1.4";
-    const cardImageStatus=document.createElement("div");cardImageStatus.style.cssText="font-size:12px;margin-top:4px;color:#666;line-height:1.4";cardImageStatus.textContent=record.storedCardImage?"✓ Full QR card image stored":"Preparing full QR card image...";if(record.storedCardImage)cardImageStatus.style.color="#2e7d32";
     const saveButton=document.createElement("button");saveButton.type="button";saveButton.style.cssText="margin-top:10px;width:100%;padding:11px;border:none;border-radius:8px;background:#17365d;color:#fff;font-size:14px;cursor:pointer";
     const emailStatus=document.createElement("div");emailStatus.className="email-status email-unsent";emailStatus.textContent="Checking QR email status...";
-    const emailButton=document.createElement("button");emailButton.type="button";emailButton.className="qr-email-button";emailButton.textContent=record.storedQR?(record.storedCardImage?"Send QR Email":"Preparing full QR card..."):"Store QR before sending";emailButton.disabled=!record.storedQR||!record.storedCardImage;card.append(saveStatus,cardImageStatus,saveButton,emailStatus,emailButton);grid.appendChild(card);
+    const emailButton=document.createElement("button");emailButton.type="button";emailButton.className="qr-email-button";emailButton.textContent=record.storedQR?"Send QR Email":"Store QR before sending";emailButton.disabled=!record.storedQR;card.append(saveStatus,saveButton,emailStatus,emailButton);grid.appendChild(card);
     let isStored=!!record.storedQR,isFailed=false,isSaving=false;
-    let cardImageStored=!!record.storedCardImage,cardImageSaving=false,emailAlreadySent=false;
     const item={record:record,card:card,saveButton:saveButton,get isStored(){return isStored;},get isFailed(){return isFailed;},get isSaving(){return isSaving;}};records.push(item);
-    function markStored(){isStored=true;isFailed=false;saveStatus.style.color="#2e7d32";saveStatus.textContent="✓ QR generated and stored successfully";saveButton.textContent="✓ Stored";saveButton.disabled=true;saveButton.style.background="#2e7d32";saveButton.style.cursor="default";emailButton.disabled=!cardImageStored||emailAlreadySent;emailButton.textContent=emailAlreadySent?"✓ SENT":(cardImageStored?"Send QR Email":"Preparing full QR card...");renderSummary();}
+    function markStored(){isStored=true;isFailed=false;saveStatus.style.color="#2e7d32";saveStatus.textContent="✓ QR generated and stored successfully";saveButton.textContent="✓ Stored";saveButton.disabled=true;saveButton.style.background="#2e7d32";saveButton.style.cursor="default";emailButton.disabled=false;emailButton.textContent="Send QR Email";renderSummary();}
     function markFailed(reason){const alreadyFailed=isFailed;isSaving=false;isFailed=true;saveStatus.style.color="#c62828";saveStatus.textContent="✗ QR generation/storage failed: "+reason;saveButton.disabled=false;saveButton.textContent="Retry QR Generation";saveButton.style.background="#b91c1c";saveButton.style.cursor="pointer";const stat=stats[record.type];if(!alreadyFailed)stat.failed++;stat.failures=stat.failures.filter(function(f){return f.id!==record.id;});stat.failures.push({row:record.row,rowLabel:record.rowLabel,id:record.id,name:record.name,reason:reason});renderSummary();}
-    function saveFullCardImage(attempt){
-      attempt=attempt||0;
-      if(cardImageStored||cardImageSaving)return;
-      const qrCanvas=qrContainer.querySelector("canvas");
-      const qrImage=qrContainer.querySelector("img");
-      const source=qrCanvas||qrImage;
-      if(!source){
-        if(attempt<5){setTimeout(function(){saveFullCardImage(attempt+1);},250);return;}
-        cardImageStatus.style.color="#c62828";
-        cardImageStatus.textContent="✗ Full QR card image could not be created; reopen this page to retry.";
-        emailButton.disabled=true;
-        return;
-      }
-      let cardImage="";
-      try{cardImage=createFullQRCardPNG(record,source);}
-      catch(error){
-        cardImageStatus.style.color="#c62828";
-        cardImageStatus.textContent="✗ Full QR card image error: "+(error.message||String(error));
-        emailButton.disabled=true;
-        return;
-      }
-      cardImageSaving=true;
-      cardImageStatus.style.color="#17365d";
-      cardImageStatus.textContent="Saving full QR card image...";
-      const params={action:record.guestType==="GUEST"?"saveGuestQRCard":"saveInvitedGuestQRCard",cardImage:cardImage,_timeoutMs:60000,_cache:Date.now()};
-      if(record.guestType==="GUEST")params.registrationId=record.id;else params.id=record.id;
-      apiRequest(params,function(result){
-        cardImageSaving=false;
-        if(result&&result.status==="success"){
-          cardImageStored=true;
-          cardImageStatus.style.color="#2e7d32";
-          cardImageStatus.textContent="✓ Full QR card image stored";
-          emailButton.disabled=!isStored||emailAlreadySent;
-          if(!emailAlreadySent)emailButton.textContent=isStored?"Send QR Email":"Store QR before sending";
-        }else if(attempt<2){
-          cardImageStatus.style.color="#17365d";
-          cardImageStatus.textContent="Retrying full QR card image storage...";
-          setTimeout(function(){saveFullCardImage(attempt+1);},500);
-        }else{
-          cardImageStatus.style.color="#c62828";
-          cardImageStatus.textContent="✗ Full card image storage failed: "+(result&&result.message?result.message:"Unknown error")+". Reopen Generate QR Codes to retry.";
-          emailButton.disabled=true;
-          emailButton.textContent="Full card image required";
-        }
-      });
-    }
-
     function generateAndStore(){if(isSaving||isStored)return;if(!record.id){markFailed("Registration ID is missing.");return;}isSaving=true;saveButton.disabled=true;saveButton.textContent="Generating...";saveStatus.style.color="#17365d";saveStatus.textContent="Generating QR and saving to Google Sheet...";let dataURL="";try{const canvas=qrContainer.querySelector("canvas"),img=qrContainer.querySelector("img");if(canvas)dataURL=canvas.toDataURL("image/png");else if(img)dataURL=img.src;}catch(e){markFailed("Could not read the QR image: "+(e.message||String(e)));return;}if(!dataURL){markFailed("QR image was not created by the QR library.");return;}
       const params={action:record.guestType==="GUEST"?"saveGuestQR":"saveInvitedGuestQR",qrCode:dataURL,_cache:Date.now()};if(record.guestType==="GUEST")params.registrationId=record.id;else params.id=record.id;
       apiRequest(params,function(result){isSaving=false;if(result&&result.status==="success"){if(isFailed){const st=stats[record.type];st.failed=Math.max(0,st.failed-1);st.failures=st.failures.filter(function(f){return f.id!==record.id;});}stats[record.type].success++;markStored();}else{markFailed(result&&result.message?result.message:"Server rejected the QR storage request.");}});
     }
     saveButton.onclick=generateAndStore;
-    emailButton.onclick=function(){if(!isStored||!cardImageStored)return;emailButton.disabled=true;emailButton.textContent="Sending...";const params=record.guestType==="GUEST"?{action:"sendGuestQREmail",registrationId:record.id,_timeoutMs:60000,_cache:Date.now()}:{action:"sendInvitedGuestQREmail",id:record.id,_timeoutMs:60000,_cache:Date.now()};apiRequest(params,function(result){if(result&&result.status==="success"){emailAlreadySent=true;emailButton.textContent="✓ SENT";emailButton.style.background="#2e7d32";emailStatus.className="email-status email-sent";emailStatus.textContent="✓ QR email SENT";}else{emailButton.disabled=false;emailButton.textContent="Send QR Email";emailStatus.className="email-status email-failed";emailStatus.textContent=result&&result.message?result.message:"QR email failed; retry is available.";}});};
-    if(isStored){saveStatus.style.color="#2e7d32";saveStatus.textContent="✓ QR already stored — will not be overwritten";saveButton.textContent="✓ Stored";saveButton.disabled=true;saveButton.style.background="#2e7d32";emailButton.disabled=!cardImageStored;stats[record.type].success++;
-      apiRequest({action:"getQREmailStatus",id:record.id,guestType:record.guestType,_cache:Date.now()},function(result){if(result&&result.status==="success"){const state=String(result.statusText||"UNSENT").toUpperCase();if(state==="SENT"){emailAlreadySent=true;emailStatus.className="email-status email-sent";emailStatus.textContent="✓ QR email SENT";emailButton.textContent="✓ SENT";emailButton.style.background="#2e7d32";emailButton.disabled=true;}else if(state==="FAILED"){emailStatus.className="email-status email-failed";emailStatus.textContent="✗ Previous send FAILED — retry available";}else{emailStatus.className="email-status email-unsent";emailStatus.textContent="QR email UNSENT";}}});
+    emailButton.onclick=function(){if(!isStored)return;emailButton.disabled=true;emailButton.textContent="Sending...";const params=record.guestType==="GUEST"?{action:"sendGuestQREmail",registrationId:record.id,_timeoutMs:60000,_cache:Date.now()}:{action:"sendInvitedGuestQREmail",id:record.id,_timeoutMs:60000,_cache:Date.now()};apiRequest(params,function(result){if(result&&result.status==="success"){emailButton.textContent="✓ SENT";emailButton.style.background="#2e7d32";emailStatus.className="email-status email-sent";emailStatus.textContent="✓ QR email SENT";}else{emailButton.disabled=false;emailButton.textContent="Send QR Email";emailStatus.className="email-status email-failed";emailStatus.textContent=result&&result.message?result.message:"QR email failed; retry is available.";}});};
+    if(isStored){saveStatus.style.color="#2e7d32";saveStatus.textContent="✓ QR already stored — will not be overwritten";saveButton.textContent="✓ Stored";saveButton.disabled=true;saveButton.style.background="#2e7d32";emailButton.disabled=false;stats[record.type].success++;
+      apiRequest({action:"getQREmailStatus",id:record.id,guestType:record.guestType,_cache:Date.now()},function(result){if(result&&result.status==="success"){const state=String(result.statusText||"UNSENT").toUpperCase();if(state==="SENT"){emailStatus.className="email-status email-sent";emailStatus.textContent="✓ QR email SENT";emailButton.textContent="✓ SENT";emailButton.style.background="#2e7d32";}else if(state==="FAILED"){emailStatus.className="email-status email-failed";emailStatus.textContent="✗ Previous send FAILED — retry available";}else{emailStatus.className="email-status email-unsent";emailStatus.textContent="QR email UNSENT";}}});
     }else if(!record.id){stats[record.type].failed++;isFailed=true;stats[record.type].failures.push({row:record.row,rowLabel:record.rowLabel,id:record.id,name:record.name,reason:"Registration ID is missing."});saveStatus.style.color="#c62828";saveStatus.textContent="✗ Registration ID is missing.";saveButton.textContent="Cannot generate QR";saveButton.disabled=true;
     }else{stats[record.type].failed++;stats[record.type].failures.push({row:record.row,rowLabel:record.rowLabel,id:record.id,name:record.name,reason:"QR not stored yet; generation pending"});stats[record.type].failed--;stats[record.type].failures=stats[record.type].failures.filter(function(f){return f.id!==record.id;});setTimeout(generateAndStore,250+index*20);}
     try{
@@ -4545,12 +4430,11 @@ function showQRGenerationPanel(participants,invitedGuests){
       const qrCanvas=qrContainer.querySelector("canvas");
       const qrImage=qrContainer.querySelector("img");
       [qrCanvas,qrImage].forEach(function(node){if(node){node.style.width="180px";node.style.height="180px";node.style.maxWidth="180px";node.style.maxHeight="180px";node.style.imageRendering="pixelated";}});
-      if(!cardImageStored)setTimeout(function(){saveFullCardImage(0);},150+index*25);
     }catch(error){if(!isStored)markFailed("QR library error: "+(error.message||String(error)));}
   }
 
-  participants.forEach(function(r,i){const email=String(r.email||"").trim().toLowerCase();const excelRow=participantRows[email];makeCard({type:"PARTICIPANT",guestType:"GUEST",id:r.id,name:r.name,email:email,institute:r.institute,storedQR:r.storedQR,storedCardImage:r.storedCardImage,row:excelRow||i+2,rowLabel:excelRow?"Excel row":"Sheet row"},i);});
-  invitedGuests.forEach(function(r,i){const email=String(r.email||"").trim().toLowerCase();const excelRow=invitedRows[email];makeCard({type:"INVITED",guestType:"INVITED",id:r.id,name:r.name,email:email,institute:r.institute,storedQR:r.storedQR,storedCardImage:r.storedCardImage,row:excelRow||i+2,rowLabel:excelRow?"Excel row":"Sheet row"},participants.length+i);});
+  participants.forEach(function(r,i){const email=String(r.email||"").trim().toLowerCase();const excelRow=participantRows[email];makeCard({type:"PARTICIPANT",guestType:"GUEST",id:r.id,name:r.name,email:email,institute:r.institute,storedQR:r.storedQR,row:excelRow||i+2,rowLabel:excelRow?"Excel row":"Sheet row"},i);});
+  invitedGuests.forEach(function(r,i){const email=String(r.email||"").trim().toLowerCase();const excelRow=invitedRows[email];makeCard({type:"INVITED",guestType:"INVITED",id:r.id,name:r.name,email:email,institute:r.institute,storedQR:r.storedQR,row:excelRow||i+2,rowLabel:excelRow?"Excel row":"Sheet row"},participants.length+i);});
   renderSummary();
 
   document.getElementById("qrForceGenerateButton").addEventListener("click",function(){const button=this;const pending=records.filter(function(item){return !item.isStored&&!item.isSaving&&item.record.id;});if(!pending.length){showActionMessage("No missing or failed QR codes were found. All successfully stored QR codes were left unchanged.","success");return;}if(!confirm("Force Generate QR will retry only missing or failed QR codes. Already stored QR codes will not be changed.\n\nRecords to retry: "+pending.length+"\n\nContinue?"))return;button.disabled=true;button.textContent="Retrying missing QR codes...";showActionMessage("Retrying "+pending.length+" missing/failed QR code(s). Successfully stored QR codes are being left unchanged.","info");pending.forEach(function(item){item.saveButton.click();});const started=Date.now();const watcher=setInterval(function(){const running=records.some(function(item){return item.isSaving;});if(!running||Date.now()-started>120000){clearInterval(watcher);button.disabled=false;button.textContent="Force Generate QR";const failed=records.filter(function(item){return !item.isStored&&!item.isSaving;});showActionMessage("Force generation attempt finished.\nSuccessfully stored: "+records.filter(function(item){return item.isStored;}).length+"\nStill missing/failed: "+failed.length+"\nReview the separate summaries above for row numbers and failure reasons.",failed.length?"error":"success");}},500);});
