@@ -2431,12 +2431,12 @@ hideGuestUploadProgress();
 try{localStorage.setItem("icemdLastParticipantImportReport",JSON.stringify({totalRecords:totalRecords,newRegistrations:newRegistrations,skippedDuplicates:skippedDuplicates,errors:allErrors}));}catch(storageError){}
 
 let message=
-"Upload completed successfully.\n\n"+
+"New list upload completed successfully.\n\n"+
 "Total Excel records: "+
 totalRecords+
-"\nNew registrations: "+
+"\nAdded: "+
 newRegistrations+
-"\nSkipped duplicates: "+
+"\nSkipped: "+
 skippedDuplicates+
 "\nErrors: "+
 errors;
