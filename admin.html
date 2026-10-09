@@ -1202,6 +1202,10 @@ document.getElementById(
 
 function apiRequest(params,callback){
 
+params=params||{};
+const timeoutMs=Number(params._timeoutMs)||15000;
+if(Object.prototype.hasOwnProperty.call(params,"_timeoutMs")) delete params._timeoutMs;
+
 const callbackName=
 "icemdCallback_"+
 Date.now()+
@@ -1242,7 +1246,7 @@ status:"error",
 message:"Unable to connect to the server."
 });
 
-},15000);
+},timeoutMs);
 
 
 window[callbackName]=function(data){
@@ -3396,6 +3400,7 @@ message.textContent=
 apiRequest({
 
 action:"sendAllUnsentGuestQREmails",
+_timeoutMs:180000,
 _cache:Date.now()
 
 },function(result){
@@ -3795,7 +3800,7 @@ apiRequest({
 
 action:
 "sendAllUnsentInvitedGuestQREmails",
-
+_timeoutMs:180000,
 _cache:Date.now()
 
 },function(result){
@@ -4259,7 +4264,7 @@ function showQRGenerationPanel(participants,invitedGuests){
       apiRequest(params,function(result){isSaving=false;if(result&&result.status==="success"){if(isFailed){const st=stats[record.type];st.failed=Math.max(0,st.failed-1);st.failures=st.failures.filter(function(f){return f.id!==record.id;});}stats[record.type].success++;markStored();}else{markFailed(result&&result.message?result.message:"Server rejected the QR storage request.");}});
     }
     saveButton.onclick=generateAndStore;
-    emailButton.onclick=function(){if(!isStored)return;emailButton.disabled=true;emailButton.textContent="Sending...";const params=record.guestType==="GUEST"?{action:"sendGuestQREmail",registrationId:record.id,_cache:Date.now()}:{action:"sendInvitedGuestQREmail",id:record.id,_cache:Date.now()};apiRequest(params,function(result){if(result&&result.status==="success"){emailButton.textContent="✓ SENT";emailButton.style.background="#2e7d32";emailStatus.className="email-status email-sent";emailStatus.textContent="✓ QR email SENT";}else{emailButton.disabled=false;emailButton.textContent="Send QR Email";emailStatus.className="email-status email-failed";emailStatus.textContent=result&&result.message?result.message:"QR email failed; retry is available.";}});};
+    emailButton.onclick=function(){if(!isStored)return;emailButton.disabled=true;emailButton.textContent="Sending...";const params=record.guestType==="GUEST"?{action:"sendGuestQREmail",registrationId:record.id,_timeoutMs:60000,_cache:Date.now()}:{action:"sendInvitedGuestQREmail",id:record.id,_timeoutMs:60000,_cache:Date.now()};apiRequest(params,function(result){if(result&&result.status==="success"){emailButton.textContent="✓ SENT";emailButton.style.background="#2e7d32";emailStatus.className="email-status email-sent";emailStatus.textContent="✓ QR email SENT";}else{emailButton.disabled=false;emailButton.textContent="Send QR Email";emailStatus.className="email-status email-failed";emailStatus.textContent=result&&result.message?result.message:"QR email failed; retry is available.";}});};
     if(isStored){saveStatus.style.color="#2e7d32";saveStatus.textContent="✓ QR already stored — will not be overwritten";saveButton.textContent="✓ Stored";saveButton.disabled=true;saveButton.style.background="#2e7d32";emailButton.disabled=false;stats[record.type].success++;
       apiRequest({action:"getQREmailStatus",id:record.id,guestType:record.guestType,_cache:Date.now()},function(result){if(result&&result.status==="success"){const state=String(result.statusText||"UNSENT").toUpperCase();if(state==="SENT"){emailStatus.className="email-status email-sent";emailStatus.textContent="✓ QR email SENT";emailButton.textContent="✓ SENT";emailButton.style.background="#2e7d32";}else if(state==="FAILED"){emailStatus.className="email-status email-failed";emailStatus.textContent="✗ Previous send FAILED — retry available";}else{emailStatus.className="email-status email-unsent";emailStatus.textContent="QR email UNSENT";}}});
     }else if(!record.id){stats[record.type].failed++;isFailed=true;stats[record.type].failures.push({row:record.row,rowLabel:record.rowLabel,id:record.id,name:record.name,reason:"Registration ID is missing."});saveStatus.style.color="#c62828";saveStatus.textContent="✗ Registration ID is missing.";saveButton.textContent="Cannot generate QR";saveButton.disabled=true;
