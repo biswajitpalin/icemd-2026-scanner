@@ -2517,7 +2517,7 @@ guests.forEach(function(guest,index){const email=String(guest.Email||"").trim().
 localStorage.setItem("icemdParticipantExcelRowByEmail",JSON.stringify(rowMap));
 }catch(rowMapError){}
 
-const BATCH_SIZE=20;
+const BATCH_SIZE=40;
 
 let totalRecords=guests.length;
 let newRegistrations=0;
@@ -2917,81 +2917,46 @@ guests.forEach(function(guest,index){const email=String(guest.Email||"").trim().
 localStorage.setItem("icemdInvitedExcelRowByEmail",JSON.stringify(rowMap));
 }catch(rowMapError){}
 
-showGenericUploadProgress(
-0,
-guests.length,
-"Uploading invited guests"
-);
+const BATCH_SIZE=40;
 
 let added=0;
 let skipped=0;
 let errors=0;
-
 const errorDetails=[];
+const totalBatches=Math.ceil(guests.length/BATCH_SIZE);
+let completed=0;
 
-for(
-let i=0;
-i<guests.length;
-i++
-){
+showGenericUploadProgress(0,guests.length,"Uploading invited guests");
 
-showGenericUploadProgress(
-i+1,
-guests.length,
-"Uploading invited guests"
-);
-
-const guest=
-guests[i];
-
-const result=
-await apiRequestPromise({
-
-action:"addInvitedGuest",
-
-id:guest.ID,
-
-name:guest.Name,
-
-email:guest.Email.toLowerCase(),
-
-institute:guest.Institute,
-
-_cache:Date.now()
-
-});
-
-if(
-result&&
-result.status==="success"
-){
-
-added++;
-
-}else if(
-result&&
-result.message&&
-/already exists|duplicate/i.test(
-result.message
-)
-){
-
-skipped++;
-
-}else{
-
-errors++;
-
-errorDetails.push({
-row:i+2,
-reason:
-result&&result.message
-?result.message
-:"Unable to add invited guest."
-});
-
-}
-
+for(let start=0;start<guests.length;start+=BATCH_SIZE){
+  const batch=guests.slice(start,start+BATCH_SIZE).map(function(guest){
+    return {ID:guest.ID,Name:guest.Name,Email:guest.Email,Institute:guest.Institute};
+  });
+  const batchNumber=Math.floor(start/BATCH_SIZE)+1;
+  showGenericUploadProgress(completed,guests.length,"Uploading invited guests (batch "+batchNumber+"/"+totalBatches+")");
+  let result;
+  try{
+    result=await apiRequestPromise({
+      action:"importInvitedGuests",
+      rows:JSON.stringify(batch),
+      _cache:Date.now()+"_"+batchNumber
+    });
+  }catch(requestError){
+    result={status:"error",message:requestError&&requestError.message?requestError.message:"Unable to upload this batch."};
+  }
+  if(!result||result.status!=="success"){
+    errors+=batch.length;
+    errorDetails.push({row:start+2,reason:result&&result.message?result.message:"No response received from server."});
+  }else{
+    added+=Number(result.added||0);
+    skipped+=Number(result.skipped||0);
+    errors+=Number(result.errors||0);
+    (result.errorDetails||[]).forEach(function(item){
+      errorDetails.push({row:start+Number(item.row||0)+1,reason:item.reason||"Upload error."});
+    });
+  }
+  completed=Math.min(start+BATCH_SIZE,guests.length);
+  showGenericUploadProgress(completed,guests.length,"Uploading invited guests");
 }
 
 hideGenericUploadProgress();
