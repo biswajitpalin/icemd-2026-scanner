@@ -1356,11 +1356,18 @@ resolve(result);
 
 /* Send large PNG payloads in short JSONP requests to avoid URL-length failures.
    The queue prevents many QR uploads from overwhelming Apps Script at once. */
-let icemdPayloadUploadQueue=Promise.resolve();
-function uploadPayloadInChunks(payload,kind){
-  const task=async function(){
-    const data=String(payload||"");
-    if(!data)throw new Error("No image data was produced.");
+/* Allow four QR images to upload concurrently while keeping each image's chunks ordered. */
+const icemdPayloadUploadWaiters=[];
+let icemdPayloadUploadActive=0;
+const ICEMD_MAX_PARALLEL_QR_UPLOADS=4;
+async function uploadPayloadInChunks(payload,kind){
+  const data=String(payload||"");
+  if(!data)throw new Error("No image data was produced.");
+  if(icemdPayloadUploadActive>=ICEMD_MAX_PARALLEL_QR_UPLOADS){
+    await new Promise(function(resolve){icemdPayloadUploadWaiters.push(resolve);});
+  }
+  icemdPayloadUploadActive++;
+  try{
     const token="icemd"+Date.now().toString(36)+Math.random().toString(36).slice(2,10);
     const chunkSize=1800;
     const total=Math.ceil(data.length/chunkSize);
@@ -1380,10 +1387,11 @@ function uploadPayloadInChunks(payload,kind){
       }
     }
     return {token:token,total:total};
-  };
-  const queued=icemdPayloadUploadQueue.then(task,task);
-  icemdPayloadUploadQueue=queued.catch(function(){});
-  return queued;
+  }finally{
+    icemdPayloadUploadActive--;
+    const next=icemdPayloadUploadWaiters.shift();
+    if(next)next();
+  }
 }
 
 function compactQRDataURL(sourceNode){
