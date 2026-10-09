@@ -1388,59 +1388,86 @@ function uploadPayloadInChunks(payload,kind){
 
 function compactQRDataURL(sourceNode){
   if(!sourceNode)throw new Error("QR image was not created.");
+  /* Store a 600 x 600 lossless QR image in the sheet instead of downsampling to 300 x 300. */
   const canvas=document.createElement("canvas");
-  canvas.width=300;canvas.height=300;
+  canvas.width=600;canvas.height=600;
   const ctx=canvas.getContext("2d");
-  ctx.fillStyle="#ffffff";ctx.fillRect(0,0,300,300);
+  ctx.fillStyle="#ffffff";ctx.fillRect(0,0,600,600);
   ctx.imageSmoothingEnabled=false;
-  ctx.drawImage(sourceNode,0,0,300,300);
+  ctx.drawImage(sourceNode,0,0,600,600);
   return canvas.toDataURL("image/png");
 }
 
-
-/* =====================================================
-   QR email card rendering and safe image transfer.
-   The visible QR preview and PDF continue using the original QR canvas.
-   ===================================================== */
-function makeEmailQRCardPNG(record, qrDataURL){
+/* Build a fresh 1200 x 1200 QR from the registration ID. This keeps email attachments sharp
+   even for records whose previously stored sheet QR was created at a lower resolution. */
+function makeHighResolutionQRCanvas(registrationId){
   return new Promise(function(resolve,reject){
-    const source=String(qrDataURL||record.storedQR||"").trim();
-    if(!source){reject(new Error("No stored QR image is available for this email."));return;}
-    const qrImage=new Image();
-    qrImage.onload=function(){
-      try{
-        const width=480,height=440;
-        const canvas=document.createElement("canvas");
-        canvas.width=width;canvas.height=height;
-        const ctx=canvas.getContext("2d");
-        ctx.fillStyle="#ffffff";ctx.fillRect(0,0,width,height);
-        ctx.strokeStyle="#222222";ctx.lineWidth=2;ctx.strokeRect(12,12,width-24,height-24);
-        const invited=String(record.guestType||record.type||"").toUpperCase()==="INVITED";
-        const category=invited?"INVITED GUEST":"PARTICIPANT";
-        ctx.textAlign="center";ctx.textBaseline="middle";
-        ctx.fillStyle=invited?"#c62828":"#218838";
-        ctx.font="bold 29px Arial";ctx.fillText(category,width/2,43);
-        ctx.fillStyle="#17365d";
-        let idFont=31;ctx.font="bold "+idFont+"px Arial";
-        while(ctx.measureText(String(record.id||"")).width>width-48&&idFont>18){idFont--;ctx.font="bold "+idFont+"px Arial";}
-        ctx.fillText(String(record.id||""),width/2,79);
-        ctx.drawImage(qrImage,125,103,230,230);
-        ctx.fillStyle="#222222";
-        let nameFont=24;ctx.font="bold "+nameFont+"px Arial";
-        while(ctx.measureText(String(record.name||"")).width>width-48&&nameFont>15){nameFont--;ctx.font="bold "+nameFont+"px Arial";}
-        ctx.fillText(String(record.name||""),width/2,360);
-        ctx.fillStyle="#666666";
-        let instituteFont=19;ctx.font=instituteFont+"px Arial";
-        while(ctx.measureText(String(record.institute||"")).width>width-48&&instituteFont>12){instituteFont--;ctx.font=instituteFont+"px Arial";}
-        ctx.fillText(String(record.institute||""),width/2,389);
-        const png=canvas.toDataURL("image/png");
-        if(png.length>60000)throw new Error("The QR card image is too large to send. Please retry.");
-        resolve(png);
-      }catch(e){reject(e);}
-    };
-    qrImage.onerror=function(){reject(new Error("Could not read the stored QR image."));};
-    qrImage.src=source;
+    try{
+      if(!window.QRCode)throw new Error("QR generation library is unavailable.");
+      const host=document.createElement("div");
+      host.style.cssText="position:fixed;left:-20000px;top:0;width:1200px;height:1200px;overflow:hidden";
+      document.body.appendChild(host);
+      new QRCode(host,{text:String(registrationId||"MISSING-ID"),width:1200,height:1200,correctLevel:QRCode.CorrectLevel.H});
+      const sourceCanvas=host.querySelector("canvas");
+      if(sourceCanvas){
+        const copy=document.createElement("canvas");
+        copy.width=1200;copy.height=1200;
+        copy.getContext("2d").drawImage(sourceCanvas,0,0,1200,1200);
+        host.remove();
+        resolve(copy);
+        return;
+      }
+      const sourceImage=host.querySelector("img");
+      if(sourceImage&&sourceImage.src){
+        const image=new Image();
+        image.onload=function(){
+          try{
+            const copy=document.createElement("canvas");copy.width=1200;copy.height=1200;
+            copy.getContext("2d").drawImage(image,0,0,1200,1200);
+            host.remove();resolve(copy);
+          }catch(e){host.remove();reject(e);}
+        };
+        image.onerror=function(){host.remove();reject(new Error("Could not create the high-resolution QR image."));};
+        image.src=sourceImage.src;
+        return;
+      }
+      host.remove();
+      reject(new Error("The high-resolution QR image was not created."));
+    }catch(e){reject(e);}
   });
+}
+
+/* Render the complete bordered email card at 3x the previous pixel dimensions. */
+async function makeEmailQRCardPNG(record, qrDataURL){
+  const qrCanvas=await makeHighResolutionQRCanvas(record.id);
+  const width=1440,height=1320;
+  const canvas=document.createElement("canvas");
+  canvas.width=width;canvas.height=height;
+  const ctx=canvas.getContext("2d");
+  ctx.fillStyle="#ffffff";ctx.fillRect(0,0,width,height);
+  ctx.strokeStyle="#222222";ctx.lineWidth=6;ctx.strokeRect(36,36,width-72,height-72);
+  const invited=String(record.guestType||record.type||"").toUpperCase()==="INVITED";
+  const category=invited?"INVITED GUEST":"PARTICIPANT";
+  ctx.textAlign="center";ctx.textBaseline="middle";
+  ctx.fillStyle=invited?"#c62828":"#218838";
+  ctx.font="bold 87px Arial";ctx.fillText(category,width/2,129);
+  ctx.fillStyle="#17365d";
+  let idFont=93;ctx.font="bold "+idFont+"px Arial";
+  while(ctx.measureText(String(record.id||"")).width>width-144&&idFont>54){idFont--;ctx.font="bold "+idFont+"px Arial";}
+  ctx.fillText(String(record.id||""),width/2,237);
+  ctx.imageSmoothingEnabled=false;
+  ctx.drawImage(qrCanvas,375,309,690,690);
+  ctx.fillStyle="#222222";
+  let nameFont=72;ctx.font="bold "+nameFont+"px Arial";
+  while(ctx.measureText(String(record.name||"")).width>width-144&&nameFont>45){nameFont--;ctx.font="bold "+nameFont+"px Arial";}
+  ctx.fillText(String(record.name||""),width/2,1080);
+  ctx.fillStyle="#666666";
+  let instituteFont=57;ctx.font=instituteFont+"px Arial";
+  while(ctx.measureText(String(record.institute||"")).width>width-144&&instituteFont>36){instituteFont--;ctx.font=instituteFont+"px Arial";}
+  ctx.fillText(String(record.institute||""),width/2,1167);
+  const png=canvas.toDataURL("image/png");
+  if(png.length>1500000)throw new Error("The QR card image exceeded the safe transfer size. Please retry.");
+  return png;
 }
 
 async function sendQRCardEmail(record, force){
@@ -4274,16 +4301,12 @@ function showQRGenerationPanel(participants,invitedGuests){
 
   function makeCard(record,index){
     const card=document.createElement("div");card.className="icemd-qr-card";card.dataset.registrationId=record.id;card.dataset.name=record.name;card.dataset.institute=record.institute;card.dataset.guestType=record.guestType;
-    card.style.cssText="background:#fff;border-radius:15px;padding:20px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.08);min-width:0";
+    card.style.cssText="background:#fff;border:1px solid #000;border-radius:0;padding:20px;text-align:center;box-shadow:none;min-width:0";
     const typeLabel=document.createElement("div");typeLabel.textContent=record.type==="PARTICIPANT"?"PARTICIPANT":"INVITED GUEST";typeLabel.style.cssText="font-size:16px;font-weight:700;letter-spacing:.45px;color:"+(record.type==="PARTICIPANT"?"#218838":"#c62828")+";margin-bottom:6px";
     const idElement=document.createElement("div");idElement.textContent=record.id||"NO REGISTRATION ID";idElement.style.cssText="font-weight:bold;color:#17365d;font-size:21px;margin-bottom:12px;overflow-wrap:anywhere;line-height:1.25";card.append(typeLabel,idElement);
     const qrContainer=document.createElement("div");qrContainer.className="icemd-qr-code";qrContainer.style.cssText="width:180px;height:180px;margin:0 auto 12px;overflow:hidden;display:flex;align-items:center;justify-content:center";card.appendChild(qrContainer);
     const nameElement=document.createElement("div");nameElement.textContent=record.name||"Name missing";nameElement.style.cssText="font-weight:bold;font-size:17px;margin-bottom:4px;overflow-wrap:anywhere";
     const instituteElement=document.createElement("div");instituteElement.textContent=record.institute||"";instituteElement.style.cssText="font-size:14px;color:#666;overflow-wrap:anywhere";card.append(nameElement,instituteElement);
-    const qrCardBorder=document.createElement("div");
-    qrCardBorder.style.cssText="border:1px solid #000;padding:10px;margin-bottom:12px;box-sizing:border-box";
-    card.insertBefore(qrCardBorder,typeLabel);
-    qrCardBorder.append(typeLabel,idElement,qrContainer,nameElement,instituteElement);
     const saveStatus=document.createElement("div");saveStatus.style.cssText="font-size:13px;margin-top:10px;color:#666;line-height:1.4";
     const saveButton=document.createElement("button");saveButton.type="button";saveButton.style.cssText="margin-top:10px;width:100%;padding:11px;border:none;border-radius:8px;background:#17365d;color:#fff;font-size:14px;cursor:pointer";
     const emailStatus=document.createElement("div");emailStatus.className="email-status email-unsent";emailStatus.textContent="Checking QR email status...";
@@ -4336,7 +4359,7 @@ function showQRGenerationPanel(participants,invitedGuests){
     }else{stats[record.type].failed++;stats[record.type].failures.push({row:record.row,rowLabel:record.rowLabel,id:record.id,name:record.name,reason:"QR not stored yet; generation pending"});stats[record.type].failed--;stats[record.type].failures=stats[record.type].failures.filter(function(f){return f.id!==record.id;});setTimeout(generateAndStore,250+index*20);}
     try{
       /* Generate at 600 x 600 pixels for crisp storage and PDF output. */
-      new QRCode(qrContainer,{text:record.id||"MISSING-ID",width:600,height:600,correctLevel:QRCode.CorrectLevel.H});
+      new QRCode(qrContainer,{text:record.id||"MISSING-ID",width:1200,height:1200,correctLevel:QRCode.CorrectLevel.H});
       /* Display at the same visual size while retaining the full-resolution canvas. */
       const qrCanvas=qrContainer.querySelector("canvas");
       const qrImage=qrContainer.querySelector("img");
@@ -4479,11 +4502,11 @@ async function downloadQRPDF(){
       pdf.setTextColor(23,54,93);
       pdf.text(registrationId,centerX,y+10.4,{align:"center",baseline:"alphabetic"});
 
-      /* Embed the original 600 x 600 QR canvas at print resolution; do not recreate it. */
+      /* Embed the original 1200 x 1200 QR canvas for crisp print output; do not downsample it. */
       const qrSize=29.5;
       const qrX=x+(cardWidth-qrSize)/2;
       const qrY=y+13.0;
-      pdf.addImage(qrDataURL,"PNG",qrX,qrY,qrSize,qrSize,undefined,"FAST");
+      pdf.addImage(qrDataURL,"PNG",qrX,qrY,qrSize,qrSize,undefined,"SLOW");
 
       /* Keep name and institute on one line where possible, shrinking only long strings. */
       const nameText=name||"Name missing";
