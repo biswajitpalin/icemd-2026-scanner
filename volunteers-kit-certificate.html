@@ -125,12 +125,12 @@ button:active, .option:active { transform: scale(.99); }
 <div id="loginPage" class="card">
 <h1>ICEMD-2026</h1>
 <h2>Volunteers Kit &amp; Certificate</h2>
-<p class="subtitle">Assistant Login</p>
+<p class="subtitle">Volunteers Login</p>
 
-<label for="assistantName">Name</label>
+<label for="assistantName">First Name</label>
 <input type="text" id="assistantName" placeholder="Enter your name" autocomplete="name">
 
-<label for="assistantEmail">Email ID</label>
+<label for="assistantEmail">Registered Volunteer Email</label>
 <input type="email" id="assistantEmail" placeholder="Enter your email ID" autocomplete="email">
 
 <button id="continueButton" class="button" onclick="requestOTP()">Continue</button>
@@ -142,8 +142,8 @@ button:active, .option:active { transform: scale(.99); }
 <!-- OTP -->
 <div id="otpPage" class="card hidden">
 <h1>ICEMD-2026</h1>
-<h2>Verify Email</h2>
-<p class="subtitle">Enter the OTP sent to your email.</p>
+<h2>Volunteers Kit &amp; Certificate</h2>
+<p class="subtitle">Volunteers Login</p>
 
 <label for="otpInput">Six-digit OTP</label>
 <input type="text" id="otpInput" placeholder="Enter OTP received by email" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code">
