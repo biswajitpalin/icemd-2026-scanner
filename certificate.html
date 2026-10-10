@@ -109,6 +109,7 @@ button:active, .option:active { transform: scale(.99); }
 #loginPage label, #otpPage label { color: #263445; }
 #loginPage input, #otpPage input { background: #fff; }
 #loginPage .button, #otpPage .button { background: #17365d; color: #fff; }
+#loginPage button.secondary, #otpPage button.secondary { background: #666666 !important; color: #ffffff !important; }
 #otpPage #verifyButton { background: #198754 !important; color: #fff !important; }
 #otpPage #resendButton { background: #17365d !important; color: #fff !important; }
 #otpPage .secondary { background: #666 !important; color: #fff !important; }
@@ -132,7 +133,7 @@ button:active, .option:active { transform: scale(.99); }
 <label for="assistantEmail">Registered Volunteer Email</label>
 <input type="email" id="assistantEmail" placeholder="Enter your email ID" autocomplete="email">
 
-<button id="continueButton" class="button" onclick="requestOTP()">Continue</button>
+<button id="continueButton" class="button" onclick="requestOTP()">Send OTP</button>
 <button class="button secondary" onclick="goHome()">Back</button>
 
 <div id="loginMessage" class="message"></div>
@@ -275,7 +276,7 @@ assistantEmail=email;
 
 const button=document.getElementById(isResending ? "resendButton" : "continueButton");
 const messageId = isResending ? "otpMessage" : "loginMessage";
-const originalText = isResending ? "Resend OTP" : "Continue";
+const originalText = isResending ? "Resend OTP" : "Send OTP";
 
 button.disabled=true;
 button.innerText=isResending ? "Resending..." : "Checking...";
