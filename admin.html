@@ -1086,6 +1086,67 @@ Back
 </div>
 
 
+<!-- =====================================================
+     VOLUNTEER UPDATES
+     ===================================================== -->
+
+<div id="volunteerUpdatesSection" class="hidden">
+
+<h1>ICEMD-2026</h1>
+<h2>IIT Jodhpur, India</h2>
+
+<div class="section-title">Volunteer Updates</div>
+
+<div class="section-subtitle">
+Send an individual update email to every volunteer
+</div>
+
+<div class="update-note">
+The email is sent separately to every volunteer.
+No CC or BCC is used.
+The volunteer's name is automatically added to the greeting.
+</div>
+
+<div class="input-group">
+<label for="volunteerUpdateSubject">Subject</label>
+<input
+type="text"
+id="volunteerUpdateSubject"
+placeholder="Enter email subject">
+</div>
+
+<div class="input-group">
+<label for="volunteerUpdateMessage">Message</label>
+<textarea
+id="volunteerUpdateMessage"
+placeholder="Write the message for volunteers..."></textarea>
+</div>
+
+<button
+type="button"
+class="option"
+onclick="sendVolunteerUpdateEmail()">
+Send Update to Volunteers
+</button>
+
+<div id="volunteerUpdateMessageBox" class="message"></div>
+
+<div
+id="volunteerUpdateCount"
+class="section-subtitle"
+style="margin-top:12px;margin-bottom:0">
+</div>
+
+<button
+type="button"
+class="option back-button"
+onclick="closeVolunteerUpdates()">
+Back
+</button>
+
+</div>
+
+
 <script>
 
 const APPS_SCRIPT_URL=
@@ -4636,11 +4697,34 @@ loadInvitedUpdateCount();
 }
 
 
-function openVolunteerUpdates(){
+
+function openVolunteerUpdates() {
   hideAllAdminSections();
 
-  alert("Volunteer Updates screen is not configured yet.");
+  const section = document.getElementById("volunteerUpdatesSection");
+
+  if (!section) {
+    alert("Volunteer Updates section could not be found.");
+    return;
+  }
+
+  section.classList.remove("hidden");
 }
+
+function closeVolunteerUpdates() {
+  const section = document.getElementById("volunteerUpdatesSection");
+
+  if (section) {
+    section.classList.add("hidden");
+  }
+
+  const dashboard = document.getElementById("dashboardSection");
+
+  if (dashboard) {
+    dashboard.classList.remove("hidden");
+  }
+}
+
 
 
 function closeInvitedUpdates(){
