@@ -1466,10 +1466,14 @@ async function makeEmailQRCardPNG(record, qrDataURL){
   const ctx=canvas.getContext("2d");
   ctx.fillStyle="#ffffff";ctx.fillRect(0,0,width,height);
   ctx.strokeStyle="#222222";ctx.lineWidth=6;ctx.strokeRect(36,36,width-72,height-72);
-  const invited=String(record.guestType||record.type||"").toUpperCase()==="INVITED";
-  const category=invited?"INVITED GUEST":"PARTICIPANT";
+
+  const guestType=String(record.guestType||record.type||"").toUpperCase();
+  const invited=guestType==="INVITED";
+  const volunteer=guestType==="VOLUNTEER";
+  const category=volunteer?"VOLUNTEER":invited?"INVITED GUEST":"PARTICIPANT";
   ctx.textAlign="center";ctx.textBaseline="middle";
-  ctx.fillStyle=invited?"#c62828":"#218838";
+  ctx.fillStyle=volunteer?"#e91e63":invited?"#c62828":"#218838";
+
   ctx.font="bold 87px Arial";ctx.fillText(category,width/2,129);
   ctx.fillStyle="#17365d";
   let idFont=93;ctx.font="bold "+idFont+"px Arial";
