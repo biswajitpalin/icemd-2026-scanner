@@ -291,12 +291,7 @@ Counter
 </label>
 
 
-<!--
-     Username field intentionally uses a text input.
-     This allows Chrome/Edge password managers to
-     recognize it as the username for the saved
-     password.
--->
+<!-- The selected counter must use its authorized email configured in SETTINGS. -->
 
 <select
 id="scannerName"
@@ -313,27 +308,57 @@ required
 </select>
 
 
-<label for="scannerPassword">
-Password
+<label for="scannerEmail">
+Authorized Email
 </label>
 
-
 <input
-type="password"
-id="scannerPassword"
-name="password"
-placeholder="Enter scanner password"
-autocomplete="current-password"
+type="email"
+id="scannerEmail"
+name="email"
+placeholder="Enter the email assigned to this counter"
+autocomplete="username"
 required
 >
 
+<div id="otpSection" class="hidden">
+  <label for="scannerOTP">Six-digit OTP</label>
+  <input
+    type="text"
+    id="scannerOTP"
+    name="one-time-code"
+    placeholder="Enter OTP received by email"
+    inputmode="numeric"
+    pattern="[0-9]{6}"
+    maxlength="6"
+    autocomplete="one-time-code"
+  >
+</div>
 
 <button
 id="loginButton"
 type="submit"
 class="button"
 >
-Login
+Send OTP
+</button>
+
+<button
+id="verifyOTPButton"
+type="button"
+class="button success-button hidden"
+onclick="verifyFoodLoginOTP()"
+>
+Verify OTP &amp; Login
+</button>
+
+<button
+id="resendOTPButton"
+type="button"
+class="button secondary hidden"
+onclick="requestFoodLoginOTP(true)"
+>
+Resend OTP
 </button>
 
 
@@ -673,175 +698,103 @@ document.body.appendChild(script);
    FOOD LOGIN
 ===================================================== */
 
-function foodLogin(event){
-
-/*
- Prevent normal form submission.
-
- The form is deliberately kept as a real
- username/password form so Chrome/Edge can
- recognize the credentials and offer to
- save the password.
-*/
-
-if(event){
-
-event.preventDefault();
-
+function foodLogin(event) {
+  if (event) event.preventDefault();
+  requestFoodLoginOTP(false);
 }
 
+function requestFoodLoginOTP(isResend) {
+  const scannerName = document.getElementById("scannerName").value.trim();
+  const email = document.getElementById("scannerEmail").value.trim().toLowerCase();
+  const sendButton = document.getElementById("loginButton");
+  const verifyButton = document.getElementById("verifyOTPButton");
+  const resendButton = document.getElementById("resendOTPButton");
 
-const scannerName=
-document.getElementById("scannerName")
-.value
-.trim();
-
-
-/*
- Do NOT trim the password.
-
- The password is sent exactly as entered.
-*/
-
-const password=
-document.getElementById("scannerPassword")
-.value;
-
-
-if(!scannerName||!password){
-
-showLoginMessage(
-"Please select Counter and enter password.",
-"error"
-);
-
-return;
-
-}
-
-
-const button=
-document.getElementById("loginButton");
-
-button.disabled=true;
-
-button.innerText="Checking...";
-
-
-showLoginMessage(
-"Checking scanner login...",
-"success"
-);
-
-
-apiRequest({
-
-action:"foodLogin",
-
-name:scannerName,
-
-password:password
-
-},function(result){
-
-console.log(
-"Food login response:",
-result
-);
-
-
-button.disabled=false;
-
-button.innerText="Login";
-
-
-if(
-result&&
-result.status==="success"
-){
-
-
-currentScannerName=
-result.scanner||
-result.name||
-scannerName;
-
-
-// Keep the logged-in counter for 3 hours.
-saveFoodSession(currentScannerName);
-
-
-setTimeout(function() {
-  if (!getSavedFoodSession()) {
-    logoutFoodScanner();
+  if (!scannerName || !email) {
+    showLoginMessage("Please select a counter and enter its authorized email address.", "error");
+    return;
   }
-}, FOOD_SESSION_DURATION);
-     
 
-document.getElementById(
-"foodWelcome"
-).innerText=
-"Welcome, "+
-currentScannerName;
+  sendButton.disabled = true;
+  sendButton.innerText = isResend ? "Resending OTP..." : "Sending OTP...";
+  resendButton.disabled = true;
+  showLoginMessage("Requesting a login OTP...", "success");
 
+  apiRequest({
+    action: "requestFoodOTP",
+    name: scannerName,
+    email: email,
+    _cache: Date.now()
+  }, function(result) {
+    sendButton.disabled = false;
+    sendButton.innerText = "Send OTP";
+    resendButton.disabled = false;
 
-document.getElementById(
-"foodLoginPage"
-).classList.add("hidden");
-
-
-document.getElementById(
-"foodScannerPage"
-).classList.remove("hidden");
-
-
-setAppView();
-
-
-document.getElementById(
-"scanResult"
-).style.display="none";
-
-
-document.getElementById(
-"scanResult"
-).innerHTML="";
-
-
-processingScan=false;
-
-scannerRunning=false;
-
-scanner=null;
-
-
-loadFoodService();
-
-
-}else{
-
-
-showLoginMessage(
-
-result&&result.message
-?
-result.message
-:
-"Invalid scanner login.",
-
-"error"
-
-);
-
+    if (result && result.status === "success") {
+      document.getElementById("otpSection").classList.remove("hidden");
+      verifyButton.classList.remove("hidden");
+      resendButton.classList.remove("hidden");
+      document.getElementById("scannerOTP").focus();
+      showLoginMessage(result.message || "OTP sent. Check the authorized email inbox.", "success");
+    } else {
+      showLoginMessage(result && result.message ? result.message : "Unable to send OTP.", "error");
+    }
+  });
 }
 
-});
+function verifyFoodLoginOTP() {
+  const scannerName = document.getElementById("scannerName").value.trim();
+  const email = document.getElementById("scannerEmail").value.trim().toLowerCase();
+  const otp = document.getElementById("scannerOTP").value.trim();
+  const verifyButton = document.getElementById("verifyOTPButton");
 
-}
+  if (!scannerName || !email || !otp) {
+    showLoginMessage("Select the counter, enter its authorized email, and enter the OTP.", "error");
+    return;
+  }
 
+  if (!/^[0-9]{6}$/.test(otp)) {
+    showLoginMessage("Enter the six-digit OTP sent to your email.", "error");
+    return;
+  }
 
+  verifyButton.disabled = true;
+  verifyButton.innerText = "Verifying...";
+  showLoginMessage("Verifying food counter OTP...", "success");
 
-/* =====================================================
+  apiRequest({
+    action: "verifyFoodOTP",
+    name: scannerName,
+    email: email,
+    otp: otp,
+    _cache: Date.now()
+  }, function(result) {
+    verifyButton.disabled = false;
+    verifyButton.innerText = "Verify OTP & Login";
+
+    if (result && result.status === "success") {
+      currentScannerName = result.scanner || scannerName;
+      saveFoodSession(currentScannerName);
+
+      document.getElementById("foodWelcome").innerText = "Welcome, " + currentScannerName;
+      document.getElementById("foodLoginPage").classList.add("hidden");
+      document.getElementById("foodScannerPage").classList.remove("hidden");
+      setAppView();
+      document.getElementById("scanResult").style.display = "none";
+      document.getElementById("scanResult").innerHTML = "";
+      processingScan = false;
+      scannerRunning = false;
+      scanner = null;
+      loadFoodService();
+
+      setTimeout(function() {
+        if (!getSavedFoodSession()) logoutFoodScanner();
+      }, FOOD_SESSION_DURATION);
+    } else {
+      showLoginMessage(result && result.message ? result.message : "OTP verification failed.", "error");
+    }
+  });
+}/* =====================================================
    LOAD ADMIN FOOD SERVICE
 ===================================================== */
 
@@ -1508,16 +1461,14 @@ document.getElementById(
 ).value="";
 
 
-/*
- Clear the password field on logout.
+/* Clear email and OTP fields on logout. */
 
- The browser password manager can still
- retain its saved credential independently.
-*/
-
-document.getElementById(
-"scannerPassword"
-).value="";
+document.getElementById("scannerEmail").value = "";
+document.getElementById("scannerOTP").value = "";
+document.getElementById("otpSection").classList.add("hidden");
+document.getElementById("verifyOTPButton").classList.add("hidden");
+document.getElementById("resendOTPButton").classList.add("hidden");
+document.getElementById("loginButton").innerText = "Send OTP";
 
 
 document.getElementById(
