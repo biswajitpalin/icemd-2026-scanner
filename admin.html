@@ -2312,12 +2312,25 @@ function loadFoodScannerEmails(){
   list.className="user-list";
   emails.forEach(function(entry){
    const email=String(entry.email||"").trim().toLowerCase(); if(!email)return;
+   const active=entry.active!==false && String(entry.status||"ACTIVE").toUpperCase()!=="INACTIVE";
    const item=document.createElement("div"); item.className="user-item";
    const label=document.createElement("div"); label.className="user-email"; label.style.fontSize="15px"; label.style.color="#17365d"; label.textContent=email;
+   const status=document.createElement("div"); status.className="user-status "+(active?"status-active":"status-inactive"); status.textContent=active?"Active":"Inactive";
    const actions=document.createElement("div"); actions.className="user-actions";
-   const del=document.createElement("button"); del.type="button"; del.className="small-button delete"; del.textContent="Remove";
-   del.onclick=function(){if(!confirm("Remove "+email+" from Food Scanner access?"))return;del.disabled=true;apiRequest({action:"deleteFoodEmail",email:email,_cache:Date.now()},function(r){if(r&&r.status==="success"){showFoodEmailMessage("Email removed.","success");loadFoodScannerEmails();}else{del.disabled=false;showFoodEmailMessage(r&&r.message?r.message:"Unable to remove email.","error");}});};
-   actions.appendChild(del);item.appendChild(label);item.appendChild(actions);list.appendChild(item);
+   const toggle=document.createElement("button"); toggle.type="button"; toggle.className="small-button"; toggle.textContent=active?"Deactivate":"Activate";
+   toggle.onclick=function(){
+    const action=active?"deactivateFoodEmail":"activateFoodEmail";
+    const verb=active?"Deactivate":"Activate";
+    if(!confirm(verb+" Food Scanner access for "+email+"?"))return;
+    toggle.disabled=true;remove.disabled=true;
+    apiRequest({action:action,email:email,_cache:Date.now()},function(r){
+      if(r&&r.status==="success"){showFoodEmailMessage("Food Scanner email "+(active?"deactivated.":"activated."),"success");loadFoodScannerEmails();}
+      else{toggle.disabled=false;remove.disabled=false;showFoodEmailMessage(r&&r.message?r.message:"Unable to update email status.","error");}
+    });
+   };
+   const remove=document.createElement("button"); remove.type="button"; remove.className="small-button delete"; remove.textContent="Delete";
+   remove.onclick=function(){if(!confirm("Permanently delete "+email+" from Food Scanner access?"))return;toggle.disabled=true;remove.disabled=true;apiRequest({action:"deleteFoodEmail",email:email,_cache:Date.now()},function(r){if(r&&r.status==="success"){showFoodEmailMessage("Food Scanner email deleted.","success");loadFoodScannerEmails();}else{toggle.disabled=false;remove.disabled=false;showFoodEmailMessage(r&&r.message?r.message:"Unable to delete email.","error");}});};
+   actions.appendChild(toggle);actions.appendChild(remove);item.appendChild(label);item.appendChild(status);item.appendChild(actions);list.appendChild(item);
   });
  });
 }
