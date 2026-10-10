@@ -5124,9 +5124,19 @@ async function downloadQRPDF(){
       pdf.setLineWidth(0.25);
       pdf.rect(x,y,cardWidth,cardHeight,"S");
 
-      /* Category label: green for participants, red for invited guests. */
-      const label=guestType==="INVITED"?"INVITED GUEST":"PARTICIPANT";
-      const labelColor=guestType==="INVITED"?[198,40,40]:[33,136,56];
+
+     /* Category label and color for all three QR categories. */
+         
+     const label=
+       guestType==="VOLUNTEER"?"VOLUNTEER":
+       guestType==="INVITED"?"INVITED GUEST":
+       "PARTICIPANT";
+     
+     const labelColor=
+       guestType==="VOLUNTEER"?[255,152,0]:
+       guestType==="INVITED"?[198,40,40]:
+       [33,136,56];
+
       const labelSize=fitFontSize(label,"bold",11.5,9.5,innerWidth);
       pdf.setFont("helvetica","bold");
       pdf.setFontSize(labelSize);
