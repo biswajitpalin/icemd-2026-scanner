@@ -1082,8 +1082,7 @@ Back
 
 </div>
 
-</div>
-</div>
+
 
 
 <!-- =====================================================
@@ -1146,7 +1145,9 @@ Back
 
 </div>
 
-
+</div>
+</div>
+     
 <script>
 
 const APPS_SCRIPT_URL=
@@ -1375,6 +1376,10 @@ document.getElementById(
 
 document.getElementById(
 "invitedUpdatesSection"
+).classList.add("hidden");
+
+document.getElementById(
+"volunteerUpdatesSection"
 ).classList.add("hidden");
 
 }
@@ -4870,7 +4875,7 @@ messageBox.textContent=
 
 });
 
-
+}
 
 
 function sendVolunteerUpdateEmail() {
