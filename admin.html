@@ -689,6 +689,17 @@ Loading users...
 
 </div>
 
+<div style="border-top:1px solid #ddd;padding-top:18px;margin-top:20px">
+  <div style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:5px">Food Scanner Email Access</div>
+  <div style="color:#666;font-size:13px;margin-bottom:12px">Add or remove any number of email addresses allowed to log in to the Food Scanner. No counter names or fixed limit.</div>
+  <form id="addFoodEmailForm" onsubmit="addFoodScannerEmail(event)">
+    <div class="input-group"><label for="newFoodEmail">Authorized email address</label><input type="email" id="newFoodEmail" placeholder="Enter food scanner email" required></div>
+    <button type="submit" class="option">Add Food Scanner Email</button>
+  </form>
+  <div id="foodEmailMessage" class="message"></div>
+  <div style="color:#17365d;font-size:16px;font-weight:bold;margin-top:18px">Authorized Food Scanner Emails</div>
+  <div id="foodEmailsList" class="loading">Loading food scanner emails...</div>
+</div>
 <button
 type="button"
 class="option back-button"
@@ -1321,6 +1332,7 @@ document.getElementById(
 ).classList.remove("hidden");
 
 loadUsers();
+loadFoodScannerEmails();
 
 }
 
@@ -2080,6 +2092,33 @@ loadUsers();
 
 }
 
+
+function loadFoodScannerEmails(){
+ const list=document.getElementById("foodEmailsList"); if(!list)return;
+ list.className="loading"; list.textContent="Loading food scanner emails...";
+ apiRequest({action:"foodEmails",_cache:Date.now()},function(result){
+  if(!result||result.status!=="success"){list.className="message error";list.textContent=result&&result.message?result.message:"Unable to load food scanner emails.";return;}
+  const emails=Array.isArray(result.data)?result.data:[]; list.innerHTML="";
+  if(!emails.length){list.className="empty";list.textContent="No food scanner emails added yet.";return;}
+  list.className="user-list";
+  emails.forEach(function(entry){
+   const email=String(entry.email||"").trim().toLowerCase(); if(!email)return;
+   const item=document.createElement("div"); item.className="user-item";
+   const label=document.createElement("div"); label.className="user-email"; label.style.fontSize="15px"; label.style.color="#17365d"; label.textContent=email;
+   const actions=document.createElement("div"); actions.className="user-actions";
+   const del=document.createElement("button"); del.type="button"; del.className="small-button delete"; del.textContent="Remove";
+   del.onclick=function(){if(!confirm("Remove "+email+" from Food Scanner access?"))return;del.disabled=true;apiRequest({action:"deleteFoodEmail",email:email,_cache:Date.now()},function(r){if(r&&r.status==="success"){showFoodEmailMessage("Email removed.","success");loadFoodScannerEmails();}else{del.disabled=false;showFoodEmailMessage(r&&r.message?r.message:"Unable to remove email.","error");}});};
+   actions.appendChild(del);item.appendChild(label);item.appendChild(actions);list.appendChild(item);
+  });
+ });
+}
+function addFoodScannerEmail(event){
+ event.preventDefault(); const input=document.getElementById("newFoodEmail"); const email=input.value.trim().toLowerCase();
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showFoodEmailMessage("Enter a valid email address.","error");return;}
+ showFoodEmailMessage("Adding email...","info");
+ apiRequest({action:"addFoodEmail",email:email,_cache:Date.now()},function(r){if(r&&r.status==="success"){document.getElementById("addFoodEmailForm").reset();showFoodEmailMessage("Food Scanner email added.","success");loadFoodScannerEmails();}else showFoodEmailMessage(r&&r.message?r.message:"Unable to add email.","error");});
+}
+function showFoodEmailMessage(message,type){const box=document.getElementById("foodEmailMessage");box.className="message "+type;box.textContent=message;}
 
 function showUserMessage(text,type){
 
