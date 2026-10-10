@@ -4870,6 +4870,72 @@ messageBox.textContent=
 
 });
 
+
+
+
+function sendVolunteerUpdateEmail() {
+  const subject = document.getElementById(
+    "volunteerUpdateSubject"
+  ).value.trim();
+
+  const message = document.getElementById(
+    "volunteerUpdateMessage"
+  ).value.trim();
+
+  const messageBox = document.getElementById(
+    "volunteerUpdateMessageBox"
+  );
+
+  if (!subject) {
+    messageBox.className = "message error";
+    messageBox.textContent = "Please enter an email subject.";
+    return;
+  }
+
+  if (!message) {
+    messageBox.className = "message error";
+    messageBox.textContent = "Please enter the email message.";
+    return;
+  }
+
+  if (!confirm(
+    "Send this update individually to all volunteers?"
+  )) {
+    return;
+  }
+
+  messageBox.className = "message info";
+  messageBox.textContent = "Sending volunteer update emails...";
+
+  apiRequest({
+    action: "sendVolunteerUpdate",
+    subject: subject,
+    message: message,
+    _cache: Date.now()
+  }, function(result) {
+    if (!result || result.status !== "success") {
+      messageBox.className = "message error";
+      messageBox.textContent =
+        result && result.message
+          ? result.message
+          : "Unable to send volunteer updates.";
+      return;
+    }
+
+    messageBox.className =
+      "message " + (result.failed ? "error" : "success");
+
+    messageBox.textContent =
+      "Volunteer update completed. Sent: " +
+      (result.sent || 0) +
+      " | Failed: " +
+      (result.failed || 0);
+  });
+}
+
+
+     
+
 }
 
 
