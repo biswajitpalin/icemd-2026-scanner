@@ -2303,25 +2303,89 @@ loadUsers();
 
 
 function loadFoodScannerEmails(){
- const list=document.getElementById("foodEmailsList"); if(!list)return;
- list.className="loading"; list.textContent="Loading food scanner emails...";
+ const list=document.getElementById("foodEmailsList");
+ if(!list)return;
+ list.className="loading";
+ list.textContent="Loading food scanner emails...";
  apiRequest({action:"foodEmails",_cache:Date.now()},function(result){
-  if(!result||result.status!=="success"){list.className="message error";list.textContent=result&&result.message?result.message:"Unable to load food scanner emails.";return;}
-  const emails=Array.isArray(result.data)?result.data:[]; list.innerHTML="";
+  if(!result||result.status!=="success"){
+   list.className="message error";
+   list.textContent=result&&result.message?result.message:"Unable to load food scanner emails.";
+   return;
+  }
+  const emails=Array.isArray(result.data)?result.data:[];
   if(!emails.length){list.className="empty";list.textContent="No food scanner emails added yet.";return;}
-  list.className="user-list";
-  emails.forEach(function(entry){
-   const email=String(entry.email||"").trim().toLowerCase(); if(!email)return;
-   const item=document.createElement("div"); item.className="user-item";
-   const label=document.createElement("div"); label.className="user-email"; label.style.fontSize="15px"; label.style.color="#17365d"; label.textContent=email;
-   const active=entry.active!==false && String(entry.status||"ACTIVE").toUpperCase()!=="INACTIVE";
-   const status=document.createElement("div"); status.className="user-status "+(active?"status-active":"status-inactive"); status.textContent=active?"Active":"Inactive";
-   const actions=document.createElement("div"); actions.className="user-actions";
-   const toggle=document.createElement("button"); toggle.type="button"; toggle.className="small-button"; toggle.textContent=active?"Deactivate":"Activate";
-   const del=document.createElement("button"); del.type="button"; del.className="small-button delete"; del.textContent="Delete";
-   toggle.onclick=function(){const next=active?"INACTIVE":"ACTIVE";if(!confirm((active?"Deactivate":"Activate")+" Food Scanner access for "+email+"?"))return;toggle.disabled=true;del.disabled=true;apiRequest({action:"setFoodEmailStatus",email:email,status:next,_cache:Date.now()},function(r){toggle.disabled=false;del.disabled=false;if(r&&r.status==="success"){showFoodEmailMessage("Food Scanner access "+(next==="ACTIVE"?"activated.":"deactivated."),"success");loadFoodScannerEmails();}else showFoodEmailMessage(r&&r.message?r.message:"Unable to update email status.","error");});};
-   del.onclick=function(){if(!confirm("Permanently delete "+email+" from Food Scanner access?"))return;toggle.disabled=true;del.disabled=true;apiRequest({action:"deleteFoodEmail",email:email,_cache:Date.now()},function(r){if(r&&r.status==="success"){showFoodEmailMessage("Email deleted.","success");loadFoodScannerEmails();}else{toggle.disabled=false;del.disabled=false;showFoodEmailMessage(r&&r.message?r.message:"Unable to delete email.","error");}});};
-   actions.appendChild(toggle);actions.appendChild(del);item.appendChild(label);item.appendChild(status);item.appendChild(actions);list.appendChild(item);
+  // Reuse names from Current Users when an email is also registered there.
+  apiRequest({action:"users",_cache:Date.now()},function(usersResult){
+   const nameByEmail={};
+   if(usersResult&&usersResult.status==="success"&&Array.isArray(usersResult.data)){
+    usersResult.data.forEach(function(user){
+     const key=String(user["Email"]||"").trim().toLowerCase();
+     if(key)nameByEmail[key]=String(user["Name"]||"").trim();
+    });
+   }
+   list.innerHTML="";
+   list.className="user-list";
+   emails.forEach(function(entry){
+    const email=String(entry.email||entry.Email||"").trim().toLowerCase();
+    if(!email)return;
+    const item=document.createElement("div");
+    item.className="user-item";
+    const name=String(entry.name||entry.Name||nameByEmail[email]||"").trim() || email.split("@")[0].replace(/[._-]+/g," ").replace(/\b\w/g,function(c){return c.toUpperCase();});
+    const nameElement=document.createElement("div");
+    nameElement.className="user-name";
+    nameElement.textContent=name;
+    const emailElement=document.createElement("div");
+    emailElement.className="user-email";
+    emailElement.textContent=email;
+    const active=entry.active!==false&&String(entry.status||entry.Status||"ACTIVE").trim().toUpperCase()!=="INACTIVE";
+    const statusElement=document.createElement("div");
+    statusElement.className="user-status "+(active?"status-active":"status-inactive");
+    statusElement.textContent="Status: "+(active?"ACTIVE":"INACTIVE");
+    const actions=document.createElement("div");
+    actions.className="user-actions";
+    const toggle=document.createElement("button");
+    toggle.type="button";
+    toggle.className="small-button";
+    toggle.textContent=active?"Deactivate":"Activate";
+    const del=document.createElement("button");
+    del.type="button";
+    del.className="small-button delete";
+    del.textContent="Delete";
+    toggle.onclick=function(){
+     const next=active?"INACTIVE":"ACTIVE";
+     if(!confirm((active?"Deactivate":"Activate")+" Food Scanner access for "+email+"?"))return;
+     toggle.disabled=true;del.disabled=true;
+     apiRequest({action:"setFoodEmailStatus",email:email,status:next,_cache:Date.now()},function(r){
+      if(r&&r.status==="success"){
+       showFoodEmailMessage("Food Scanner access "+(next==="ACTIVE"?"activated.":"deactivated."),"success");
+       loadFoodScannerEmails();
+      }else{
+       toggle.disabled=false;del.disabled=false;
+       showFoodEmailMessage(r&&r.message?r.message:"Unable to update email status.","error");
+      }
+     });
+    };
+    del.onclick=function(){
+     if(!confirm("Permanently delete "+email+" from Food Scanner access?"))return;
+     toggle.disabled=true;del.disabled=true;
+     apiRequest({action:"deleteFoodEmail",email:email,_cache:Date.now()},function(r){
+      if(r&&r.status==="success"){
+       showFoodEmailMessage("Email deleted.","success");
+       loadFoodScannerEmails();
+      }else{
+       toggle.disabled=false;del.disabled=false;
+       showFoodEmailMessage(r&&r.message?r.message:"Unable to delete email.","error");
+      }
+     });
+    };
+    actions.appendChild(toggle);actions.appendChild(del);
+    item.appendChild(nameElement);
+    item.appendChild(emailElement);
+    item.appendChild(statusElement);
+    item.appendChild(actions);
+    list.appendChild(item);
+   });
   });
  });
 }
