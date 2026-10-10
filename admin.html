@@ -501,30 +501,18 @@ flex:1
 <form id="adminLoginForm" onsubmit="adminLogin(event)" autocomplete="on">
 
 <div class="input-group">
-<label for="adminEmail">Email</label>
-<input
-type="text"
-id="adminEmail"
-value="pal.17@iitj.ac.in"
-readonly
-autocomplete="username">
+<label for="adminEmail">Registered Admin Email</label>
+<input type="email" id="adminEmail" value="pal.17@iitj.ac.in" readonly autocomplete="username">
 </div>
 
-<div class="input-group">
-<label for="adminPassword">Password</label>
-<input
-type="password"
-id="adminPassword"
-placeholder="Enter password"
-autocomplete="current-password"
-autocapitalize="none"
-spellcheck="false"
-required>
+<div id="adminOtpGroup" class="input-group hidden">
+<label for="adminOTP">Six-digit email OTP</label>
+<input type="text" id="adminOTP" placeholder="Enter OTP" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code">
 </div>
 
-<button type="submit" class="option">
-Login
-</button>
+<button id="requestAdminOTPButton" type="button" class="option" onclick="requestAdminOTP()">Send Login OTP</button>
+<button id="verifyAdminOTPButton" type="submit" class="option hidden">Verify OTP and Login</button>
+<button id="resendAdminOTPButton" type="button" class="option hidden" onclick="requestAdminOTP()">Resend OTP</button>
 
 </form>
 
@@ -1154,7 +1142,7 @@ const APPS_SCRIPT_URL=
 "https://script.google.com/macros/s/AKfycbxD0VHRLp17LUYiPlYzxPRWwsZUagkVZycolhHfn6Nyt6XN-N2bQD0_uekzWlZc3iOgrA/exec";
 
 const FIXED_EMAIL="pal.17@iitj.ac.in";
-const FIXED_PASSWORD="icemd@20260317";
+const ADMIN_DISPLAY_NAME="Biswajit Pal";
 
 
 /* =====================================================
@@ -1176,63 +1164,77 @@ document.body.classList.add("login-view");
    LOGIN
    ===================================================== */
 
+let adminOTPRequested=false;
+let adminOTPRequestBusy=false;
+
+function requestAdminOTP(){
+if(adminOTPRequestBusy)return;
+const email=document.getElementById("adminEmail").value.trim().toLowerCase();
+const message=document.getElementById("loginMessage");
+const sendButton=document.getElementById("requestAdminOTPButton");
+const resendButton=document.getElementById("resendAdminOTPButton");
+adminOTPRequestBusy=true;
+sendButton.disabled=true;
+resendButton.disabled=true;
+message.className="message info";
+message.textContent="Sending login OTP to your registered email...";
+apiRequest({action:"requestAssistantOTP",name:ADMIN_DISPLAY_NAME,email:email,_cache:Date.now()},function(result){
+adminOTPRequestBusy=false;
+sendButton.disabled=false;
+resendButton.disabled=false;
+if(!result||result.status!=="success"||result.success===false){
+message.className="message error";
+message.textContent=result&&result.message?result.message:"Unable to send OTP. Please try again.";
+return;
+}
+adminOTPRequested=true;
+document.getElementById("adminOtpGroup").classList.remove("hidden");
+document.getElementById("verifyAdminOTPButton").classList.remove("hidden");
+document.getElementById("resendAdminOTPButton").classList.remove("hidden");
+sendButton.classList.add("hidden");
+message.className="message success";
+message.textContent="OTP sent. Check your registered email. It expires in 5 minutes.";
+document.getElementById("adminOTP").focus();
+});
+}
+
 function adminLogin(event){
-
 event.preventDefault();
-
-const email=
-document.getElementById("adminEmail").value.trim();
-
-const passwordInput=
-document.getElementById("adminPassword");
-
-const password=
-passwordInput.value;
-
-const message=
-document.getElementById("loginMessage");
-
-if(
-email===FIXED_EMAIL&&
-password===FIXED_PASSWORD
-){
-
-sessionStorage.setItem(
-"icemdAdminLoggedIn",
-"true"
-);
-
-document.getElementById(
-"loginSection"
-).classList.add("hidden");
-
-document.getElementById(
-"dashboardSection"
-).classList.remove("hidden");
-
+const email=document.getElementById("adminEmail").value.trim().toLowerCase();
+const otp=document.getElementById("adminOTP").value.trim();
+const message=document.getElementById("loginMessage");
+const verifyButton=document.getElementById("verifyAdminOTPButton");
+if(!adminOTPRequested){
+message.className="message error";
+message.textContent="Please request an OTP first.";
+return;
+}
+if(!/^[0-9]{6}$/.test(otp)){
+message.className="message error";
+message.textContent="Enter the six-digit OTP sent to your email.";
+return;
+}
+verifyButton.disabled=true;
+message.className="message info";
+message.textContent="Verifying OTP...";
+apiRequest({action:"verifyAssistantOTP",email:email,otp:otp,_cache:Date.now()},function(result){
+verifyButton.disabled=false;
+if(!result||result.status!=="success"||result.success===false){
+message.className="message error";
+message.textContent=result&&result.message?result.message:"OTP verification failed.";
+return;
+}
+sessionStorage.setItem("icemdAdminLoggedIn","true");
+sessionStorage.setItem("icemdAdminEmail",email);
+document.getElementById("loginSection").classList.add("hidden");
+document.getElementById("dashboardSection").classList.remove("hidden");
 setAppView();
-
 message.className="message";
 message.textContent="";
-
-passwordInput.value="";
-
-}else{
-
-message.className="message error";
-message.textContent="Invalid admin password.";
-
-passwordInput.value="";
-passwordInput.focus();
-
+document.getElementById("adminOTP").value="";
+});
 }
 
-}
-
-
-/* =====================================================
-   LOGOUT
-   ===================================================== */
 
 function adminLogout(){
 
@@ -1240,9 +1242,8 @@ sessionStorage.removeItem(
 "icemdAdminLoggedIn"
 );
 
-document.getElementById(
-"adminPassword"
-).value="";
+document.getElementById("adminOTP").value="";
+adminOTPRequested=false;
 
 document.getElementById(
 "dashboardSection"
@@ -1290,9 +1291,10 @@ document.getElementById(
 
 setLoginView();
 
-document.getElementById(
-"adminPassword"
-).focus();
+document.getElementById("adminOtpGroup").classList.add("hidden");
+document.getElementById("verifyAdminOTPButton").classList.add("hidden");
+document.getElementById("resendAdminOTPButton").classList.add("hidden");
+document.getElementById("requestAdminOTPButton").classList.remove("hidden");
 
 }
 
