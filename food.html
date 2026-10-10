@@ -769,6 +769,13 @@ scannerName;
 
 // Keep the logged-in counter for 3 hours.
 saveFoodSession(currentScannerName);
+
+
+setTimeout(function() {
+  if (!getSavedFoodSession()) {
+    logoutFoodScanner();
+  }
+}, FOOD_SESSION_DURATION);
      
 
 document.getElementById(
