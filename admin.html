@@ -1178,7 +1178,7 @@ sendButton.disabled=true;
 resendButton.disabled=true;
 message.className="message info";
 message.textContent="Sending login OTP to your registered email...";
-apiRequest({action:"requestAssistantOTP",name:ADMIN_DISPLAY_NAME,email:email,_cache:Date.now()},function(result){
+apiRequest({action:"requestAdminOTP",email:email,_cache:Date.now()},function(result){
 adminOTPRequestBusy=false;
 sendButton.disabled=false;
 resendButton.disabled=false;
@@ -1217,7 +1217,7 @@ return;
 verifyButton.disabled=true;
 message.className="message info";
 message.textContent="Verifying OTP...";
-apiRequest({action:"verifyAssistantOTP",email:email,otp:otp,_cache:Date.now()},function(result){
+apiRequest({action:"verifyAdminOTP",email:email,otp:otp,_cache:Date.now()},function(result){
 verifyButton.disabled=false;
 if(!result||result.status!=="success"||result.success===false){
 message.className="message error";
