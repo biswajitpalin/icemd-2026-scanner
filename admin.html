@@ -1553,7 +1553,14 @@ async function sendBulkQRCardEmails(guestType, force){
   );
   message.className="message info";
   message.textContent="Preparing complete QR cards and sending emails...";
-  const loaded=await apiRequestPromise({action:type==="GUEST"?"guests":"getInvitedGuests",_cache:Date.now()});
+  
+     const loaded=await apiRequestPromise({
+       action:type==="GUEST"?"guests":
+              type==="INVITED"?"getInvitedGuests":
+              "getVolunteers",
+       _cache:Date.now()
+     });
+
   if(!loaded||loaded.status!=="success"){
     message.className="message error";message.textContent=loaded&&loaded.message?loaded.message:"Unable to load guest records.";return;
   }
