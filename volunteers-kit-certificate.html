@@ -106,8 +106,13 @@ button:active, .option:active { transform: scale(.99); }
 #loginPage .subtitle, #otpPage .subtitle { color: #667085; }
 #loginPage label, #otpPage label { color: #263445; }
 #loginPage input, #otpPage input { background: #fff; }
-#loginPage .button, #otpPage .button { background: #17365d; color: #fff; }
+#loginPage .button { background: #17365d; color: #fff; }
+#otpPage .button { background: #17365d; color: #fff; }
+#otpPage #verifyButton { background: #198754 !important; color: #fff !important; }
+#otpPage #resendButton { background: #17365d !important; color: #fff !important; }
 #loginPage .secondary, #otpPage .secondary { background: #666; color: #fff; }
+#otpPage #verifyButton:hover { background: #157347 !important; }
+#otpPage #resendButton:hover { background: #214a78 !important; }
 
 </style>
 </head>
@@ -140,10 +145,11 @@ button:active, .option:active { transform: scale(.99); }
 <h2>Verify Email</h2>
 <p class="subtitle">Enter the OTP sent to your email.</p>
 
-<label for="otpInput">OTP</label>
-<input type="text" id="otpInput" placeholder="Enter OTP" inputmode="numeric" autocomplete="one-time-code">
+<label for="otpInput">Six-digit OTP</label>
+<input type="text" id="otpInput" placeholder="Enter OTP received by email" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code">
 
-<button id="verifyButton" class="button" onclick="verifyOTP()">Verify OTP</button>
+<button id="verifyButton" class="button success-button" onclick="verifyOTP()">Verify OTP &amp; Login</button>
+<button id="resendButton" class="button" onclick="requestOTP(true)">Resend OTP</button>
 <button class="button secondary" onclick="backToLogin()">Back</button>
 
 <div id="otpMessage" class="message"></div>
@@ -251,7 +257,8 @@ document.body.appendChild(script);
    SAME FLOW AS WORKING ASSISTANT
 ========================================================= */
 
-function requestOTP(){
+function requestOTP(isResend){
+if(isResend===undefined)isResend=false;
 
 const name=document.getElementById("assistantName").value.trim();
 const email=document.getElementById("assistantEmail").value.trim().toLowerCase();
@@ -270,14 +277,15 @@ return;
 assistantName=name;
 assistantEmail=email;
 
-const button=document.getElementById("continueButton");
+const button=document.getElementById(isResend?"resendButton":"continueButton");
 
 button.disabled=true;
-button.innerText="Checking...";
+const originalButtonText=isResend?"Resend OTP":"Continue";
+button.innerText=isResend?"Resending OTP...":"Checking...";
 
 showMessage(
-"loginMessage",
-"Checking assistant details...",
+isResend?"otpMessage":"loginMessage",
+isResend?"Requesting a new OTP...":"Checking assistant details...",
 "success"
 );
 
@@ -295,20 +303,21 @@ script.parentNode.removeChild(script);
 }
 
 button.disabled=false;
-button.innerText="Continue";
+button.innerText=originalButtonText;
 
-/* IMPORTANT: use data.success like Assistant */
+/* Keep the existing OTP API flow. */
 
 if(data&&data.success){
 
+if(!isResend){
 document.getElementById("loginPage").classList.add("hidden");
 document.getElementById("otpPage").classList.remove("hidden");
-
 document.getElementById("otpInput").value="";
+}
 
 showMessage(
-"otpMessage",
-data.message||"OTP has been sent to your email address.",
+isResend?"otpMessage":"otpMessage",
+data.message||(isResend?"A new OTP has been sent to your email address.":"OTP has been sent to your email address."),
 "success"
 );
 
@@ -319,7 +328,7 @@ document.getElementById("otpInput").focus();
 }else{
 
 showMessage(
-"loginMessage",
+isResend?"otpMessage":"loginMessage",
 data&&data.message?data.message:"Unable to send OTP.",
 "error"
 );
@@ -347,10 +356,10 @@ script.parentNode.removeChild(script);
 }
 
 button.disabled=false;
-button.innerText="Continue";
+button.innerText=originalButtonText;
 
 showMessage(
-"loginMessage",
+isResend?"otpMessage":"loginMessage",
 "Unable to connect to the attendance server.",
 "error"
 );
