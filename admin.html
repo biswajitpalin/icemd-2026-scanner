@@ -639,6 +639,29 @@ button:disabled,.option:disabled{background:#999!important;cursor:not-allowed}
 .hidden{display:none!important}
 @media(max-width:540px){body{padding:16px!important}.card{padding:22px;border-radius:12px}h1{font-size:24px}h2{font-size:20px}.subtitle{font-size:17px}label,.input-group label{font-size:17px}input,select,textarea{font-size:16px}button,.option{font-size:17px;min-height:52px}}
 
+
+/* Force the Admin OTP verification button to match Food Scanner green. */
+#verifyAdminOTPButton,
+#verifyAdminOTPButton.option,
+#verifyAdminOTPButton.button,
+button#verifyAdminOTPButton.success-button {
+  background-color: #198754 !important;
+  background: #198754 !important;
+  color: #ffffff !important;
+}
+#verifyAdminOTPButton:hover,
+#verifyAdminOTPButton.option:hover,
+#verifyAdminOTPButton.button:hover,
+button#verifyAdminOTPButton.success-button:hover {
+  background-color: #157347 !important;
+  background: #157347 !important;
+  color: #ffffff !important;
+}
+#verifyAdminOTPButton:disabled {
+  background-color: #999999 !important;
+  background: #999999 !important;
+}
+
 </style>
 </head>
 
