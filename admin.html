@@ -2744,6 +2744,203 @@ input.click();
 }
 
 
+
+/* =====================================================
+   VOLUNTEER EXCEL UPLOAD
+   ===================================================== */
+
+async function uploadVolunteerExcel(){
+  const input=document.createElement("input");
+  input.type="file";
+  input.accept=".xlsx,.xls";
+
+  input.onchange=async function(event){
+    const file=event.target.files[0];
+    if(!file)return;
+
+    try{
+      const arrayBuffer=await file.arrayBuffer();
+      const workbook=XLSX.read(arrayBuffer,{type:"array"});
+
+      if(!workbook.SheetNames.length){
+        alert("The Excel file does not contain any worksheet.");
+        return;
+      }
+
+      const worksheet=workbook.Sheets[workbook.SheetNames[0]];
+      const rawRows=XLSX.utils.sheet_to_json(worksheet,{defval:""});
+
+      if(!rawRows.length){
+        alert("The Excel file is empty.");
+        return;
+      }
+
+      const columns=Object.keys(rawRows[0]);
+      const hasColumn=function(target){
+        return columns.some(function(column){
+          return String(column).trim().toLowerCase()===target.toLowerCase();
+        });
+      };
+
+      const missing=["Name","Email"].filter(function(column){
+        return !hasColumn(column);
+      });
+
+      if(missing.length){
+        alert(
+          "Invalid volunteer Excel format.\n\n"+
+          "Missing column(s): "+missing.join(", ")+
+          "\n\nRequired columns:\nName\nEmail\nInstitute (optional)"
+        );
+        return;
+      }
+
+      const volunteers=rawRows.map(function(row){
+        let name="",email="",institute="";
+
+        Object.keys(row).forEach(function(key){
+          const normalized=String(key).trim().toLowerCase();
+
+          if(normalized==="name"||normalized==="full name"||
+             normalized==="volunteer name"){
+            name=String(row[key]||"").trim();
+          }
+
+          if(normalized==="email"||normalized==="email id"||
+             normalized==="e-mail"||normalized==="email address"){
+            email=String(row[key]||"").trim();
+          }
+
+          if(normalized==="institute"||normalized==="institution"||
+             normalized==="organization"||normalized==="organisation"||
+             normalized==="affiliation"){
+            institute=String(row[key]||"").trim();
+          }
+        });
+
+        return {Name:name,Email:email,Institute:institute};
+      });
+
+      const invalidRows=[];
+      volunteers.forEach(function(volunteer,index){
+        if(!volunteer.Name||!volunteer.Email){
+          invalidRows.push(index+2);
+        }
+      });
+
+      if(invalidRows.length){
+        alert(
+          "Some rows are missing Name or Email.\n\n"+
+          "Invalid Excel row(s): "+invalidRows.join(", ")
+        );
+        return;
+      }
+
+      if(!confirm(
+        "Volunteer Excel loaded successfully.\n\n"+
+        "Total records: "+volunteers.length+
+        "\n\nUpload these records to the separate VOLUNTEERS sheet?"
+      )){
+        return;
+      }
+
+      const BATCH_SIZE=40;
+      let added=0,skipped=0,errors=0;
+      const errorDetails=[];
+      const totalBatches=Math.ceil(volunteers.length/BATCH_SIZE);
+
+      showGenericUploadProgress(0,volunteers.length,"Uploading volunteers");
+
+      for(let start=0;start<volunteers.length;start+=BATCH_SIZE){
+        const batch=volunteers.slice(start,start+BATCH_SIZE);
+        const batchNumber=Math.floor(start/BATCH_SIZE)+1;
+
+        showGenericUploadProgress(
+          Math.min(start,volunteers.length),
+          volunteers.length,
+          "Uploading volunteers (batch "+batchNumber+"/"+totalBatches+")"
+        );
+
+        let result;
+
+        try{
+          result=await apiRequestPromise({
+            action:"importVolunteers",
+            rows:JSON.stringify(batch),
+            _timeoutMs:60000,
+            _cache:Date.now()+"_"+batchNumber
+          });
+        }catch(requestError){
+          result={
+            status:"error",
+            message:requestError&&requestError.message
+              ?requestError.message
+              :"Unable to upload this batch."
+          };
+        }
+
+        if(!result||result.status!=="success"){
+          errors+=batch.length;
+          errorDetails.push({
+            row:start+2,
+            reason:result&&result.message
+              ?result.message
+              :"No response received from server."
+          });
+        }else{
+          added+=Number(result.added||0);
+          skipped+=Number(result.skipped||0);
+          errors+=Number(result.errors||0);
+
+          (result.errorDetails||[]).forEach(function(item){
+            errorDetails.push({
+              row:start+Number(item.row||0)-1,
+              reason:item.reason||"Upload error."
+            });
+          });
+        }
+
+        showGenericUploadProgress(
+          Math.min(start+batch.length,volunteers.length),
+          volunteers.length,
+          "Uploading volunteers"
+        );
+      }
+
+      hideGenericUploadProgress();
+
+      let message=
+        "Volunteer upload completed.\n\n"+
+        "Total Excel records: "+volunteers.length+
+        "\nAdded: "+added+
+        "\nSkipped duplicates: "+skipped+
+        "\nErrors: "+errors;
+
+      if(errorDetails.length){
+        message+="\n\nError details:";
+        errorDetails.slice(0,10).forEach(function(item){
+          message+="\nRow "+item.row+": "+item.reason;
+        });
+
+        if(errorDetails.length>10){
+          message+="\n...and "+(errorDetails.length-10)+" more error(s).";
+        }
+      }
+
+      alert(message);
+
+    }catch(error){
+      hideGenericUploadProgress();
+      console.error("Volunteer Excel upload error:",error);
+      alert("Unable to process the volunteer Excel file.\n\n"+error.message);
+    }
+  };
+
+  input.click();
+}
+
+     
+
 /* =====================================================
    INVITED GUEST EXCEL UPLOAD
    ===================================================== */
