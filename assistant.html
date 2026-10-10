@@ -338,6 +338,11 @@ button:active, .option:active { transform: scale(.99); }
 #assistantLoginPage .subtitle { color: #667085; }
 #assistantLoginPage label { color: #263445; }
 #assistantLoginPage input { background: #fff; }
+#assistantOTPEmail {
+  background: #e8f0fe !important;
+  color: #17212f;
+  cursor: default;
+}
 #assistantLoginPage .button { background: #17365d; color: #fff; }
 #assistantLoginPage .success-button { background: #198754; color: #fff; }
 #assistantLoginPage .secondary { background: #666; color: #fff; }
@@ -494,6 +499,17 @@ Send OTP
 <div
 id="assistantOTP"
 class="hidden"
+>
+
+<label for="assistantOTPEmail">
+Registered Volunteer Email
+</label>
+
+<input
+type="email"
+id="assistantOTPEmail"
+readonly
+aria-readonly="true"
 >
 
 <label for="assistantOTPInput">
@@ -849,6 +865,14 @@ document
 "hidden"
 );
 
+
+/* Show the same email entered on the previous page */
+
+document
+.getElementById(
+"assistantOTPEmail"
+)
+.value=email;
 
 /* Show OTP */
 
