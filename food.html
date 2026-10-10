@@ -286,28 +286,6 @@ autocomplete="on"
 >
 
 
-<label for="scannerName">
-Counter
-</label>
-
-
-<!-- The selected counter must use its authorized email configured in SETTINGS. -->
-
-<select
-id="scannerName"
-name="username"
-autocomplete="username"
-required
->
-<option value="" selected disabled>Select Counter</option>
-<option value="Food Counter 1">Food Counter 1</option>
-<option value="Food Counter 2">Food Counter 2</option>
-<option value="Food Counter 3">Food Counter 3</option>
-<option value="Food Counter 4">Food Counter 4</option>
-<option value="Food Counter 5">Food Counter 5</option>
-</select>
-
-
 <label for="scannerEmail">
 Authorized Email
 </label>
@@ -316,7 +294,7 @@ Authorized Email
 type="email"
 id="scannerEmail"
 name="email"
-placeholder="Enter the email assigned to this counter"
+placeholder="Enter your authorized email address"
 autocomplete="username"
 required
 >
@@ -702,102 +680,34 @@ function foodLogin(event) {
   if (event) event.preventDefault();
   requestFoodLoginOTP(false);
 }
-
 function requestFoodLoginOTP(isResend) {
-  const scannerName = document.getElementById("scannerName").value.trim();
-  const email = document.getElementById("scannerEmail").value.trim().toLowerCase();
-  const sendButton = document.getElementById("loginButton");
-  const verifyButton = document.getElementById("verifyOTPButton");
-  const resendButton = document.getElementById("resendOTPButton");
-
-  if (!scannerName || !email) {
-    showLoginMessage("Please select a counter and enter its authorized email address.", "error");
-    return;
-  }
-
-  sendButton.disabled = true;
-  sendButton.innerText = isResend ? "Resending OTP..." : "Sending OTP...";
-  resendButton.disabled = true;
-  showLoginMessage("Requesting a login OTP...", "success");
-
-  apiRequest({
-    action: "requestFoodOTP",
-    name: scannerName,
-    email: email,
-    _cache: Date.now()
-  }, function(result) {
-    sendButton.disabled = false;
-    sendButton.innerText = "Send OTP";
-    resendButton.disabled = false;
-
-    if (result && result.status === "success") {
-      document.getElementById("otpSection").classList.remove("hidden");
-      verifyButton.classList.remove("hidden");
-      resendButton.classList.remove("hidden");
-      document.getElementById("scannerOTP").focus();
-      showLoginMessage(result.message || "OTP sent. Check the authorized email inbox.", "success");
-    } else {
-      showLoginMessage(result && result.message ? result.message : "Unable to send OTP.", "error");
-    }
+  const email=document.getElementById("scannerEmail").value.trim().toLowerCase();
+  const sendButton=document.getElementById("loginButton"), verifyButton=document.getElementById("verifyOTPButton"), resendButton=document.getElementById("resendOTPButton");
+  if(!email){showLoginMessage("Enter your authorized email address.","error");return;}
+  sendButton.disabled=true;sendButton.innerText=isResend?"Resending OTP...":"Sending OTP...";resendButton.disabled=true;
+  showLoginMessage("Requesting a login OTP...","success");
+  apiRequest({action:"requestFoodOTP",email:email,_cache:Date.now()},function(result){
+   sendButton.disabled=false;sendButton.innerText="Send OTP";resendButton.disabled=false;
+   if(result&&result.status==="success") {document.getElementById("otpSection").classList.remove("hidden");verifyButton.classList.remove("hidden");resendButton.classList.remove("hidden");document.getElementById("scannerOTP").focus();showLoginMessage(result.message||"OTP sent. Check your email inbox.","success");}
+   else showLoginMessage(result&&result.message?result.message:"Unable to send OTP.","error");
   });
 }
-
 function verifyFoodLoginOTP() {
-  const scannerName = document.getElementById("scannerName").value.trim();
-  const email = document.getElementById("scannerEmail").value.trim().toLowerCase();
-  const otp = document.getElementById("scannerOTP").value.trim();
-  const verifyButton = document.getElementById("verifyOTPButton");
-
-  if (!scannerName || !email || !otp) {
-    showLoginMessage("Select the counter, enter its authorized email, and enter the OTP.", "error");
-    return;
-  }
-
-  if (!/^[0-9]{6}$/.test(otp)) {
-    showLoginMessage("Enter the six-digit OTP sent to your email.", "error");
-    return;
-  }
-
-  verifyButton.disabled = true;
-  verifyButton.innerText = "Verifying...";
-  showLoginMessage("Verifying food counter OTP...", "success");
-
-  apiRequest({
-    action: "verifyFoodOTP",
-    name: scannerName,
-    email: email,
-    otp: otp,
-    _cache: Date.now()
-  }, function(result) {
-    verifyButton.disabled = false;
-    verifyButton.innerText = "Verify OTP & Login";
-
-    if (result && result.status === "success") {
-      currentScannerName = result.scanner || scannerName;
-      saveFoodSession(currentScannerName);
-
-      document.getElementById("foodWelcome").innerText = "Welcome, " + currentScannerName;
-      document.getElementById("foodLoginPage").classList.add("hidden");
-      document.getElementById("foodScannerPage").classList.remove("hidden");
-      setAppView();
-      document.getElementById("scanResult").style.display = "none";
-      document.getElementById("scanResult").innerHTML = "";
-      processingScan = false;
-      scannerRunning = false;
-      scanner = null;
-      loadFoodService();
-
-      setTimeout(function() {
-        if (!getSavedFoodSession()) logoutFoodScanner();
-      }, FOOD_SESSION_DURATION);
-    } else {
-      showLoginMessage(result && result.message ? result.message : "OTP verification failed.", "error");
-    }
-  });
-}/* =====================================================
-   LOAD ADMIN FOOD SERVICE
-===================================================== */
-
+ const email=document.getElementById("scannerEmail").value.trim().toLowerCase(), otp=document.getElementById("scannerOTP").value.trim(), verifyButton=document.getElementById("verifyOTPButton");
+ if(!email||!otp){showLoginMessage("Enter your authorized email and the OTP.","error");return;}
+ if(!/^[0-9]{6}$/.test(otp)){showLoginMessage("Enter the six-digit OTP sent to your email.","error");return;}
+ verifyButton.disabled=true;verifyButton.innerText="Verifying...";showLoginMessage("Verifying food scanner OTP...","success");
+ apiRequest({action:"verifyFoodOTP",email:email,otp:otp,_cache:Date.now()},function(result){
+  verifyButton.disabled=false;verifyButton.innerText="Verify OTP & Login";
+  if(result&&result.status==="success") {
+   currentScannerName=result.scanner||email;saveFoodSession(currentScannerName);
+   document.getElementById("foodWelcome").innerText="Authorized Food Scanner: "+email;
+   document.getElementById("foodLoginPage").classList.add("hidden");document.getElementById("foodScannerPage").classList.remove("hidden");setAppView();
+   document.getElementById("scanResult").style.display="none";document.getElementById("scanResult").innerHTML="";processingScan=false;scannerRunning=false;scanner=null;loadFoodService();
+   setTimeout(function(){if(!getSavedFoodSession())logoutFoodScanner();},FOOD_SESSION_DURATION);
+  } else showLoginMessage(result&&result.message?result.message:"OTP verification failed.","error");
+ });
+}
 function loadFoodService(){
 
 const serviceText=
@@ -1456,9 +1366,7 @@ currentScannerName="";
 localStorage.removeItem(FOOD_SESSION_KEY);
 
 
-document.getElementById(
-"scannerName"
-).value="";
+
 
 
 /* Clear email and OTP fields on logout. */
