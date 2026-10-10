@@ -687,6 +687,25 @@ button#resendAdminOTPButton:disabled {
   opacity: .75;
 }
 
+
+/* Restore the original Generate QR Codes panel controls only.
+   The newer site-wide button sizing must not affect this dynamically-built panel. */
+#qrGenerationPanel button {
+  min-height: 0 !important;
+}
+#qrGenerationPanel .qr-email-button {
+  margin-top: 8px !important;
+  padding: 9px !important;
+  border-radius: 7px !important;
+  font-size: 13px !important;
+}
+#qrGenerationPanel .qr-force-email-button {
+  margin-top: 8px !important;
+  padding: 9px !important;
+  border-radius: 7px !important;
+  font-size: 13px !important;
+}
+
 </style>
 </head>
 
