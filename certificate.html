@@ -54,6 +54,62 @@ button:disabled{background:#999!important;cursor:not-allowed}
 .scan-result p{margin:8px 0;font-size:14px;line-height:1.5;word-break:break-word}
 .hidden{display:none!important}
 </style>
+
+<style>
+
+/* =========================================================
+   ICEMD-2026 COLORFUL LOGIN THEME
+   Consistent with the Food Service Scanner login design
+========================================================= */
+body.login-view,
+body:not(.app-view) {
+  background: #f5f5f5;
+  color: #17212f;
+}
+.card {
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 5px 20px rgba(20, 39, 63, 0.10);
+}
+h1 { color: #17365d; }
+h2 { color: #17365d; }
+input, select {
+  border: 1px solid #c9d3df;
+  border-radius: 9px;
+  min-height: 48px;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+input:focus, select:focus {
+  outline: none;
+  border-color: #17365d;
+  box-shadow: 0 0 0 3px rgba(23, 54, 93, .10);
+}
+button, .option {
+  border-radius: 9px;
+  transition: background .15s ease, transform .1s ease;
+}
+button:active, .option:active { transform: scale(.99); }
+.message.success, .success {
+  background: #d9f2df;
+  color: #126334;
+  border: 1px solid #b8e2c2;
+}
+.message.error, .error {
+  background: #ffebee;
+  color: #a61b29;
+  border: 1px solid #f4c3c8;
+}
+
+
+#loginPage, #otpPage { border-radius: 14px; padding: 26px; }
+#loginPage h1, #loginPage h2, #otpPage h1, #otpPage h2 { color: #17365d; }
+#loginPage .subtitle, #otpPage .subtitle { color: #667085; }
+#loginPage label, #otpPage label { color: #263445; }
+#loginPage input, #otpPage input { background: #fff; }
+#loginPage .button, #otpPage .button { background: #17365d; color: #fff; }
+#loginPage .secondary, #otpPage .secondary { background: #666; color: #fff; }
+
+</style>
 </head>
 
 <body>
