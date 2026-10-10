@@ -4415,27 +4415,74 @@ messageBox.textContent=
    GENERATE QR CODES
    ===================================================== */
 
+
 async function generateQRCodes(){
   try{
     const results=await Promise.all([
       apiRequestPromise({action:"guests",_cache:Date.now()}),
-      apiRequestPromise({action:"getInvitedGuests",_cache:Date.now()})
+      apiRequestPromise({action:"getInvitedGuests",_cache:Date.now()}),
+      apiRequestPromise({action:"getVolunteers",_cache:Date.now()})
     ]);
+
     if(!results[0]||results[0].status!=="success"){
-      alert(results[0]&&results[0].message?results[0].message:"Unable to load participants.");return;
+      alert(results[0]&&results[0].message?results[0].message:"Unable to load participants.");
+      return;
     }
+
     if(!results[1]||results[1].status!=="success"){
-      alert(results[1]&&results[1].message?results[1].message:"Unable to load invited guests.");return;
+      alert(results[1]&&results[1].message?results[1].message:"Unable to load invited guests.");
+      return;
     }
-    const participants=(Array.isArray(results[0].data)?results[0].data:[]).map(function(g){return{
-      guestType:"GUEST",id:String(g["Registration ID"]||"").trim(),name:String(g["Name"]||"").trim(),email:String(g["Email"]||"").trim(),institute:String(g["Institute"]||"").trim(),storedQR:String(g["QR Code"]||"").trim()
-    };});
-    const invited=(Array.isArray(results[1].data)?results[1].data:[]).map(function(g){return{
-      guestType:"INVITED",id:String(g["ID"]||g["Registration ID"]||"").trim(),name:String(g["Name"]||"").trim(),email:String(g["Email"]||"").trim(),institute:String(g["Institute"]||"").trim(),storedQR:String(g["QR Code"]||"").trim()
-    };});
-    if(!participants.length&&!invited.length){alert("No participant or invited guest records are available. Please upload the Excel files first.");return;}
-    showQRGenerationPanel(participants,invited);
-  }catch(error){console.error("QR generation error:",error);alert("Unable to load QR records.\n\n"+(error.message||String(error)));}
+
+    if(!results[2]||results[2].status!=="success"){
+      alert(results[2]&&results[2].message?results[2].message:"Unable to load volunteers.");
+      return;
+    }
+
+    const participants=(Array.isArray(results[0].data)?results[0].data:[]).map(function(g){
+      return {
+        guestType:"GUEST",
+        id:String(g["Registration ID"]||"").trim(),
+        name:String(g["Name"]||"").trim(),
+        email:String(g["Email"]||"").trim(),
+        institute:String(g["Institute"]||"").trim(),
+        storedQR:String(g["QR Code"]||"").trim()
+      };
+    });
+
+    const invited=(Array.isArray(results[1].data)?results[1].data:[]).map(function(g){
+      return {
+        guestType:"INVITED",
+        id:String(g["ID"]||g["Registration ID"]||"").trim(),
+        name:String(g["Name"]||"").trim(),
+        email:String(g["Email"]||"").trim(),
+        institute:String(g["Institute"]||"").trim(),
+        storedQR:String(g["QR Code"]||"").trim()
+      };
+    });
+
+    const volunteers=(Array.isArray(results[2].data)?results[2].data:[]).map(function(g){
+      return {
+        guestType:"VOLUNTEER",
+        id:String(g["Registration ID"]||"").trim(),
+        name:String(g["Name"]||"").trim(),
+        email:String(g["Email"]||"").trim(),
+        institute:String(g["Institute"]||"").trim(),
+        storedQR:String(g["QR Code"]||"").trim()
+      };
+    });
+
+    if(!participants.length&&!invited.length&&!volunteers.length){
+      alert("No participant, invited guest, or volunteer records are available. Please upload the Excel files first.");
+      return;
+    }
+
+    showQRGenerationPanel(participants,invited,volunteers);
+
+  }catch(error){
+    console.error("QR generation error:",error);
+    alert("Unable to load QR records.\n\n"+(error.message||String(error)));
+  }
 }
 
 function showQRGenerationPanel(participants,invitedGuests){
