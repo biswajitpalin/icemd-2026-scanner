@@ -693,7 +693,7 @@ button#verifyAdminOTPButton.success-button:hover {
 <input type="text" id="adminOTP" placeholder="Enter OTP" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code">
 </div>
 
-
+<button id="requestAdminOTPButton" type="button" class="option" onclick="requestAdminOTP()">Send OTP</button>
 <button id="verifyAdminOTPButton" type="submit" class="option success-button hidden">Verify OTP &amp; Login</button>
 <button id="resendAdminOTPButton" type="button" class="option secondary hidden" onclick="requestAdminOTP()">Resend OTP</button>
 
