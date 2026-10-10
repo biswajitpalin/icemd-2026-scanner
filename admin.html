@@ -973,13 +973,13 @@ Back
 <div class="section-title">Participant Updates</div>
 
 <div class="section-subtitle">
-Send an individual update email to every registered participant
+Send updates to registered participants in private BCC batches
 </div>
 
 <div class="update-note">
-The email is sent separately to every participant.
-No CC or BCC is used.
-The participant's name is automatically added to the greeting.
+Participants receive a shared update in BCC batches of up to 50 total recipients (49 BCC recipients plus the admin address).
+Recipient email addresses are hidden from one another.
+Only registered participants are included.
 </div>
 
 <div class="input-group">
@@ -1034,13 +1034,13 @@ Back
 <div class="section-title">Invited Guest Updates</div>
 
 <div class="section-subtitle">
-Send an individual update email to every invited guest
+Send updates to invited guests in private BCC batches
 </div>
 
 <div class="update-note">
-The email is sent separately to every invited guest.
-No CC or BCC is used.
-The guest's name is automatically added to the greeting.
+Invited guests receive a shared update in BCC batches of up to 50 total recipients (49 BCC recipients plus the admin address).
+Recipient email addresses are hidden from one another.
+Participants and volunteers are not included.
 </div>
 
 <div class="input-group">
@@ -1097,13 +1097,13 @@ Back
 <div class="section-title">Volunteer Updates</div>
 
 <div class="section-subtitle">
-Send an individual update email to every volunteer
+Send updates to volunteers in private BCC batches
 </div>
 
 <div class="update-note">
-The email is sent separately to every volunteer.
-No CC or BCC is used.
-The volunteer's name is automatically added to the greeting.
+Volunteers receive a shared update in BCC batches of up to 50 total recipients (49 BCC recipients plus the admin address).
+Recipient email addresses are hidden from one another.
+Participants and invited guests are not included.
 </div>
 
 <div class="input-group">
@@ -4587,7 +4587,7 @@ document.getElementById(
 "participantUpdateCount"
 ).textContent=
 guests.length+
-" participant(s) will receive this update.";
+" participant(s) will receive this update in BCC batches.";
 
 }
 
@@ -4638,7 +4638,7 @@ return;
 }
 
 if(!confirm(
-"Send this update individually to all registered participants?"
+"Send this update to registered participants using private BCC batches of up to 50 total recipients (49 BCC recipients plus the admin address)?"
 )){
 
 return;
@@ -4649,7 +4649,7 @@ messageBox.className=
 "message info";
 
 messageBox.textContent=
-"Sending participant update emails...";
+"Sending participant update BCC batches...";
 
 apiRequest({
 
@@ -4687,10 +4687,12 @@ result.failed
 );
 
 messageBox.textContent=
-"Participant update completed. Sent: "+
+"Participant update completed. Recipients sent: "+
 (result.sent||0)+
-" | Failed: "+
-(result.failed||0);
+" | Failed recipients: "+
+(result.failed||0)+
+" | BCC emails sent: "+(result.batchesSent||0)+
+(result.duplicatesSkipped?" | Duplicate addresses skipped: "+result.duplicatesSkipped:"");
 
 });
 
@@ -4780,7 +4782,7 @@ document.getElementById(
 "invitedUpdateCount"
 ).textContent=
 guests.length+
-" invited guest(s) will receive this update.";
+" invited guest(s) will receive this update in BCC batches.";
 
 }
 
@@ -4831,7 +4833,7 @@ return;
 }
 
 if(!confirm(
-"Send this update individually to all invited guests?"
+"Send this update to invited guests using private BCC batches of up to 50 total recipients (49 BCC recipients plus the admin address)?"
 )){
 
 return;
@@ -4842,7 +4844,7 @@ messageBox.className=
 "message info";
 
 messageBox.textContent=
-"Sending invited guest update emails...";
+"Sending invited guest update BCC batches...";
 
 apiRequest({
 
@@ -4880,10 +4882,12 @@ result.failed
 );
 
 messageBox.textContent=
-"Invited guest update completed. Sent: "+
+"Invited guest update completed. Recipients sent: "+
 (result.sent||0)+
-" | Failed: "+
-(result.failed||0);
+" | Failed recipients: "+
+(result.failed||0)+
+" | BCC emails sent: "+(result.batchesSent||0)+
+(result.duplicatesSkipped?" | Duplicate addresses skipped: "+result.duplicatesSkipped:"");
 
 });
 
@@ -4916,13 +4920,13 @@ function sendVolunteerUpdateEmail() {
   }
 
   if (!confirm(
-    "Send this update individually to all volunteers?"
+    "Send this update to volunteers using private BCC batches of up to 50 total recipients (49 BCC recipients plus the admin address)?"
   )) {
     return;
   }
 
   messageBox.className = "message info";
-  messageBox.textContent = "Sending volunteer update emails...";
+  messageBox.textContent = "Sending volunteer update BCC batches...";
 
   apiRequest({
     action: "sendVolunteerUpdate",
@@ -4943,10 +4947,12 @@ function sendVolunteerUpdateEmail() {
       "message " + (result.failed ? "error" : "success");
 
     messageBox.textContent =
-      "Volunteer update completed. Sent: " +
+      "Volunteer update completed. Recipients sent: " +
       (result.sent || 0) +
-      " | Failed: " +
-      (result.failed || 0);
+      " | Failed recipients: " +
+      (result.failed || 0) +
+      " | BCC emails sent: " + (result.batchesSent || 0) +
+      (result.duplicatesSkipped ? " | Duplicate addresses skipped: " + result.duplicatesSkipped : "");
   });
 }
 
