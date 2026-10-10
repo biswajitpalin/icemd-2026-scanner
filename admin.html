@@ -888,6 +888,79 @@ Back
 </div>
 
 
+     
+<!-- =====================================================
+     VOLUNTEER QR EMAILS
+     ===================================================== -->
+
+<div id="volunteerQRMailSection" class="hidden">
+
+<h1>ICEMD-2026</h1>
+<h2>IIT Jodhpur, India</h2>
+
+<div class="section-title">Volunteer QR Emails</div>
+
+<div class="section-subtitle">
+Send each volunteer their own stored QR code
+</div>
+
+<div class="update-note">
+Each volunteer receives an individual email.
+Already sent QR emails are skipped.
+Failed emails remain retryable.
+</div>
+
+<div class="summary">
+
+<div class="summary-box">
+<div id="volunteerQRTotal" class="summary-number">0</div>
+<div class="summary-label">Volunteers</div>
+</div>
+
+<div class="summary-box">
+<div id="volunteerQRSent" class="summary-number">0</div>
+<div class="summary-label">Sent</div>
+</div>
+
+<div class="summary-box">
+<div id="volunteerQRUnsent" class="summary-number">0</div>
+<div class="summary-label">Unsent</div>
+</div>
+
+</div>
+
+<button
+type="button"
+class="option"
+onclick="sendAllVolunteerQREmails()">
+Send All Unsent QR Emails
+</button>
+
+<button
+type="button"
+class="option"
+style="background:#8b0000"
+onclick="forceSendAllVolunteerQREmails()">
+Force Send ALL QR Emails
+</button>
+
+<div id="volunteerQRMailMessage" class="message"></div>
+
+<div id="volunteerQRMailList" class="loading">
+Loading volunteer QR status...
+</div>
+
+<button
+type="button"
+class="option back-button"
+onclick="closeVolunteerQRMail()">
+Back
+</button>
+
+</div>
+
+
+     
 <!-- =====================================================
      PARTICIPANT UPDATES
      ===================================================== -->
@@ -1569,7 +1642,13 @@ async function sendBulkQRCardEmails(guestType, force){
   let sent=0,alreadySent=0,failed=0;const failures=[];
   for(let i=0;i<rows.length;i++){
     const row=rows[i]||{};
-    const id=String(type==="GUEST"?(row["Registration ID"]||""):(row["ID"]||row["Registration ID"]||"")).trim();
+    
+     const id=String(
+       type==="GUEST"||type==="VOLUNTEER"
+         ?(row["Registration ID"]||"")
+         :(row["ID"]||row["Registration ID"]||"")
+     ).trim();
+
     const name=String(row["Name"]||"").trim();
     const email=String(row["Email"]||"").trim();
     const institute=String(row["Institute"]||"").trim();
@@ -1588,7 +1667,15 @@ async function sendBulkQRCardEmails(guestType, force){
   message.className="message "+(failed?"error":"success");
   message.textContent=(force?"Force-send":"QR email")+" process completed. Sent: "+sent+" | Already sent: "+alreadySent+" | Failed: "+failed+(failures.length?" | First failure: "+failures[0].id+" — "+failures[0].message:"");
   if(failures.length)console.warn("QR card email failures:",failures);
-  if(type==="GUEST")loadGuestQRMail();else loadInvitedQRMail();
+  
+     if(type==="GUEST"){
+       loadGuestQRMail();
+     }else if(type==="INVITED"){
+       loadInvitedQRMail();
+     }else if(type==="VOLUNTEER"){
+       loadVolunteerQRMail();
+     }
+
 }
 
 
@@ -3826,6 +3913,13 @@ loadInvitedQRMail();
 }
 
 
+
+function openVolunteerQREmails(){
+  openVolunteerQRMail();
+}
+
+
+
 function closeInvitedQRMail(){
 
 document.getElementById(
@@ -3839,6 +3933,41 @@ document.getElementById(
 }
 
 
+
+function openVolunteerQRMail(){
+  hideAllAdminSections();
+
+  document.getElementById(
+    "volunteerQRMailSection"
+  ).classList.remove("hidden");
+
+  loadVolunteerQRMail();
+}
+
+function closeVolunteerQRMail(){
+  document.getElementById(
+    "volunteerQRMailSection"
+  ).classList.add("hidden");
+
+  document.getElementById(
+    "dashboardSection"
+  ).classList.remove("hidden");
+}
+
+function sendAllVolunteerQREmails(){
+  sendBulkQRCardEmails("VOLUNTEER",false);
+}
+
+function forceSendAllVolunteerQREmails(){
+  if(!confirm(
+    "Force send QR emails to ALL volunteers with stored QR codes, including those already marked SENT? This may send duplicate emails."
+  ))return;
+
+  sendBulkQRCardEmails("VOLUNTEER",true);
+}
+
+
+     
 function loadInvitedQRMail(){
 
 const list=
@@ -4122,6 +4251,199 @@ forceButton.onclick=async function(){
 
 }
 
+
+
+
+function loadVolunteerQRMail(){
+  const list=document.getElementById("volunteerQRMailList");
+
+  list.className="loading";
+  list.textContent="Loading volunteer QR status...";
+
+  apiRequest({
+    action:"getVolunteers",
+    _cache:Date.now()
+  },function(result){
+
+    if(!result||result.status!=="success"){
+      list.className="message error";
+      list.textContent=result&&result.message
+        ?result.message
+        :"Unable to load volunteers.";
+      return;
+    }
+
+    const volunteers=Array.isArray(result.data)?result.data:[];
+    const total=document.getElementById("volunteerQRTotal");
+    const sentCount=document.getElementById("volunteerQRSent");
+    const unsentCount=document.getElementById("volunteerQRUnsent");
+
+    total.textContent=volunteers.length;
+    sentCount.textContent="0";
+    unsentCount.textContent=volunteers.length;
+    list.innerHTML="";
+
+    if(!volunteers.length){
+      list.className="empty";
+      list.textContent="No volunteers found.";
+      return;
+    }
+
+    list.className="invited-list";
+
+    let sent=0;
+    let checked=0;
+
+    volunteers.forEach(function(volunteer){
+      const id=String(volunteer["Registration ID"]||"").trim();
+      const name=String(volunteer["Name"]||"").trim();
+      const email=String(volunteer["Email"]||"").trim();
+      const institute=String(volunteer["Institute"]||"").trim();
+      const storedQR=String(volunteer["QR Code"]||"").trim();
+
+      const item=document.createElement("div");
+      item.className="invited-item";
+
+      item.innerHTML=
+        '<div class="invited-name">'+escapeHTML(id+" — "+name)+'</div>'+
+        '<div class="invited-meta">'+escapeHTML(email)+'</div>'+
+        '<div class="invited-meta">'+escapeHTML(institute)+'</div>';
+
+      const qrStatus=document.createElement("div");
+      qrStatus.className="email-status "+(storedQR?"email-sent":"email-failed");
+      qrStatus.textContent=storedQR?"✓ QR stored":"✗ QR not stored";
+
+      const emailStatus=document.createElement("div");
+      emailStatus.className="email-status email-unsent";
+      emailStatus.textContent="Checking...";
+
+      const button=document.createElement("button");
+      button.type="button";
+      button.className="qr-email-button";
+      button.textContent=storedQR?"Send QR Email":"QR not stored";
+      button.disabled=!storedQR;
+
+      const forceButton=document.createElement("button");
+      forceButton.type="button";
+      forceButton.className="qr-force-email-button";
+      forceButton.textContent="Force Send QR Email";
+      forceButton.style.display="none";
+      forceButton.disabled=!storedQR;
+
+      item.appendChild(qrStatus);
+      item.appendChild(emailStatus);
+      item.appendChild(button);
+      item.appendChild(forceButton);
+      list.appendChild(item);
+
+      function refreshCounts(){
+        sentCount.textContent=sent;
+        unsentCount.textContent=Math.max(volunteers.length-sent,0);
+      }
+
+      if(storedQR){
+        apiRequest({
+          action:"getQREmailStatus",
+          id:id,
+          guestType:"VOLUNTEER",
+          _cache:Date.now()
+        },function(statusResult){
+
+          if(statusResult&&statusResult.status==="success"&&
+             String(statusResult.statusText||"").toUpperCase()==="SENT"){
+            sent++;
+            emailStatus.className="email-status email-sent";
+            emailStatus.textContent="✓ QR email SENT";
+            button.textContent="✓ SENT";
+            button.style.background="#2e7d32";
+            button.disabled=true;
+            forceButton.style.display="block";
+          }else if(statusResult&&statusResult.status==="success"&&
+                   String(statusResult.statusText||"").toUpperCase()==="FAILED"){
+            emailStatus.className="email-status email-failed";
+            emailStatus.textContent="✗ Previous send FAILED — retry available";
+          }else{
+            emailStatus.className="email-status email-unsent";
+            emailStatus.textContent="QR email UNSENT";
+          }
+
+          checked++;
+          refreshCounts();
+
+          if(checked===volunteers.length){
+            unsentCount.textContent=Math.max(volunteers.length-sent,0);
+          }
+        });
+      }else{
+        checked++;
+        refreshCounts();
+      }
+
+      button.onclick=async function(){
+        button.disabled=true;
+        button.textContent="Preparing card...";
+
+        try{
+          await sendQRCardEmail({
+            guestType:"VOLUNTEER",
+            id:id,
+            name:name,
+            email:email,
+            institute:institute,
+            storedQR:storedQR
+          },false);
+
+          button.textContent="✓ SENT";
+          button.style.background="#2e7d32";
+          button.disabled=true;
+          forceButton.style.display="block";
+          emailStatus.className="email-status email-sent";
+          emailStatus.textContent="✓ QR card email SENT";
+          loadVolunteerQRMail();
+
+        }catch(sendError){
+          button.disabled=false;
+          button.textContent="Send QR Email";
+          emailStatus.className="email-status email-failed";
+          emailStatus.textContent=sendError.message||"QR email failed. Retry available.";
+        }
+      };
+
+      forceButton.onclick=async function(){
+        if(!confirm("Resend the QR email to "+name+" ("+id+") even though it may already have been sent?"))return;
+
+        forceButton.disabled=true;
+        forceButton.textContent="Preparing card...";
+
+        try{
+          await sendQRCardEmail({
+            guestType:"VOLUNTEER",
+            id:id,
+            name:name,
+            email:email,
+            institute:institute,
+            storedQR:storedQR
+          },true);
+
+          emailStatus.className="email-status email-sent";
+          emailStatus.textContent="✓ QR card email SENT (force resent)";
+          button.textContent="✓ SENT";
+          button.style.background="#2e7d32";
+          button.disabled=true;
+
+        }catch(forceError){
+          emailStatus.className="email-status email-failed";
+          emailStatus.textContent=forceError.message||"Forced resend failed.";
+        }finally{
+          forceButton.disabled=false;
+          forceButton.textContent="Force Send QR Email";
+        }
+      };
+    });
+  });
+}
+
+     
 
 function forceSendAllInvitedQREmails(){
   if(!confirm("Force send QR emails to ALL invited guests with stored QR codes, including those already marked SENT? This may send duplicate emails."))return;
