@@ -250,6 +250,19 @@ word-break:break-word
 display:none!important
 }
 
+#resendOTPButton {
+  background: #17365d !important;
+  color: #ffffff !important;
+}
+#resendOTPButton:hover {
+  background: #214a78 !important;
+}
+#resendOTPButton:disabled {
+  background: #17365d !important;
+  color: #ffffff !important;
+  opacity: .75;
+}
+
 </style>
 
 </head>
@@ -333,7 +346,7 @@ Verify OTP &amp; Login
 <button
 id="resendOTPButton"
 type="button"
-class="button secondary hidden"
+class="button hidden"
 onclick="requestFoodLoginOTP(true)"
 >
 Resend OTP
@@ -688,7 +701,7 @@ function requestFoodLoginOTP(isResend) {
   showLoginMessage("Requesting a login OTP...","success");
   apiRequest({action:"requestFoodOTP",email:email,_cache:Date.now()},function(result){
    sendButton.disabled=false;sendButton.innerText="Send OTP";resendButton.disabled=false;
-   if(result&&result.status==="success") {document.getElementById("otpSection").classList.remove("hidden");verifyButton.classList.remove("hidden");resendButton.classList.remove("hidden");document.getElementById("scannerOTP").focus();showLoginMessage(result.message||"OTP sent. Check your email inbox.","success");}
+   if(result&&result.status==="success") {sendButton.classList.add("hidden");document.getElementById("otpSection").classList.remove("hidden");verifyButton.classList.remove("hidden");resendButton.classList.remove("hidden");document.getElementById("scannerOTP").focus();showLoginMessage(result.message||"OTP sent. Check your email inbox.","success");}
    else showLoginMessage(result&&result.message?result.message:"Unable to send OTP.","error");
   });
 }
@@ -1377,6 +1390,7 @@ document.getElementById("otpSection").classList.add("hidden");
 document.getElementById("verifyOTPButton").classList.add("hidden");
 document.getElementById("resendOTPButton").classList.add("hidden");
 document.getElementById("loginButton").innerText = "Send OTP";
+document.getElementById("loginButton").classList.remove("hidden");
 
 
 document.getElementById(
