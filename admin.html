@@ -899,7 +899,7 @@ Loading users...
 
 <div style="border-top:1px solid #ddd;padding-top:18px;margin-top:20px">
   <div style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:5px">Food Scanner Email Access</div>
-  <div style="color:#666;font-size:13px;margin-bottom:12px">Add or remove any number of email addresses allowed to log in to the Food Scanner. No counter names or fixed limit.</div>
+  <div style="color:#666;font-size:13px;margin-bottom:12px">Add, deactivate, reactivate, or permanently delete email access for the Food Scanner.</div>
   <form id="addFoodEmailForm" onsubmit="addFoodScannerEmail(event)">
     <div class="input-group"><label for="newFoodEmail">Authorized email address</label><input type="email" id="newFoodEmail" placeholder="Enter food scanner email" required></div>
     <button type="submit" class="option">Add Food Scanner Email</button>
@@ -2312,25 +2312,16 @@ function loadFoodScannerEmails(){
   list.className="user-list";
   emails.forEach(function(entry){
    const email=String(entry.email||"").trim().toLowerCase(); if(!email)return;
-   const active=entry.active!==false && String(entry.status||"ACTIVE").toUpperCase()!=="INACTIVE";
    const item=document.createElement("div"); item.className="user-item";
    const label=document.createElement("div"); label.className="user-email"; label.style.fontSize="15px"; label.style.color="#17365d"; label.textContent=email;
+   const active=entry.active!==false && String(entry.status||"ACTIVE").toUpperCase()!=="INACTIVE";
    const status=document.createElement("div"); status.className="user-status "+(active?"status-active":"status-inactive"); status.textContent=active?"Active":"Inactive";
    const actions=document.createElement("div"); actions.className="user-actions";
    const toggle=document.createElement("button"); toggle.type="button"; toggle.className="small-button"; toggle.textContent=active?"Deactivate":"Activate";
-   toggle.onclick=function(){
-    const action=active?"deactivateFoodEmail":"activateFoodEmail";
-    const verb=active?"Deactivate":"Activate";
-    if(!confirm(verb+" Food Scanner access for "+email+"?"))return;
-    toggle.disabled=true;remove.disabled=true;
-    apiRequest({action:action,email:email,_cache:Date.now()},function(r){
-      if(r&&r.status==="success"){showFoodEmailMessage("Food Scanner email "+(active?"deactivated.":"activated."),"success");loadFoodScannerEmails();}
-      else{toggle.disabled=false;remove.disabled=false;showFoodEmailMessage(r&&r.message?r.message:"Unable to update email status.","error");}
-    });
-   };
-   const remove=document.createElement("button"); remove.type="button"; remove.className="small-button delete"; remove.textContent="Delete";
-   remove.onclick=function(){if(!confirm("Permanently delete "+email+" from Food Scanner access?"))return;toggle.disabled=true;remove.disabled=true;apiRequest({action:"deleteFoodEmail",email:email,_cache:Date.now()},function(r){if(r&&r.status==="success"){showFoodEmailMessage("Food Scanner email deleted.","success");loadFoodScannerEmails();}else{toggle.disabled=false;remove.disabled=false;showFoodEmailMessage(r&&r.message?r.message:"Unable to delete email.","error");}});};
-   actions.appendChild(toggle);actions.appendChild(remove);item.appendChild(label);item.appendChild(status);item.appendChild(actions);list.appendChild(item);
+   const del=document.createElement("button"); del.type="button"; del.className="small-button delete"; del.textContent="Delete";
+   toggle.onclick=function(){const next=active?"INACTIVE":"ACTIVE";if(!confirm((active?"Deactivate":"Activate")+" Food Scanner access for "+email+"?"))return;toggle.disabled=true;del.disabled=true;apiRequest({action:"setFoodEmailStatus",email:email,status:next,_cache:Date.now()},function(r){toggle.disabled=false;del.disabled=false;if(r&&r.status==="success"){showFoodEmailMessage("Food Scanner access "+(next==="ACTIVE"?"activated.":"deactivated."),"success");loadFoodScannerEmails();}else showFoodEmailMessage(r&&r.message?r.message:"Unable to update email status.","error");});};
+   del.onclick=function(){if(!confirm("Permanently delete "+email+" from Food Scanner access?"))return;toggle.disabled=true;del.disabled=true;apiRequest({action:"deleteFoodEmail",email:email,_cache:Date.now()},function(r){if(r&&r.status==="success"){showFoodEmailMessage("Email deleted.","success");loadFoodScannerEmails();}else{toggle.disabled=false;del.disabled=false;showFoodEmailMessage(r&&r.message?r.message:"Unable to delete email.","error");}});};
+   actions.appendChild(toggle);actions.appendChild(del);item.appendChild(label);item.appendChild(status);item.appendChild(actions);list.appendChild(item);
   });
  });
 }
