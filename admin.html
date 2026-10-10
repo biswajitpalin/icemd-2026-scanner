@@ -1490,20 +1490,52 @@ async function makeEmailQRCardPNG(record, qrDataURL){
   return png;
 }
 
+
 async function sendQRCardEmail(record, force){
-  const type=String(record.guestType||record.type||"").toUpperCase()==="INVITED"?"INVITED":"GUEST";
+  const type=String(record.guestType||record.type||"").toUpperCase();
   const qrDataURL=record.qrDataURL||record.storedQR||"";
-  const cardPNG=await makeEmailQRCardPNG({guestType:type,id:record.id,name:record.name,institute:record.institute},qrDataURL);
-  const params=type==="GUEST"
-    ?{action:"sendGuestQREmail",registrationId:record.id}
-    :{action:"sendInvitedGuestQREmail",id:record.id};
+
+  const cardPNG=await makeEmailQRCardPNG({
+    guestType:type,
+    id:record.id,
+    name:record.name,
+    institute:record.institute
+  },qrDataURL);
+
+  let params;
+
+  if(type==="GUEST"||type==="PARTICIPANT"){
+    params={
+      action:"sendGuestQREmail",
+      registrationId:record.id
+    };
+  }else if(type==="VOLUNTEER"){
+    params={
+      action:"sendVolunteerQREmail",
+      registrationId:record.id
+    };
+  }else{
+    params={
+      action:"sendInvitedGuestQREmail",
+      id:record.id
+    };
+  }
+
   const uploaded=await uploadPayloadInChunks(cardPNG,"CARD");
   params.qrCardToken=uploaded.token;
   params.qrCardChunks=uploaded.total;
+
   if(force)params.force="true";
-  params._timeoutMs=30000;params._cache=Date.now();
+
+  params._timeoutMs=30000;
+  params._cache=Date.now();
+
   const result=await apiRequestPromise(params);
-  if(!result||result.status!=="success")throw new Error(result&&result.message?result.message:"QR email failed.");
+
+  if(!result||result.status!=="success"){
+    throw new Error(result&&result.message?result.message:"QR email failed.");
+  }
+
   return result;
 }
 
@@ -4543,7 +4575,10 @@ function showQRGenerationPanel(participants,invitedGuests,volunteers){
     const printCard=document.createElement("div");printCard.style.cssText="background:#fff;border:1px solid #000;border-radius:0;padding:20px;text-align:center;box-shadow:none;min-width:0;width:100%;";
     const typeLabel=document.createElement("div");typeLabel.textContent=
     record.type==="PARTICIPANT"?"PARTICIPANT":
-    record.type==="VOLUNTEER"?"VOLUNTEER":"INVITED GUEST";typeLabel.style.cssText="font-size:16px;font-weight:700;letter-spacing:.45px;color:"+(record.type==="PARTICIPANT"?"#218838":"#c62828")+";margin-bottom:6px";
+    record.type==="VOLUNTEER"?"VOLUNTEER":"INVITED GUEST";typeLabel.style.cssText="font-size:16px;font-weight:700;letter-spacing:.45px;color:"+
+       (record.type==="PARTICIPANT"?"#218838":
+        record.type==="VOLUNTEER"?"#17365d":"#c62828")+
+       ";margin-bottom:6px";
     const idElement=document.createElement("div");idElement.textContent=record.id||"NO REGISTRATION ID";idElement.style.cssText="font-weight:bold;color:#17365d;font-size:21px;margin-bottom:12px;overflow-wrap:anywhere;line-height:1.25";printCard.append(typeLabel,idElement);
     const qrContainer=document.createElement("div");qrContainer.className="icemd-qr-code";qrContainer.style.cssText="width:180px;height:180px;margin:0 auto 12px;overflow:hidden;display:flex;align-items:center;justify-content:center";printCard.appendChild(qrContainer);
     const nameElement=document.createElement("div");nameElement.textContent=record.name||"Name missing";nameElement.style.cssText="font-weight:bold;font-size:17px;margin-bottom:4px;overflow-wrap:anywhere";
