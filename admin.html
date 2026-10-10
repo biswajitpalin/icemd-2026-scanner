@@ -1543,15 +1543,21 @@ async function sendQRCardEmail(record, force){
   return result;
 }
 
+
 async function sendBulkQRCardEmails(guestType, force){
-  const type=String(guestType||"").toUpperCase()==="INVITED"?"INVITED":"GUEST";
-  const message=document.getElementById(type==="GUEST"?"guestQRMailMessage":"invitedQRMailMessage");
+  const type=String(guestType||"").toUpperCase();
+  const message=document.getElementById(
+    type==="GUEST"?"guestQRMailMessage":
+    type==="INVITED"?"invitedQRMailMessage":
+    "volunteerQRMailMessage"
+  );
   message.className="message info";
   message.textContent="Preparing complete QR cards and sending emails...";
   const loaded=await apiRequestPromise({action:type==="GUEST"?"guests":"getInvitedGuests",_cache:Date.now()});
   if(!loaded||loaded.status!=="success"){
     message.className="message error";message.textContent=loaded&&loaded.message?loaded.message:"Unable to load guest records.";return;
   }
+
   const rows=Array.isArray(loaded.data)?loaded.data:[];
   let sent=0,alreadySent=0,failed=0;const failures=[];
   for(let i=0;i<rows.length;i++){
