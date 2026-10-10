@@ -145,6 +145,9 @@ button:active, .option:active { transform: scale(.99); }
 <h2>Volunteers Kit &amp; Certificate</h2>
 <p class="subtitle">Volunteers Login</p>
 
+<label for="otpEmailDisplay">Registered Volunteer Email</label>
+<input type="email" id="otpEmailDisplay" readonly aria-readonly="true" autocomplete="email" style="background:#e8f0fe;">
+
 <label for="otpInput">Six-digit OTP</label>
 <input type="text" id="otpInput" placeholder="Enter OTP received by email" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code">
 
@@ -310,6 +313,7 @@ button.innerText=originalButtonText;
 if(data&&data.success){
 
 if(!isResend){
+document.getElementById("otpEmailDisplay").value=assistantEmail;
 document.getElementById("loginPage").classList.add("hidden");
 document.getElementById("otpPage").classList.remove("hidden");
 document.getElementById("otpInput").value="";
@@ -853,6 +857,7 @@ sessionStorage.removeItem("icemdCertificateEmail");
 
 document.getElementById("assistantName").value="";
 document.getElementById("assistantEmail").value="";
+document.getElementById("otpEmailDisplay").value="";
 document.getElementById("otpInput").value="";
 
 document.getElementById("scannerPage").classList.add("hidden");
