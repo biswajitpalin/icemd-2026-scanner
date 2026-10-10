@@ -458,6 +458,47 @@ const APPS_SCRIPT_URL=
 
 let currentScannerName="";
 
+
+
+const FOOD_SESSION_KEY = "icemdFoodScanner";
+const FOOD_SESSION_DURATION = 3 * 60 * 60 * 1000; // 3 hours
+
+function saveFoodSession(scannerName) {
+  localStorage.setItem(
+    FOOD_SESSION_KEY,
+    JSON.stringify({
+      scanner: scannerName,
+      expiresAt: Date.now() + FOOD_SESSION_DURATION
+    })
+  );
+}
+
+function getSavedFoodSession() {
+  try {
+    const session = JSON.parse(
+      localStorage.getItem(FOOD_SESSION_KEY) || "null"
+    );
+
+    if (
+      !session ||
+      !session.scanner ||
+      !session.expiresAt ||
+      Date.now() >= session.expiresAt
+    ) {
+      localStorage.removeItem(FOOD_SESSION_KEY);
+      return null;
+    }
+
+    return session;
+  } catch (error) {
+    localStorage.removeItem(FOOD_SESSION_KEY);
+    return null;
+  }
+}
+
+
+     
+
 let scanner=null;
 
 let scannerRunning=false;
@@ -726,17 +767,9 @@ result.name||
 scannerName;
 
 
-/*
- Keep the logged-in counter in session.
-
- This does NOT store the password.
-*/
-
-sessionStorage.setItem(
-"icemdFoodScanner",
-currentScannerName
-);
-
+// Keep the logged-in counter for 3 hours.
+saveFoodSession(currentScannerName);
+     
 
 document.getElementById(
 "foodWelcome"
@@ -1460,9 +1493,7 @@ processingScan=false;
 currentScannerName="";
 
 
-sessionStorage.removeItem(
-"icemdFoodScanner"
-);
+localStorage.removeItem(FOOD_SESSION_KEY);
 
 
 document.getElementById(
@@ -1522,47 +1553,37 @@ document.getElementById(
    PAGE LOAD
 ===================================================== */
 
-window.addEventListener(
-"load",
-function(){
 
-const savedScanner=
-sessionStorage.getItem(
-"icemdFoodScanner"
-);
+window.addEventListener("load", function() {
+  const savedSession = getSavedFoodSession();
 
+  if (savedSession) {
+    currentScannerName = savedSession.scanner;
 
-if(savedScanner){
+    document.getElementById("foodWelcome").innerText =
+      "Welcome, " + currentScannerName;
 
-currentScannerName=
-savedScanner;
+    document.getElementById("foodLoginPage")
+      .classList.add("hidden");
 
+    document.getElementById("foodScannerPage")
+      .classList.remove("hidden");
 
-document.getElementById(
-"foodWelcome"
-).innerText=
-"Welcome, "+
-currentScannerName;
+    setAppView();
+    loadFoodService();
 
-
-document.getElementById(
-"foodLoginPage"
-).classList.add("hidden");
-
-
-document.getElementById(
-"foodScannerPage"
-).classList.remove("hidden");
-
-
-setAppView();
-
-
-loadFoodService();
-
-}
-
+     const remainingTime = savedSession.expiresAt - Date.now();
+     
+     setTimeout(function() {
+       if (!getSavedFoodSession()) {
+         logoutFoodScanner();
+       }
+     }, remainingTime);
+  } else {
+    setLoginView();
+  }
 });
+
 
 
 </script>
