@@ -385,7 +385,17 @@ button:active, .option:active { transform: scale(.99); }
 #assistantLoginPage #verifyButton:hover {
   background: #157347 !important;
 }
-#assistantLoginPage #resendOTPButton,
+/* Resend OTP uses the same navy-blue style as Continue. */
+#assistantLoginPage #resendOTPButton {
+  background: #17365d !important;
+  color: #ffffff !important;
+}
+
+#assistantLoginPage #resendOTPButton:hover {
+  background: #214a78 !important;
+}
+
+/* Back buttons remain grey. */
 #assistantLoginPage #backDetailsButton,
 #assistantLoginPage #assistantBackButton {
   background: #666666 !important;
@@ -432,11 +442,11 @@ ICEMD-2026
 </h1>
 
 <h2>
-Assistant Login
+Volunteers Login
 </h2>
 
 <p class="subtitle">
-Registration Desk
+Attendance &amp; Registration Desk
 </p>
 
 
@@ -445,7 +455,7 @@ Registration Desk
 <div id="assistantDetails">
 
 <label for="assistantName">
-Name
+First Name
 </label>
 
 <input
