@@ -9,7 +9,7 @@
 :root{--navy:#17365d;--navy2:#244c7b;--green:#198754;--bg:#f3f6fa;--line:#dfe6ef;--text:#172033;--muted:#5d6b80;--white:#fff}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.55}
-.hero{background:linear-gradient(120deg,var(--navy),var(--navy2));color:#fff;padding:30px 20px;text-align:center}
+.hero{background:linear-gradient(105deg,#e28a3c 0%,#b68e63 28%,#858f80 55%,#5b9696 76%,#2c8da7 100%);color:#fff;padding:30px 20px;text-align:center}
 .hero-inner{max-width:1240px;margin:0 auto;text-align:center}
 .brand{text-align:center;font-size:clamp(25px,3vw,38px);font-weight:800;margin:0}
 .hero-sub{text-align:center;margin:5px 0 0;color:#e4edf8}
@@ -60,7 +60,7 @@ main{width:min(1240px,100%);margin:0 auto;padding:24px 20px 48px}
 }
 @media print{
  body{background:#fff}
- .hero{background:#fff;color:#000;padding:10px 0;border-bottom:2px solid #17365d;text-align:center}
+ .hero{background:linear-gradient(105deg,#e28a3c 0%,#b68e63 28%,#858f80 55%,#5b9696 76%,#2c8da7 100%);color:#fff;padding:10px 0;border-bottom:2px solid #17365d;text-align:center}
  .hero-sub,.hero p{color:#333}
  main{width:100%;padding:10px 0}
  .toolbar,.day-tabs,.status,.footer .no-print{display:none!important}
@@ -74,7 +74,7 @@ main{width:min(1240px,100%);margin:0 auto;padding:24px 20px 48px}
     <p class="brand">ICEMD-2026</p>
     <p class="hero-sub">IIT Jodhpur, India · 21–23 December 2026</p>
     <h2>Conference Programme</h2>
-
+    <p>Explore the daily schedule, sessions, speakers and presentation details.</p>
   </div>
 </header>
 <main>
@@ -155,7 +155,7 @@ function loadProgramme(){
    state.talks=(t.data||[]).filter(x=>active(x.Status)&&sessionIds.has(String(x["Session ID"])));
    if(!state.selectedDay||!state.days.some(d=>String(d["Day ID"])===state.selectedDay))state.selectedDay=state.days.length?String(state.days[0]["Day ID"]):"";
    buildCategoryFilter();render();
-   setStatus("Programme length: "+state.days.length+" Days and "+state.sessions.length+" Sessions");
+   setStatus("Programme loaded: "+state.days.length+" days and "+state.sessions.length+" published sessions.");
  })
  .catch(e=>setStatus(e.message||"Unable to load the programme.",true));
 }
