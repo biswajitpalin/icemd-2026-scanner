@@ -765,8 +765,12 @@ Back
 <h2>IIT Jodhpur, India</h2>
 <p class="subtitle">Admin Dashboard</p>
 
+<div style="text-align:center;color:#666;font-size:15px;margin-bottom:20px">
+Welcome, Biswajit Pal
+</div>
+
 <button type="button" class="option" onclick="openUsers()">
-<div class="option-title">Manage Volunteers Access</div>
+<div class="option-title">Manage Users</div>
 </button>
 
 <button type="button" class="option" onclick="openFoodService()">
@@ -817,11 +821,9 @@ Back
 <div class="option-title">Volunteer Updates</div>
 </button>
 
-
 <button type="button" class="option" onclick="openInvitedGuestTravel()">
 <div class="option-title">Manage Invited Guests Travel</div>
 </button>
-   
 
 <button type="button" class="option secondary back-button" onclick="goHome()">
 Back
@@ -843,7 +845,8 @@ Back
 <h1>ICEMD-2026</h1>
 <h2>IIT Jodhpur, India</h2>
 
-<div class="section-title">Manage Volunteers Access</div>
+<div class="section-title">Manage Users</div>
+<div class="section-subtitle">Registration Desk Users</div>
 
 <div class="summary">
 
@@ -866,10 +869,18 @@ Back
 
 <div style="border-top:1px solid #ddd;padding-top:18px">
 
+<div style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:5px">
+Add New User
+</div>
+
+<div style="color:#666;font-size:13px;margin-bottom:15px">
+Any valid email address can be used.
+</div>
+
 <form id="addUserForm" onsubmit="addNewUser(event)">
 
 <div class="input-group">
-<label for="newUserName">First Name</label>
+<label for="newUserName">Name</label>
 <input
 type="text"
 id="newUserName"
@@ -900,7 +911,7 @@ Add User
 <div class="user-list">
 
 <div style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:8px">
-Authorized Volunteers
+Current Users
 </div>
 
 <div id="usersList" class="loading">
@@ -910,10 +921,11 @@ Loading users...
 </div>
 
 <div style="border-top:1px solid #ddd;padding-top:18px;margin-top:20px">
-
+  <div style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:5px">Food Scanner Email Access</div>
+  <div style="color:#666;font-size:13px;margin-bottom:12px">Add, deactivate, reactivate, or permanently delete email access for the Food Scanner.</div>
   <form id="addFoodEmailForm" onsubmit="addFoodScannerEmail(event)">
     <div class="input-group">
-      <label for="newFoodName">First Name</label>
+      <label for="newFoodName">Name</label>
       <input type="text" id="newFoodName" placeholder="Enter food scanner name" required>
     </div>
     <div class="input-group">
@@ -923,7 +935,7 @@ Loading users...
     <button type="submit" class="option">Add Food Scanner Email</button>
   </form>
   <div id="foodEmailMessage" class="message"></div>
-  <div style="color:#17365d;font-size:16px;font-weight:bold;margin-top:18px">Authorized Food Scanners</div>
+  <div style="color:#17365d;font-size:16px;font-weight:bold;margin-top:18px">Authorized Food Scanner Emails</div>
   <div id="foodEmailsList" class="loading">Loading food scanner emails...</div>
 </div>
 <button
@@ -2412,7 +2424,7 @@ function addFoodScannerEmail(event){
  const name=document.getElementById("newFoodName").value.trim();
  const email=document.getElementById("newFoodEmail").value.trim().toLowerCase();
  if(!name){showFoodEmailMessage("Enter the food scanner name.","error");return;}
- if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showFoodEmailMessage("Enter a valid email address.","error");return;}
+ if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)){showFoodEmailMessage("Enter a valid email address.","error");return;}
  showFoodEmailMessage("Adding Food Scanner...","info");
  apiRequest({action:"addFoodEmail",name:name,email:email,_cache:Date.now()},function(r){
   if(r&&r.status==="success"){
@@ -5064,6 +5076,10 @@ loadInvitedUpdateCount();
 
 
 
+function openInvitedGuestTravel(){
+  alert("Invited Guest Travel management has not been connected to this Admin page yet.");
+}
+
 function openVolunteerUpdates() {
   hideAllAdminSections();
 
@@ -5395,7 +5411,7 @@ function showQRGenerationPanel(participants,invitedGuests,volunteers){
   const summaries=document.createElement("div");summaries.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:15px;margin-bottom:15px";container.appendChild(summaries);
   const actionMessage=document.createElement("div");actionMessage.id="qrForceMessage";actionMessage.style.cssText="display:none;margin-bottom:15px;padding:12px;border-radius:8px;line-height:1.5;white-space:pre-wrap";container.appendChild(actionMessage);
   const actions=document.createElement("div");actions.style.cssText="background:#fff;padding:18px;border-radius:14px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,.08);display:flex;gap:10px;flex-wrap:wrap;justify-content:center";
-  actions.innerHTML='<button id="qrForceGenerateButton" style="background:#b45309;color:white;border:none;padding:13px 20px;border-radius:9px;font-size:16px;cursor:pointer;font-weight:bold">Force Generate QR</button><button id="qrDownloadButton" style="background:#17365d;color:white;border:none;padding:13px 20px;border-radius:9px;font-size:16px;cursor:pointer">Download QR PDF</button><button id="qrCloseButton" style="background:#777;color:white;border:none;padding:13px 20px;border-radius:9px;font-size:16px;cursor:pointer">Close</button>';
+  actions.innerHTML='<button id="qrForceGenerateButton" style="background:#b45309;color:white;border:none;padding:10px 16px;border-radius:8px;font-size:14px;cursor:pointer;font-weight:bold;width:auto!important;min-width:0;flex:0 1 auto;min-height:0">Force Generate QR</button><button id="qrDownloadButton" style="background:#17365d;color:white;border:none;padding:10px 16px;border-radius:8px;font-size:14px;cursor:pointer;width:auto!important;min-width:0;flex:0 1 auto;min-height:0">Download QR PDF</button><button id="qrCloseButton" style="background:#777;color:white;border:none;padding:10px 16px;border-radius:8px;font-size:14px;cursor:pointer;width:auto!important;min-width:0;flex:0 1 auto;min-height:0">Close</button>';
   container.appendChild(actions);
   const grid=document.createElement("div");grid.id="qrPreviewGrid";grid.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px";container.appendChild(grid);
   overlay.appendChild(container);document.body.appendChild(overlay);
