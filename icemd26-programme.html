@@ -155,7 +155,7 @@ function loadProgramme(){
    state.talks=(t.data||[]).filter(x=>active(x.Status)&&sessionIds.has(String(x["Session ID"])));
    if(!state.selectedDay||!state.days.some(d=>String(d["Day ID"])===state.selectedDay))state.selectedDay=state.days.length?String(state.days[0]["Day ID"]):"";
    buildCategoryFilter();render();
-   setStatus("Programme loaded: "+state.days.length+" days and "+state.sessions.length+" published sessions.");
+   setStatus("Programme length: "+state.days.length+" Days and "+state.sessions.length+" Sessions");
  })
  .catch(e=>setStatus(e.message||"Unable to load the programme.",true));
 }
