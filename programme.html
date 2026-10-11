@@ -178,7 +178,7 @@ function setLoginBusy(busy,buttonId,label){
 async function sendManagerOTP(isResend=false){
  const email=(isResend?$('otpEmail').value:$('loginEmail').value).trim().toLowerCase();
  if(!email){loginMessage('Please enter your authorized admin email.');return;}
- if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)){loginMessage('Please enter a valid email address.');return;}
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){loginMessage('Please enter a valid email address.');return;}
  clearLoginMessage();
  const buttonId=isResend?'resendOtpButton':'sendOtpButton';
  setLoginBusy(true,buttonId,isResend?'Sending OTP…':'Sending OTP…');
@@ -201,7 +201,7 @@ async function sendManagerOTP(isResend=false){
 async function verifyManagerOTP(){
  const email=$('otpEmail').value.trim().toLowerCase();
  const otp=$('otpInput').value.trim();
- if(!/^\\d{6}$/.test(otp)){loginMessage('Enter the six-digit OTP sent to your email.');return;}
+ if(!/^\d{6}$/.test(otp)){loginMessage('Enter the six-digit OTP sent to your email.');return;}
  clearLoginMessage();
  setLoginBusy(true,'verifyOtpButton','Verifying OTP…');
  try{
