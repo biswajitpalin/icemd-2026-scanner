@@ -2420,7 +2420,7 @@ function addFoodScannerEmail(event){
  const name=document.getElementById("newFoodName").value.trim();
  const email=document.getElementById("newFoodEmail").value.trim().toLowerCase();
  if(!name){showFoodEmailMessage("Enter the food scanner name.","error");return;}
- if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)){showFoodEmailMessage("Enter a valid email address.","error");return;}
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showFoodEmailMessage("Enter a valid email address.","error");return;}
  showFoodEmailMessage("Adding Food Scanner...","info");
  apiRequest({action:"addFoodEmail",name:name,email:email,_cache:Date.now()},function(r){
   if(r&&r.status==="success"){
