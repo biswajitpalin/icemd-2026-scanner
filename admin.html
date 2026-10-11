@@ -706,6 +706,39 @@ button#resendAdminOTPButton:disabled {
   font-size: 13px !important;
 }
 
+/* Restore compact QR-panel action buttons from the old Admin UI only. */
+#qrGenerationPanel #qrForceGenerateButton,
+#qrGenerationPanel #qrDownloadButton,
+#qrGenerationPanel #qrCloseButton {
+  display: inline-block !important;
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 10px 16px !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  line-height: 1.25 !important;
+  flex: 0 1 auto !important;
+}
+
+/* Global disabled-button CSS had turned the QR Stored/SENT buttons grey. */
+#qrGenerationPanel button:disabled {
+  background-color: #2e7d32 !important;
+  color: #ffffff !important;
+  opacity: 1 !important;
+  cursor: default !important;
+}
+#qrGenerationPanel .qr-email-button {
+  width: 100% !important;
+  min-height: 0 !important;
+  margin-top: 8px !important;
+  padding: 9px !important;
+  border-radius: 7px !important;
+  font-size: 13px !important;
+}
+
+
 </style>
 </head>
 
@@ -765,12 +798,8 @@ Back
 <h2>IIT Jodhpur, India</h2>
 <p class="subtitle">Admin Dashboard</p>
 
-<div style="text-align:center;color:#666;font-size:15px;margin-bottom:20px">
-Welcome, Biswajit Pal
-</div>
-
 <button type="button" class="option" onclick="openUsers()">
-<div class="option-title">Manage Users</div>
+<div class="option-title">Manage Volunteers Access</div>
 </button>
 
 <button type="button" class="option" onclick="openFoodService()">
@@ -821,9 +850,11 @@ Welcome, Biswajit Pal
 <div class="option-title">Volunteer Updates</div>
 </button>
 
+
 <button type="button" class="option" onclick="openInvitedGuestTravel()">
 <div class="option-title">Manage Invited Guests Travel</div>
 </button>
+   
 
 <button type="button" class="option secondary back-button" onclick="goHome()">
 Back
@@ -845,8 +876,7 @@ Back
 <h1>ICEMD-2026</h1>
 <h2>IIT Jodhpur, India</h2>
 
-<div class="section-title">Manage Users</div>
-<div class="section-subtitle">Registration Desk Users</div>
+<div class="section-title">Manage Volunteers Access</div>
 
 <div class="summary">
 
@@ -869,18 +899,10 @@ Back
 
 <div style="border-top:1px solid #ddd;padding-top:18px">
 
-<div style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:5px">
-Add New User
-</div>
-
-<div style="color:#666;font-size:13px;margin-bottom:15px">
-Any valid email address can be used.
-</div>
-
 <form id="addUserForm" onsubmit="addNewUser(event)">
 
 <div class="input-group">
-<label for="newUserName">Name</label>
+<label for="newUserName">First Name</label>
 <input
 type="text"
 id="newUserName"
@@ -911,7 +933,7 @@ Add User
 <div class="user-list">
 
 <div style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:8px">
-Current Users
+Authorized Volunteers
 </div>
 
 <div id="usersList" class="loading">
@@ -921,11 +943,10 @@ Loading users...
 </div>
 
 <div style="border-top:1px solid #ddd;padding-top:18px;margin-top:20px">
-  <div style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:5px">Food Scanner Email Access</div>
-  <div style="color:#666;font-size:13px;margin-bottom:12px">Add, deactivate, reactivate, or permanently delete email access for the Food Scanner.</div>
+
   <form id="addFoodEmailForm" onsubmit="addFoodScannerEmail(event)">
     <div class="input-group">
-      <label for="newFoodName">Name</label>
+      <label for="newFoodName">First Name</label>
       <input type="text" id="newFoodName" placeholder="Enter food scanner name" required>
     </div>
     <div class="input-group">
@@ -935,7 +956,7 @@ Loading users...
     <button type="submit" class="option">Add Food Scanner Email</button>
   </form>
   <div id="foodEmailMessage" class="message"></div>
-  <div style="color:#17365d;font-size:16px;font-weight:bold;margin-top:18px">Authorized Food Scanner Emails</div>
+  <div style="color:#17365d;font-size:16px;font-weight:bold;margin-top:18px">Authorized Food Scanners</div>
   <div id="foodEmailsList" class="loading">Loading food scanner emails...</div>
 </div>
 <button
@@ -2424,7 +2445,7 @@ function addFoodScannerEmail(event){
  const name=document.getElementById("newFoodName").value.trim();
  const email=document.getElementById("newFoodEmail").value.trim().toLowerCase();
  if(!name){showFoodEmailMessage("Enter the food scanner name.","error");return;}
- if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)){showFoodEmailMessage("Enter a valid email address.","error");return;}
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showFoodEmailMessage("Enter a valid email address.","error");return;}
  showFoodEmailMessage("Adding Food Scanner...","info");
  apiRequest({action:"addFoodEmail",name:name,email:email,_cache:Date.now()},function(r){
   if(r&&r.status==="success"){
@@ -5076,10 +5097,6 @@ loadInvitedUpdateCount();
 
 
 
-function openInvitedGuestTravel(){
-  alert("Invited Guest Travel management has not been connected to this Admin page yet.");
-}
-
 function openVolunteerUpdates() {
   hideAllAdminSections();
 
@@ -5411,7 +5428,7 @@ function showQRGenerationPanel(participants,invitedGuests,volunteers){
   const summaries=document.createElement("div");summaries.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:15px;margin-bottom:15px";container.appendChild(summaries);
   const actionMessage=document.createElement("div");actionMessage.id="qrForceMessage";actionMessage.style.cssText="display:none;margin-bottom:15px;padding:12px;border-radius:8px;line-height:1.5;white-space:pre-wrap";container.appendChild(actionMessage);
   const actions=document.createElement("div");actions.style.cssText="background:#fff;padding:18px;border-radius:14px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,.08);display:flex;gap:10px;flex-wrap:wrap;justify-content:center";
-  actions.innerHTML='<button id="qrForceGenerateButton" style="background:#b45309;color:white;border:none;padding:10px 16px;border-radius:8px;font-size:14px;cursor:pointer;font-weight:bold;width:auto!important;min-width:0;flex:0 1 auto;min-height:0">Force Generate QR</button><button id="qrDownloadButton" style="background:#17365d;color:white;border:none;padding:10px 16px;border-radius:8px;font-size:14px;cursor:pointer;width:auto!important;min-width:0;flex:0 1 auto;min-height:0">Download QR PDF</button><button id="qrCloseButton" style="background:#777;color:white;border:none;padding:10px 16px;border-radius:8px;font-size:14px;cursor:pointer;width:auto!important;min-width:0;flex:0 1 auto;min-height:0">Close</button>';
+  actions.innerHTML='<button id="qrForceGenerateButton" style="background:#b45309;color:white;border:none;padding:13px 20px;border-radius:9px;font-size:16px;cursor:pointer;font-weight:bold">Force Generate QR</button><button id="qrDownloadButton" style="background:#17365d;color:white;border:none;padding:13px 20px;border-radius:9px;font-size:16px;cursor:pointer">Download QR PDF</button><button id="qrCloseButton" style="background:#777;color:white;border:none;padding:13px 20px;border-radius:9px;font-size:16px;cursor:pointer">Close</button>';
   container.appendChild(actions);
   const grid=document.createElement("div");grid.id="qrPreviewGrid";grid.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px";container.appendChild(grid);
   overlay.appendChild(container);document.body.appendChild(overlay);
@@ -5468,7 +5485,7 @@ function showQRGenerationPanel(participants,invitedGuests,volunteers){
     const emailButton=document.createElement("button");emailButton.type="button";emailButton.className="qr-email-button";emailButton.textContent=record.storedQR?"Send QR Email":"Store QR before sending";emailButton.disabled=!record.storedQR;card.append(saveStatus,saveButton,emailStatus,emailButton);grid.appendChild(card);
     let isStored=!!record.storedQR,isFailed=false,isSaving=false;
     const item={record:record,card:card,saveButton:saveButton,get isStored(){return isStored;},get isFailed(){return isFailed;},get isSaving(){return isSaving;}};records.push(item);
-    function markStored(){isStored=true;isFailed=false;saveStatus.style.color="#2e7d32";saveStatus.textContent="✓ QR generated and stored successfully";saveButton.textContent="✓ Stored";saveButton.disabled=true;saveButton.style.background="#2e7d32";saveButton.style.cursor="default";emailButton.disabled=false;emailButton.textContent="Send QR Email";renderSummary();}
+    function markStored(){isStored=true;isFailed=false;saveStatus.style.color="#2e7d32";saveStatus.textContent="✓ QR generated and stored successfully";saveButton.textContent="✓ Stored";saveButton.disabled=true;saveButton.style.setProperty("background","#2e7d32","important");saveButton.style.cursor="default";emailButton.disabled=false;emailButton.textContent="Send QR Email";renderSummary();}
     function markFailed(reason){const alreadyFailed=isFailed;isSaving=false;isFailed=true;saveStatus.style.color="#c62828";saveStatus.textContent="✗ QR generation/storage failed: "+reason;saveButton.disabled=false;saveButton.textContent="Retry QR Generation";saveButton.style.background="#b91c1c";saveButton.style.cursor="pointer";const stat=stats[record.type];if(!alreadyFailed)stat.failed++;stat.failures=stat.failures.filter(function(f){return f.id!==record.id;});stat.failures.push({row:record.row,rowLabel:record.rowLabel,id:record.id,name:record.name,reason:reason});renderSummary();}
     async function generateAndStore(){
       if(isSaving||isStored)return;
@@ -5514,9 +5531,9 @@ function showQRGenerationPanel(participants,invitedGuests,volunteers){
       }
     }
     saveButton.onclick=generateAndStore;
-    emailButton.onclick=async function(){if(!isStored)return;emailButton.disabled=true;emailButton.textContent="Preparing card...";emailStatus.textContent="Preparing full bordered QR card...";try{const qrCanvas=qrContainer.querySelector("canvas");const qrDataURL=qrCanvas?qrCanvas.toDataURL("image/png"):record.storedQR;await sendQRCardEmail({guestType:record.guestType,id:record.id,name:record.name,email:record.email,institute:record.institute,storedQR:record.storedQR,qrDataURL:qrDataURL},false);emailButton.textContent="✓ SENT";emailButton.style.background="#2e7d32";emailStatus.className="email-status email-sent";emailStatus.textContent="✓ QR card email SENT";}catch(error){emailButton.disabled=false;emailButton.textContent="Send QR Email";emailStatus.className="email-status email-failed";emailStatus.textContent=error.message||"QR email failed; retry is available.";}};
-    if(isStored){saveStatus.style.color="#2e7d32";saveStatus.textContent="✓ QR already stored — will not be overwritten";saveButton.textContent="✓ Stored";saveButton.disabled=true;saveButton.style.background="#2e7d32";emailButton.disabled=false;stats[record.type].success++;
-      apiRequest({action:"getQREmailStatus",id:record.id,guestType:record.guestType,_cache:Date.now()},function(result){if(result&&result.status==="success"){const state=String(result.statusText||"UNSENT").toUpperCase();if(state==="SENT"){emailStatus.className="email-status email-sent";emailStatus.textContent="✓ QR email SENT";emailButton.textContent="✓ SENT";emailButton.style.background="#2e7d32";}else if(state==="FAILED"){emailStatus.className="email-status email-failed";emailStatus.textContent="✗ Previous send FAILED — retry available";}else{emailStatus.className="email-status email-unsent";emailStatus.textContent="QR email UNSENT";}}});
+    emailButton.onclick=async function(){if(!isStored)return;emailButton.disabled=true;emailButton.textContent="Preparing card...";emailStatus.textContent="Preparing full bordered QR card...";try{const qrCanvas=qrContainer.querySelector("canvas");const qrDataURL=qrCanvas?qrCanvas.toDataURL("image/png"):record.storedQR;await sendQRCardEmail({guestType:record.guestType,id:record.id,name:record.name,email:record.email,institute:record.institute,storedQR:record.storedQR,qrDataURL:qrDataURL},false);emailButton.textContent="✓ SENT";emailButton.style.setProperty("background","#2e7d32","important");emailStatus.className="email-status email-sent";emailStatus.textContent="✓ QR card email SENT";}catch(error){emailButton.disabled=false;emailButton.textContent="Send QR Email";emailStatus.className="email-status email-failed";emailStatus.textContent=error.message||"QR email failed; retry is available.";}};
+    if(isStored){saveStatus.style.color="#2e7d32";saveStatus.textContent="✓ QR already stored — will not be overwritten";saveButton.textContent="✓ Stored";saveButton.disabled=true;saveButton.style.setProperty("background","#2e7d32","important");emailButton.disabled=false;stats[record.type].success++;
+      apiRequest({action:"getQREmailStatus",id:record.id,guestType:record.guestType,_cache:Date.now()},function(result){if(result&&result.status==="success"){const state=String(result.statusText||"UNSENT").toUpperCase();if(state==="SENT"){emailStatus.className="email-status email-sent";emailStatus.textContent="✓ QR email SENT";emailButton.textContent="✓ SENT";emailButton.style.setProperty("background","#2e7d32","important");}else if(state==="FAILED"){emailStatus.className="email-status email-failed";emailStatus.textContent="✗ Previous send FAILED — retry available";}else{emailStatus.className="email-status email-unsent";emailStatus.textContent="QR email UNSENT";}}});
     }else if(!record.id){stats[record.type].failed++;isFailed=true;stats[record.type].failures.push({row:record.row,rowLabel:record.rowLabel,id:record.id,name:record.name,reason:"Registration ID is missing."});saveStatus.style.color="#c62828";saveStatus.textContent="✗ Registration ID is missing.";saveButton.textContent="Cannot generate QR";saveButton.disabled=true;
     }else{stats[record.type].failed++;stats[record.type].failures.push({row:record.row,rowLabel:record.rowLabel,id:record.id,name:record.name,reason:"QR not stored yet; generation pending"});stats[record.type].failed--;stats[record.type].failures=stats[record.type].failures.filter(function(f){return f.id!==record.id;});setTimeout(generateAndStore,250+index*20);}
     try{
