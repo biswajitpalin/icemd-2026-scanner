@@ -770,7 +770,7 @@ Welcome, Biswajit Pal
 </div>
 
 <button type="button" class="option" onclick="openUsers()">
-<div class="option-title">Manage Users</div>
+<div class="option-title">Manage Volunteers Access</div>
 </button>
 
 <button type="button" class="option" onclick="openFoodService()">
@@ -841,8 +841,7 @@ Back
 <h1>ICEMD-2026</h1>
 <h2>IIT Jodhpur, India</h2>
 
-<div class="section-title">Manage Users</div>
-<div class="section-subtitle">Registration Desk Users</div>
+<div class="section-title">Manage Volunteers Access</div>
 
 <div class="summary">
 
@@ -865,18 +864,10 @@ Back
 
 <div style="border-top:1px solid #ddd;padding-top:18px">
 
-<div style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:5px">
-Add New User
-</div>
-
-<div style="color:#666;font-size:13px;margin-bottom:15px">
-Any valid email address can be used.
-</div>
-
 <form id="addUserForm" onsubmit="addNewUser(event)">
 
 <div class="input-group">
-<label for="newUserName">Name</label>
+<label for="newUserName">First Name</label>
 <input
 type="text"
 id="newUserName"
@@ -917,11 +908,10 @@ Loading users...
 </div>
 
 <div style="border-top:1px solid #ddd;padding-top:18px;margin-top:20px">
-  <div style="color:#17365d;font-size:17px;font-weight:bold;margin-bottom:5px">Food Scanner Email Access</div>
-  <div style="color:#666;font-size:13px;margin-bottom:12px">Add, deactivate, reactivate, or permanently delete email access for the Food Scanner.</div>
+
   <form id="addFoodEmailForm" onsubmit="addFoodScannerEmail(event)">
     <div class="input-group">
-      <label for="newFoodName">Name</label>
+      <label for="newFoodName">First Name</label>
       <input type="text" id="newFoodName" placeholder="Enter food scanner name" required>
     </div>
     <div class="input-group">
