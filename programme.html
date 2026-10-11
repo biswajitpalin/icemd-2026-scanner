@@ -60,7 +60,7 @@ tbody tr:hover{background:#f8fafc}
     <h2>Programme Manager</h2>
     <p class="login-subtitle">Sign in with your authorized admin email to manage the conference programme.</p>
     <div id="loginDetails">
-      <label for="loginEmail">Authorized Admin Email</label>
+      <label for="loginEmail">Programme Manager Email</label>
       <input id="loginEmail" type="email" autocomplete="email" placeholder="Enter your admin email" required>
       <button id="sendOtpButton" class="primary login-btn" type="button">Send OTP</button>
     </div>
@@ -183,7 +183,7 @@ async function sendManagerOTP(isResend=false){
  const buttonId=isResend?'resendOtpButton':'sendOtpButton';
  setLoginBusy(true,buttonId,isResend?'Sending OTP…':'Sending OTP…');
  try{
-  const result=await api('requestAdminOTP',{email});
+  const result=await api('requestProgramManagerOTP',{email});
   $('otpEmail').value=email;
   $('loginDetails').classList.add('hidden');
   $('loginOtpSection').classList.remove('hidden');
@@ -205,7 +205,7 @@ async function verifyManagerOTP(){
  clearLoginMessage();
  setLoginBusy(true,'verifyOtpButton','Verifying OTP…');
  try{
-  const result=await api('verifyAdminOTP',{email,otp});
+  const result=await api('verifyProgramManagerOTP',{email,otp});
   if(!result||result.success!==true)throw new Error((result&&result.message)||'OTP verification failed.');
   $('managerLogin').classList.add('hidden');
   $('managerApp').classList.remove('hidden');
