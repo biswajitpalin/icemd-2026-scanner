@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="ICEMD-2026 conference programme, sessions, speakers and presentation timetable.">
+<title>ICEMD-2026 | Conference Programme</title>
+<style>
+:root{--navy:#17365d;--navy2:#244c7b;--green:#198754;--bg:#f3f6fa;--line:#dfe6ef;--text:#172033;--muted:#5d6b80;--white:#fff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.55}
+.hero{background:linear-gradient(120deg,var(--navy),var(--navy2));color:#fff;padding:30px max(20px,calc((100% - 1240px)/2))}
+.hero-inner{max-width:1240px;margin:auto}
+.brand{font-size:clamp(25px,3vw,38px);font-weight:800;margin:0}
+.hero-sub{margin:5px 0 0;color:#e4edf8}
+.hero h2{font-size:clamp(24px,3vw,34px);margin:24px 0 4px}
+.hero p{margin:0}
+main{width:min(1240px,100%);margin:0 auto;padding:24px 20px 48px}
+.toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+.toolbar input,.toolbar select{min-height:46px;border:1px solid #ccd6e4;border-radius:10px;background:#fff;padding:10px 13px;font:inherit;color:var(--text)}
+.toolbar input{flex:1 1 280px}
+.toolbar select{flex:0 1 230px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;border:0;border-radius:9px;padding:10px 16px;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
+.btn-primary{background:var(--navy);color:#fff}
+.status{padding:12px 15px;border-radius:10px;margin-bottom:18px;background:#e8eef7;color:var(--navy)}
+.status.error{background:#fdebea;color:#a61b1b}
+.day-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 22px}
+.day-tab{border:1px solid #d4deeb;background:#fff;color:var(--navy);padding:11px 16px;border-radius:10px;font:inherit;font-weight:700;cursor:pointer}
+.day-tab[aria-selected="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+.day-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin:6px 0 18px}
+.day-heading h3{font-size:clamp(22px,2.5vw,30px);margin:0}
+.day-heading p{margin:4px 0 0;color:var(--muted)}
+.timeline{display:grid;gap:14px}
+.session{display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 3px 12px #17203308}
+.time{font-weight:800;color:var(--navy);font-size:16px}
+.time .to{display:block;font-size:14px;color:var(--muted);font-weight:500}
+.session-content{min-width:0}
+.pill{display:inline-block;background:#edf3fa;color:var(--navy);padding:4px 9px;border-radius:999px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px}
+.session h4{font-size:21px;line-height:1.3;margin:0 0 8px}
+.meta{display:flex;gap:10px 18px;flex-wrap:wrap;color:var(--muted);font-size:14px;margin:6px 0}
+.meta span{display:inline-flex;gap:6px;align-items:flex-start}
+.talks{margin-top:14px;border-top:1px solid #e8edf4;padding-top:8px;display:grid;gap:0}
+.talk{padding:12px 0;border-bottom:1px solid #edf1f6}
+.talk:last-child{border-bottom:0}
+.talk-title{font-weight:700;margin-bottom:3px}
+.speaker{color:var(--muted);font-size:14px}
+.abstract{margin:8px 0 0;color:#34435b;font-size:14px;white-space:pre-wrap}
+.no-results{background:#fff;border:1px dashed #cbd5e1;border-radius:12px;padding:28px;text-align:center;color:var(--muted)}
+.footer{text-align:center;color:var(--muted);font-size:13px;margin-top:28px}
+.loading{opacity:.75}
+@media(max-width:700px){
+ main{padding:17px 12px 34px}
+ .hero{padding:23px 16px}
+ .session{grid-template-columns:1fr;gap:9px;padding:16px}
+ .time{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+ .time .to{display:inline}
+ .toolbar>*{width:100%;flex:1 1 100%}
+ .day-tab{flex:1 1 calc(33.33% - 8px);padding:10px 8px}
+ .session h4{font-size:19px}
+}
+@media print{
+ body{background:#fff}
+ .hero{background:#fff;color:#000;padding:10px 0;border-bottom:2px solid #17365d}
+ .hero-sub,.hero p{color:#333}
+ main{width:100%;padding:10px 0}
+ .toolbar,.day-tabs,.status,.footer .no-print{display:none!important}
+ .session{break-inside:avoid;box-shadow:none}
+}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="hero-inner">
+    <p class="brand">ICEMD-2026</p>
+    <p class="hero-sub">IIT Jodhpur, India · 21–23 December 2026</p>
+    <h2>Conference Programme</h2>
+    <p>Explore the daily schedule, sessions, speakers and presentation details.</p>
+  </div>
+</header>
+<main>
+  <div class="toolbar">
+    <input id="search" type="search" placeholder="Search sessions, talk titles, speakers or institutes…" aria-label="Search conference programme">
+    <select id="categoryFilter" aria-label="Filter by session category">
+      <option value="">All session categories</option>
+    </select>
+    <button class="btn btn-primary" id="printBtn" type="button">Print / Save PDF</button>
+  </div>
+  <div id="status" class="status" role="status">Loading the latest conference programme…</div>
+  <nav id="dayTabs" class="day-tabs" aria-label="Conference days"></nav>
+  <section id="programme" aria-live="polite"><div class="no-results loading">Loading sessions and speaker details…</div></section>
+  <div class="footer">ICEMD-2026 · IIT Jodhpur · Programme information is subject to updates by the organisers.</div>
+</main>
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbxD0VHRLp17LUYiPlYzxPRWwsZUagkVZycolhHfn6Nyt6XN-N2bQD0_uekzWlZc3iOgrA/exec";
+const state={days:[],sessions:[],talks:[],selectedDay:"",search:"",category:""};
+const $=id=>document.getElementById(id);
+function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function api(action){
+ return new Promise((resolve,reject)=>{
+  const url=new URL(API_URL);
+  url.searchParams.set("action",action);
+  const cb="__icemd_public_"+Date.now()+"_"+Math.floor(Math.random()*100000);
+  url.searchParams.set("callback",cb);
+  const script=document.createElement("script");
+  let done=false;
+  const timer=setTimeout(()=>finish(new Error("The programme service did not respond. Please refresh and try again.")),20000);
+  function finish(err,data){if(done)return;done=true;clearTimeout(timer);delete window[cb];script.remove();err?reject(err):resolve(data);}
+  window[cb]=data=>{if(data&&data.status==="error")finish(new Error(data.message||"Unable to load programme."));else finish(null,data||{});};
+  script.onerror=()=>finish(new Error("Could not connect to the programme service."));
+  script.src=url.toString();document.body.appendChild(script);
+ });
+}
+function active(v){return String(v==null?"":v).trim().toUpperCase()==="ACTIVE";}
+function yes(v){return ["YES","TRUE","1","Y"].includes(String(v==null?"":v).trim().toUpperCase());}
+function normDate(v){
+ if(v==null||v==="")return "";
+ const s=String(v).trim();
+ const m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+ if(m)return m[1]+"-"+m[2]+"-"+m[3];
+ const d=new Date(s);
+ return isNaN(d.getTime())?s:d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+function displayDate(v){
+ const s=normDate(v);if(!s)return "";
+ const m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+ if(!m)return esc(s);
+ const d=new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));
+ return d.toLocaleDateString("en-IN",{day:"numeric",month:"long",year:"numeric"});
+}
+function timeValue(v){
+ if(v==null||v==="")return "";
+ const s=String(v).trim();
+ const m=s.match(/^(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM)?$/i);
+ if(!m)return s;
+ let h=Number(m[1]),min=m[2],amp=(m[3]||"").toUpperCase();
+ if(!amp){amp=h>=12?"PM":"AM";h=h%12||12;}
+ return String(h).padStart(2,"0")+":"+min+" "+amp;
+}
+function timeSort(v){
+ const s=String(v||"").trim(),m=s.match(/^(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM)?$/i);
+ if(!m)return 0;
+ let h=Number(m[1]),amp=(m[3]||"").toUpperCase();
+ if(amp==="PM"&&h<12)h+=12;if(amp==="AM"&&h===12)h=0;
+ return h*60+Number(m[2]);
+}
+function setStatus(message,error=false){$("status").textContent=message;$("status").className="status"+(error?" error":"");}
+function loadProgramme(){
+ setStatus("Loading the latest conference programme…");
+ Promise.all([api("getProgramDays"),api("getProgramSessions"),api("getProgramTalks")])
+ .then(([d,s,t])=>{
+   state.days=(d.data||[]).filter(x=>active(x.Status)).sort((a,b)=>Number(a["Day Number"]||0)-Number(b["Day Number"]||0));
+   const dayIds=new Set(state.days.map(x=>String(x["Day ID"])));
+   state.sessions=(s.data||[]).filter(x=>active(x.Status)&&yes(x["Show Publicly"])&&dayIds.has(String(x["Day ID"])));
+   const sessionIds=new Set(state.sessions.map(x=>String(x["Session ID"])));
+   state.talks=(t.data||[]).filter(x=>active(x.Status)&&sessionIds.has(String(x["Session ID"])));
+   if(!state.selectedDay||!state.days.some(d=>String(d["Day ID"])===state.selectedDay))state.selectedDay=state.days.length?String(state.days[0]["Day ID"]):"";
+   buildCategoryFilter();render();
+   setStatus("Programme loaded: "+state.days.length+" days and "+state.sessions.length+" published sessions.");
+ })
+ .catch(e=>setStatus(e.message||"Unable to load the programme.",true));
+}
+function buildCategoryFilter(){
+ const sel=$("categoryFilter"),previous=state.category;
+ const cats=[...new Set(state.sessions.map(s=>String(s["Session Category"]||"").trim()).filter(Boolean))].sort();
+ sel.innerHTML='<option value="">All session categories</option>'+cats.map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join("");
+ if(cats.includes(previous))sel.value=previous;else state.category="";
+}
+function renderTabs(){
+ $("dayTabs").innerHTML=state.days.map(d=>{
+  const id=String(d["Day ID"]),sel=id===state.selectedDay;
+  return '<button class="day-tab" type="button" data-day="'+esc(id)+'" aria-selected="'+(sel?"true":"false")+'"><span>Day '+esc(d["Day Number"])+'</span><br><small>'+esc(displayDate(d.Date))+'</small></button>';
+ }).join("");
+ $("dayTabs").querySelectorAll("[data-day]").forEach(b=>b.addEventListener("click",()=>{state.selectedDay=b.dataset.day;render();}));
+}
+function render(){
+ renderTabs();
+ const day=state.days.find(d=>String(d["Day ID"])===state.selectedDay);
+ if(!day){$("programme").innerHTML='<div class="no-results">No published programme is available yet. Please check again later.</div>';return;}
+ const q=state.search.toLowerCase();
+ let sessions=state.sessions.filter(s=>String(s["Day ID"])===state.selectedDay);
+ if(state.category)sessions=sessions.filter(s=>String(s["Session Category"]||"")===state.category);
+ sessions.sort((a,b)=>timeSort(a["Start Time"])-timeSort(b["Start Time"])||Number(a["Session Order"]||0)-Number(b["Session Order"]||0));
+ sessions=sessions.map(s=>{
+  const talks=state.talks.filter(t=>String(t["Session ID"])===String(s["Session ID"])).sort((a,b)=>Number(a["Talk Order"]||0)-Number(b["Talk Order"]||0)||timeSort(a["Start Time"])-timeSort(b["Start Time"]));
+  return {...s,_talks:talks};
+ }).filter(s=>!q||JSON.stringify(s).toLowerCase().includes(q));
+ let out='<div class="day-heading"><div><h3>Day '+esc(day["Day Number"])+' — '+esc(day["Day Title"]||"Conference Programme")+'</h3><p>'+esc(displayDate(day.Date))+'</p></div></div>';
+ if(!sessions.length){$("programme").innerHTML=out+'<div class="no-results">No sessions match your search or selected filter.</div>';return;}
+ out+='<div class="timeline">';
+ sessions.forEach(s=>{
+  const category=String(s["Session Category"]||"Session");
+  const talks=s._talks.filter(t=>!q||JSON.stringify(t).toLowerCase().includes(q)||JSON.stringify(s).toLowerCase().includes(q));
+  const start=timeValue(s["Start Time"]),end=timeValue(s["End Time"]);
+  out+='<article class="session"><div class="time">'+esc(start||"Time TBA")+(end?'<span class="to">to '+esc(end)+'</span>':'')+'</div><div class="session-content"><span class="pill">'+esc(category)+'</span><h4>'+esc(s["Session Title"]||category)+'</h4><div class="meta">';
+  if(s.Venue)out+='<span>📍 '+esc(s.Venue)+'</span>';
+  if(s["Session Chair"])out+='<span>Chair: '+esc(s["Session Chair"])+(s["Chair Affiliation"]?' · '+esc(s["Chair Affiliation"]):'')+'</span>';
+  out+='</div>';
+  if(talks.length){
+   out+='<div class="talks">';
+   talks.forEach(t=>{
+    out+='<div class="talk">';
+    const ts=timeValue(t["Start Time"]),te=timeValue(t["End Time"]);
+    if(ts||te)out+='<div class="speaker">'+esc(ts)+(te?' – '+esc(te):'')+'</div>';
+    out+='<div class="talk-title">'+esc(t["Talk Title"]||"Presentation")+'</div>';
+    const who=[t["Speaker Name"],t["Speaker Affiliation"]].filter(Boolean).map(esc).join(" · ");
+    if(who)out+='<div class="speaker">'+who+(t["Speaker Type"]?' · '+esc(t["Speaker Type"]):'')+'</div>';
+    if(t["Abstract/Description"])out+='<details><summary>Talk abstract / details</summary><p class="abstract">'+esc(t["Abstract/Description"])+'</p></details>';
+    out+='</div>';
+   });
+   out+='</div>';
+  }
+  out+='</div></article>';
+ });
+ out+='</div>';$("programme").innerHTML=out;
+}
+$("search").addEventListener("input",e=>{state.search=e.target.value;render();});
+$("categoryFilter").addEventListener("change",e=>{state.category=e.target.value;render();});
+$("printBtn").addEventListener("click",()=>window.print());
+loadProgramme();
+</script>
+</body>
+</html>
