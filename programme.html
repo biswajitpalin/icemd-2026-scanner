@@ -196,7 +196,7 @@ function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&l
 function rowsTable(items,kind){
  if(!items.length)return '<div class="empty">No records yet.</div>';
  let cols;
- if(kind==='days')cols=['Day ID','Day Number','Date','Day Title','Status','Remarks'];
+ if(kind==='days')cols=['Day ID','Day Number','Date','Day Title','Status','Remarks','Updated By','Last Updated'];
  else if(kind==='sessions')cols=['Session ID','Day ID','Session Category','Session Title','Start Time','End Time','Session Chair','Chair Affiliation','Venue','Session Order','Status','Show Publicly','Remarks','Last Updated'];
  else cols=['Talk ID','Session ID','Talk Order','Start Time','End Time','Email','Registration ID','Speaker Name','Speaker Affiliation','Talk Title','Speaker Type','Abstract/Description','Status','Remarks','Last Updated'];
  let out='<table><thead><tr>'+cols.map(c=>'<th>'+esc(c)+'</th>').join('')+'<th>Actions</th></tr></thead><tbody>';
@@ -267,9 +267,11 @@ function fetchRecordDetails(kind){
 async function submitForm(e,formId,kind,addAction,updateAction){
  e.preventDefault();
  const p=formData($(formId));
- // Record the currently logged-in Programme Manager for day/session/talk changes.
+ // Record the currently logged-in Programme Manager for session/talk changes.
  const managerSession=getManagerSession();
- p.updatedBy=(managerSession&&managerSession.email)||$('loggedInEmail').textContent.trim()||'';
+ p.updatedBy=(managerSession&&managerSession.email)
+  ||$('loggedInEmail').textContent.trim()
+  ||$('otpEmail').value.trim().toLowerCase();
  const editing=!!p.originalId;
  const idKey=kind==='days'?'Day ID':kind==='sessions'?'Session ID':'Talk ID';
  const enteredId=String(p.id||'').trim();
