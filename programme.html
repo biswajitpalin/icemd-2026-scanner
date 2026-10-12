@@ -87,6 +87,8 @@ tbody tr:hover{background:#f8fafc}
 </div><!-- /managerApp -->
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbxD0VHRLp17LUYiPlYzxPRWwsZUagkVZycolhHfn6Nyt6XN-N2bQD0_uekzWlZc3iOgrA/exec";
+const SESSION_KEY = 'ICEMD_PROGRAM_MANAGER_SESSION_V1';
+const SESSION_DURATION = 60 * 60 * 1000; // 1 hour
 const state={days:[],sessions:[],talks:[],kind:'days'};
 const $=id=>document.getElementById(id);
 function showStatus(msg,ok=true){const el=$('globalStatus');el.textContent=msg;el.className='status '+(ok?'ok':'err');}
@@ -198,24 +200,108 @@ async function sendManagerOTP(isResend=false){
   setLoginBusy(false,buttonId,'');
  }
 }
-async function verifyManagerOTP(){
- const email=$('otpEmail').value.trim().toLowerCase();
- const otp=$('otpInput').value.trim();
- if(!/^\d{6}$/.test(otp)){loginMessage('Enter the six-digit OTP sent to your email.');return;}
- clearLoginMessage();
- setLoginBusy(true,'verifyOtpButton','Verifying OTP…');
- try{
-  const result=await api('verifyProgramManagerOTP',{email,otp});
-  if(!result||result.success!==true)throw new Error((result&&result.message)||'OTP verification failed.');
+
+
+function saveManagerSession(email) {
+  const now = Date.now();
+
+  localStorage.setItem(SESSION_KEY, JSON.stringify({
+    email: email,
+    verifiedAt: now,
+    expiresAt: now + SESSION_DURATION
+  }));
+}
+
+function getManagerSession() {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+
+    const session = JSON.parse(raw);
+
+    if (
+      !session ||
+      !session.email ||
+      !Number.isFinite(session.expiresAt) ||
+      session.expiresAt <= Date.now()
+    ) {
+      localStorage.removeItem(SESSION_KEY);
+      return null;
+    }
+
+    return session;
+  } catch (error) {
+    return null;
+  }
+}
+
+function clearManagerSession() {
+  try {
+    localStorage.removeItem(SESSION_KEY);
+  } catch (error) {}
+}
+
+function showManagerApp(email) {
   $('managerLogin').classList.add('hidden');
   $('managerApp').classList.remove('hidden');
+
+  if (email) {
+    $('loginEmail').value = email;
+  }
+
   loadAll();
- }catch(err){
-  loginMessage(err.message||'OTP verification failed.');
- }finally{
-  setLoginBusy(false,'verifyOtpButton','');
- }
 }
+
+function restoreManagerSession() {
+  const session = getManagerSession();
+
+  if (session) {
+    showManagerApp(session.email);
+  } else {
+    clearManagerSession();
+    $('managerLogin').classList.remove('hidden');
+    $('managerApp').classList.add('hidden');
+  }
+}  
+
+  
+async function verifyManagerOTP() {
+  const email = $('otpEmail').value.trim().toLowerCase();
+  const otp = $('otpInput').value.trim();
+
+  if (!/^\d{6}$/.test(otp)) {
+    loginMessage('Enter the six-digit OTP sent to your email.');
+    return;
+  }
+
+  clearLoginMessage();
+  setLoginBusy(true, 'verifyOtpButton', 'Verifying OTP…');
+
+  try {
+    const result = await api('verifyProgramManagerOTP', {
+      email: email,
+      otp: otp
+    });
+
+    if (!result || result.success !== true) {
+      throw new Error(
+        (result && result.message) || 'OTP verification failed.'
+      );
+    }
+
+    // Start the one-hour session only after successful OTP verification.
+    saveManagerSession(email);
+
+    showManagerApp(email);
+
+  } catch (err) {
+    loginMessage(err.message || 'OTP verification failed.');
+  } finally {
+    setLoginBusy(false, 'verifyOtpButton', '');
+  }
+}
+
+  
 $('sendOtpButton').addEventListener('click',()=>sendManagerOTP(false));
 $('resendOtpButton').addEventListener('click',()=>sendManagerOTP(true));
 $('verifyOtpButton').addEventListener('click',verifyManagerOTP);
@@ -230,5 +316,5 @@ $('backLoginButton').addEventListener('click',()=>{
 $('otpInput').addEventListener('input',function(){this.value=this.value.replace(/[^0-9]/g,'').slice(0,6);});
 $('otpInput').addEventListener('keydown',e=>{if(e.key==='Enter')verifyManagerOTP();});
 $('loginEmail').addEventListener('keydown',e=>{if(e.key==='Enter')sendManagerOTP(false);});
-window.addEventListener('load',()=>{});
+window.addEventListener('load', restoreManagerSession);
 </script></body></html>
