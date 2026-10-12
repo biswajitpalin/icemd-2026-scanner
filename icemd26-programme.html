@@ -208,7 +208,7 @@ function render(){
     out+='<div class="talk-title">'+esc(t["Talk Title"]||"Presentation")+'</div>';
     const who=[t["Speaker Name"],t["Speaker Affiliation"]].filter(Boolean).map(esc).join(" · ");
     if(who)out+='<div class="speaker">'+who+(t["Speaker Type"]?' · '+esc(t["Speaker Type"]):'')+'</div>';
-    if(t["Abstract/Description"])out+='<details><summary>Talk abstract/Other details</summary><p class="abstract">'+esc(t["Abstract/Description"])+'</p></details>';
+    if(t["Abstract/Description"])out+='<details><summary>Talk abstract / Other details</summary><p class="abstract">'+esc(t["Abstract/Description"])+'</p></details>';
     out+='</div>';
    });
    out+='</div>';
