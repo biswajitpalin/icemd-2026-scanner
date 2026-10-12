@@ -267,13 +267,9 @@ function fetchRecordDetails(kind){
 async function submitForm(e,formId,kind,addAction,updateAction){
  e.preventDefault();
  const p=formData($(formId));
- // Record the currently logged-in Programme Manager for session/talk changes.
- if(kind==='sessions'||kind==='talks'){
-  const managerSession=getManagerSession();
-  p['Updated By']=managerSession&&managerSession.email
-   ?managerSession.email
-   :$('loggedInEmail').textContent.trim();
- }
+ // Record the currently logged-in Programme Manager for day/session/talk changes.
+ const managerSession=getManagerSession();
+ p.updatedBy=(managerSession&&managerSession.email)||$('loggedInEmail').textContent.trim()||'';
  const editing=!!p.originalId;
  const idKey=kind==='days'?'Day ID':kind==='sessions'?'Session ID':'Talk ID';
  const enteredId=String(p.id||'').trim();
