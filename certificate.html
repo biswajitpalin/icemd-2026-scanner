@@ -312,7 +312,6 @@ const params=new URLSearchParams();
 params.append("action","requestAssistantOTP");
 params.append("name",name);
 params.append("email",email);
-params.append("page","certificate.html");
 params.append("callback",callbackName);
 script.src=APPS_SCRIPT_URL+"?"+params.toString();
 
@@ -422,6 +421,7 @@ const params=new URLSearchParams();
 params.append("action","verifyAssistantOTP");
 params.append("email",email);
 params.append("otp",otp);
+params.append("page","certificate.html");
 params.append("callback",callbackName);
 
 script.src=APPS_SCRIPT_URL+"?"+params.toString();
