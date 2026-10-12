@@ -60,11 +60,11 @@ th{background:#f1f4f8;color:#34435b;white-space:nowrap;position:sticky;top:0}
       <button class="secondary" type="button" id="guestBackButton" onclick="window.location.href='./index.html'">Back</button>
     </div>
     <div id="otpSection" class="hidden">
-      <div class="field"><label for="otpEmail">Guest Arrival Email</label><input id="otpEmail" type="email" readonly aria-readonly="true"></div>
+      <div class="field"><label for="otpEmail">Authorized Email</label><input id="otpEmail" type="email" readonly aria-readonly="true"></div>
       <div class="field"><label for="otpInput">Six-digit OTP</label><input id="otpInput" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Enter OTP received by email"></div>
       <button class="save" type="button" id="verifyOtpButton">Verify OTP &amp; Login</button>
       <button class="primary" type="button" id="resendOtpButton">Resend OTP</button>
-      <button class="secondary" type="button" id="backLoginButton">Back</button>
+      <button class="secondary" type="button" id="guestBackButton" onclick="window.location.href='./invited-guest-arrivals-management.html'">Back</button>
     </div>
     <div id="loginMessage" class="login-message"></div>
   </div>
