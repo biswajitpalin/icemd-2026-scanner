@@ -143,6 +143,17 @@ function normalizedRecord(row){
 async function fetchRegistrationDetails(){
   const id=$("regId").value.trim().toLowerCase();
   if(!id){showStatus("Enter the full Registration ID first.",false);$("regId").focus();return}
+
+  // Check the saved arrival records first to prevent duplicate arrival entries.
+  const existingArrival=records.find(row=>String(row["Registration ID"]||"").trim().toLowerCase()===id);
+  if(existingArrival){
+    showStatus("Registration ID "+String(existingArrival["Registration ID"]||$("regId").value).trim()+" is already present in the saved arrival records. Use Edit in the records table to update this entry.",false);
+    const searchBox=$("search");
+    searchBox.value=String(existingArrival["Registration ID"]||"");
+    render();
+    return;
+  }
+
   const btn=$("fetchDetailsButton");btn.disabled=true;btn.textContent="Fetching…";
   try{
     // Search all three registration categories using their existing read-only APIs.
