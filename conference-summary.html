@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ICEMD-2026 | Conference Summary</title>
+<style>
+:root{--navy:#17365d;--blue:#245b91;--bg:#f3f6fa;--line:#e1e7ef;--text:#182230;--muted:#627084;--green:#16845b;--red:#b42332}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--text)}
+.wrap{max-width:1050px;margin:0 auto;padding:16px}.header{background:var(--navy);color:white;padding:18px 20px;border-radius:14px;box-shadow:0 4px 14px #17365d18}.header h1{font-size:22px;margin:0 0 5px}.header p{margin:0;color:#dce8f6;font-size:13px}.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px}.status{font-size:12px;color:var(--muted)}button{font:inherit;cursor:pointer;border:0;border-radius:9px;padding:10px 14px;font-weight:700}.refresh{background:var(--green);color:#fff}.refresh:disabled{opacity:.65;cursor:wait}.tabs{display:flex;gap:7px;overflow-x:auto;padding:14px 0 10px}.tab{white-space:nowrap;background:#e7edf5;color:#24415f}.tab.active{background:var(--blue);color:#fff}.panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px;margin-bottom:12px;box-shadow:0 2px 8px #12263a08}.panel h2{font-size:17px;margin:0 0 5px}.note{font-size:12px;color:var(--muted);margin:0 0 12px;line-height:1.45}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:13px;min-width:460px}th,td{padding:10px 9px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}th{background:#f4f7fb;color:#34465c;font-weight:700}th:first-child,td:first-child{text-align:left}tr:last-child td{border-bottom:0}tr.total td{font-weight:700;background:#f4f8fc}.empty{padding:22px;text-align:center;color:var(--muted);font-size:14px}.error{color:var(--red)}.foot{font-size:11px;color:var(--muted);text-align:center;padding:8px 0 18px}.loading{opacity:.6;pointer-events:none}@media(max-width:600px){.wrap{padding:10px}.header{padding:15px}.header h1{font-size:19px}.panel{padding:11px}.panel h2{font-size:16px}th,td{padding:9px 7px;font-size:12px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="header"><h1>ICEMD-2026 Conference Summary</h1><p>Attendance · Food · Welcome Kits · Certificates</p></header>
+  <div class="topline"><span id="status" class="status" aria-live="polite">Loading summary from existing records…</span><button id="refreshBtn" class="refresh" type="button">↻ Refresh summary</button></div>
+  <nav class="tabs" aria-label="Summary sections">
+    <button class="tab active" data-tab="FOOD_SUMMARY">Food</button>
+    <button class="tab" data-tab="ATTENDANCE_SUMMARY">Attendance</button>
+    <button class="tab" data-tab="KIT_SUMMARY">Welcome Kits</button>
+    <button class="tab" data-tab="CERTIFICATE_SUMMARY">Certificates</button>
+  </nav>
+  <main id="content"><div class="panel empty">Fetching latest summary…</div></main>
+  <div class="foot">Counts are generated from existing successful records in the connected Google Sheet. Scan timestamps are not used to split meal counts.</div>
+</div>
+<script>
+(function(){
+  // Same Apps Script web-app endpoint used by the ICEMD-2026 portals.
+  const API_URL = 'https://script.google.com/macros/s/AKfycbxD0VHRLp17LUYiPlYzxPRWwsZUagkVZycolhHfn6Nyt6XN-N2bQD_0uekzWlZc3iOgrA/exec';
+  const TITLES={FOOD_SUMMARY:'Food Distribution Summary',ATTENDANCE_SUMMARY:'Attendance Summary',KIT_SUMMARY:'Registration Welcome Kit Distribution',CERTIFICATE_SUMMARY:'Certificate Distribution'};
+  const NOTES={
+    FOOD_SUMMARY:'Counts are grouped by category, meal, and conference day.',
+    ATTENDANCE_SUMMARY:'Count each person only once across the entire conference. Day columns show the day the person first had successful attendance recorded.',
+    KIT_SUMMARY:'Participants and invited guests are counted from attendance records. Volunteers are counted only from the special Kit & Certificate scanner record.',
+    CERTIFICATE_SUMMARY:'Participant and invited-guest counts come from successful CERTIFICATE records. Volunteers count only after the special Kit & Certificate scanner record.'
+  };
+  let summaryData={}; let currentTab='FOOD_SUMMARY'; let loading=false;
+  const content=document.getElementById('content'),status=document.getElementById('status'),refreshBtn=document.getElementById('refreshBtn');
+  function api(action){return new Promise((resolve,reject)=>{const cb='icemdSummaryCb_'+Date.now()+'_'+Math.floor(Math.random()*100000);const script=document.createElement('script');const timer=setTimeout(()=>{cleanup();reject(new Error('The summary service did not respond. Check the Apps Script deployment and try again.'));},25000);function cleanup(){clearTimeout(timer);delete window[cb];if(script.parentNode)script.parentNode.removeChild(script)}window[cb]=data=>{cleanup();resolve(data)};script.onerror=()=>{cleanup();reject(new Error('Could not connect to the summary service.'))};script.src=API_URL+'?action='+encodeURIComponent(action)+'&callback='+encodeURIComponent(cb)+'&_='+Date.now();document.body.appendChild(script);});}
+  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function isTotal(row){return String(row[0]||'').toLowerCase().includes('overall attendance')||String(row[0]||'').toLowerCase().includes('grand total')||String(row[0]||'').toLowerCase().includes('overall total');}
+  function render(){const rows=summaryData[currentTab]||[];if(!rows.length){content.innerHTML='<section class="panel empty">No summary data returned yet. Click “Refresh summary” to try again.</section>';return;}
+    let title=TITLES[currentTab]||'Conference Summary';let note=NOTES[currentTab]||'';
+    // The generated sheet has title/note/header rows; find the actual column header.
+    let headerIndex=rows.findIndex(r=>Array.isArray(r)&&r.some(c=>String(c||'').trim().toLowerCase()==='category'));
+    if(headerIndex<0) headerIndex=rows.findIndex(r=>Array.isArray(r)&&r.length>1);
+    const headers=rows[headerIndex]||[];const body=rows.slice(headerIndex+1).filter(r=>Array.isArray(r)&&r.some(c=>String(c==null?'':c).trim()!==''));
+    let html='<section class="panel"><h2>'+esc(title)+'</h2><p class="note">'+esc(note)+'</p><div class="table-wrap"><table><thead><tr>'+headers.map((h,i)=>'<th'+(i===0?' style="text-align:left"':'')+'>'+esc(h)+'</th>').join('')+'</tr></thead><tbody>';
+    html+=body.map(row=>'<tr'+(isTotal(row)?' class="total"':'')+'>'+headers.map((_,i)=>'<td>'+esc(row[i]===undefined?'':row[i])+'</td>').join('')+'</tr>').join('');
+    html+='</tbody></table></div></section>';
+    if(currentTab==='FOOD_SUMMARY') html+='<section class="panel"><p class="note" style="margin:0">Meal names are taken from the food services configured in the system. Each meal has separate counts for volunteers, participants, and invited guests.</p></section>';
+    content.innerHTML=html;
+  }
+  async function load(){if(loading)return;loading=true;refreshBtn.disabled=true;document.body.classList.add('loading');status.textContent='Refreshing from existing records…';status.classList.remove('error');try{const result=await api('getSummaryData');if(!result||result.status!=='success')throw new Error(result&&result.message?result.message:'Summary could not be loaded.');summaryData=result.summaries||{};render();status.textContent='Updated successfully · '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});}catch(e){status.textContent=e.message||'Unable to load summary.';status.classList.add('error');content.innerHTML='<section class="panel empty error">'+esc(status.textContent)+'<br><br>Confirm that the Apps Script has been deployed with access allowed for this page, then refresh.</section>';}finally{loading=false;refreshBtn.disabled=false;document.body.classList.remove('loading');}}
+  document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{currentTab=btn.dataset.tab;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b===btn));render();}));
+  refreshBtn.addEventListener('click',load);load();
+})();
+</script>
+</body>
+</html>
