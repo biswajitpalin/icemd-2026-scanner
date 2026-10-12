@@ -407,7 +407,8 @@ async function verifyManagerOTP() {
   try {
     const result = await api('verifyProgramManagerOTP', {
       email: email,
-      otp: otp
+      otp: otp,
+      page: 'programme.html'
     });
 
     if (!result || result.success !== true) {
