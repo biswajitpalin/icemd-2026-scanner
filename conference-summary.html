@@ -7,12 +7,25 @@
 <style>
 :root{--navy:#17365d;--blue:#245b91;--bg:#f3f6fa;--line:#e1e7ef;--text:#182230;--muted:#627084;--green:#16845b;--red:#b42332}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--text)}
-.wrap{max-width:1050px;margin:0 auto;padding:16px}.header{background:var(--navy);color:white;padding:18px 20px;border-radius:14px;box-shadow:0 4px 14px #17365d18}.header h1{font-size:22px;margin:0 0 5px}.header p{margin:0;color:#dce8f6;font-size:13px}.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px}.status{font-size:12px;color:var(--muted)}button{font:inherit;cursor:pointer;border:0;border-radius:9px;padding:10px 14px;font-weight:700}.refresh{background:var(--green);color:#fff}.refresh:disabled{opacity:.65;cursor:wait}.tabs{display:flex;gap:7px;overflow-x:auto;padding:14px 0 10px}.tab{white-space:nowrap;background:#e7edf5;color:#24415f}.tab.active{background:var(--blue);color:#fff}.panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px;margin-bottom:12px;box-shadow:0 2px 8px #12263a08}.panel h2{font-size:17px;margin:0 0 5px}.note{font-size:12px;color:var(--muted);margin:0 0 12px;line-height:1.45}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:13px;min-width:460px}th,td{padding:10px 9px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}th{background:#f4f7fb;color:#34465c;font-weight:700}th:first-child,td:first-child{text-align:left}tr:last-child td{border-bottom:0}tr.total td{font-weight:700;background:#f4f8fc}.empty{padding:22px;text-align:center;color:var(--muted);font-size:14px}.error{color:var(--red)}.foot{font-size:11px;color:var(--muted);text-align:center;padding:8px 0 18px}.loading{opacity:.6;pointer-events:none}@media(max-width:600px){.wrap{padding:10px}.header{padding:15px}.header h1{font-size:19px}.panel{padding:11px}.panel h2{font-size:16px}th,td{padding:9px 7px;font-size:12px}}
+.wrap{max-width:1050px;margin:0 auto;padding:16px}
+.header{background:var(--navy);color:white;padding:18px 20px;border-radius:14px;box-shadow:0 4px 14px #17365d18;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.header h1{font-size:22px;margin:0 0 5px}
+.header p{margin:0;color:#dce8f6;font-size:13px}
+.header-text{flex:1;min-width:200px}
+.home-btn{display:inline-block;background:#fff;color:var(--navy);text-decoration:none;font-weight:700;padding:10px 14px;border-radius:9px;white-space:nowrap}
+.home-btn:hover{background:#e7edf5}
+.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px}.status{font-size:12px;color:var(--muted)}button{font:inherit;cursor:pointer;border:0;border-radius:9px;padding:10px 14px;font-weight:700}.refresh{background:var(--green);color:#fff}.refresh:disabled{opacity:.65;cursor:wait}.tabs{display:flex;gap:7px;overflow-x:auto;padding:14px 0 10px}.tab{white-space:nowrap;background:#e7edf5;color:#24415f}.tab.active{background:var(--blue);color:#fff}.panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px;margin-bottom:12px;box-shadow:0 2px 8px #12263a08}.panel h2{font-size:17px;margin:0 0 5px}.note{font-size:12px;color:var(--muted);margin:0 0 12px;line-height:1.45}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:13px;min-width:460px}th,td{padding:10px 9px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}th{background:#f4f7fb;color:#34465c;font-weight:700}th:first-child,td:first-child{text-align:left}tr:last-child td{border-bottom:0}tr.total td{font-weight:700;background:#f4f8fc}.empty{padding:22px;text-align:center;color:var(--muted);font-size:14px}.error{color:var(--red)}.foot{font-size:11px;color:var(--muted);text-align:center;padding:8px 0 18px}.loading{opacity:.6;pointer-events:none}@media(max-width:600px){.wrap{padding:10px}.header{padding:15px}.header h1{font-size:19px}.panel{padding:11px}.panel h2{font-size:16px}th,td{padding:9px 7px;font-size:12px}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header class="header"><h1>ICEMD-2026 Conference Summary</h1><p>Attendance · Food · Welcome Kits · Certificates</p></header>
+  <header class="header">
+  <div class="header-text">
+    <h1>ICEMD-2026 Conference Summary</h1>
+    <p>Attendance · Food · Welcome Kits · Certificates</p>
+  </div>
+  <a class="home-btn" href="./index.html">← Back to Home</a>
+  </header>
   <div class="topline"><span id="status" class="status" aria-live="polite">Loading summary from existing records…</span><button id="refreshBtn" class="refresh" type="button">↻ Refresh summary</button></div>
   <nav class="tabs" aria-label="Summary sections">
     <button class="tab active" data-tab="FOOD_SUMMARY">Food</button>
