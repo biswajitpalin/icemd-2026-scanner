@@ -1482,7 +1482,7 @@ return;
 verifyButton.disabled=true;
 message.className="message info";
 message.textContent="Verifying OTP...";
-apiRequest({action:"verifyAdminOTP",email:email,otp:otp,_cache:Date.now()},function(result){
+apiRequest({action:"verifyAdminOTP",email:email,otp:otp,page:"admin.html",_cache:Date.now()},function(result){
 verifyButton.disabled=false;
 verifyButton.innerText="Verify OTP & Login";
 if(!result||result.status!=="success"||result.success===false){
