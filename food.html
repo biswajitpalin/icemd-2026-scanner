@@ -710,7 +710,7 @@ function verifyFoodLoginOTP() {
  if(!email||!otp){showLoginMessage("Enter your authorized email and the OTP.","error");return;}
  if(!/^[0-9]{6}$/.test(otp)){showLoginMessage("Enter the six-digit OTP sent to your email.","error");return;}
  verifyButton.disabled=true;verifyButton.innerText="Verifying...";showLoginMessage("Verifying food scanner OTP...","success");
- apiRequest({action:"verifyFoodOTP",email:email,otp:otp,_cache:Date.now()},function(result){
+ apiRequest({action:"verifyFoodOTP",email:email,otp:otp,page: "food.html",_cache:Date.now()},function(result){
   verifyButton.disabled=false;verifyButton.innerText="Verify OTP & Login";
   if(result&&result.status==="success") {
    currentScannerName=result.scanner||email;saveFoodSession(currentScannerName);
