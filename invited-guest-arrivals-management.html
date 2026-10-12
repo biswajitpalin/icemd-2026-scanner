@@ -30,18 +30,23 @@ th{background:#f1f4f8;color:#34435b;white-space:nowrap;position:sticky;top:0}
 @media(max-width:950px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:540px){main{padding:10px}.card{padding:13px}.grid{grid-template-columns:1fr}.full{grid-column:auto}.toolbar input{max-width:none;width:100%}header{padding:15px}}
 
+/* Login UI matched to the Programme Manager page; guest-arrival wording and behavior remain specific to this page. */
 .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.login-card{width:100%;max-width:700px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:clamp(24px,4vw,46px);box-shadow:0 5px 24px #14273f1a}
-.login-card h1{text-align:center;color:var(--navy);font-size:clamp(28px,3vw,40px);margin:0 0 8px;font-weight:700}
-.login-card p{color:var(--navy);font-size:clamp(20px,2.4vw,30px);font-weight:700;text-align:center;margin:0 0 24px}
-.login-card .field{margin:14px 0}
-.login-card label{display:block;font-size:18px;margin:16px 0 7px;color:#42516a}
-.login-card input{min-height:48px;font-size:20px;padding:12px 14px}
-.login-card button{width:100%;margin-top:15px;min-height:48px;font-size:20px}
+.login-card{width:100%;max-width:520px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:clamp(22px,4vw,34px);box-shadow:0 5px 20px #14273f1a}
+.login-card h1{text-align:center;color:var(--navy);font-size:clamp(24px,3vw,30px);line-height:1.2;margin:0 0 8px;font-weight:700}
+.login-card p{color:var(--navy);font-size:clamp(18px,2.3vw,23px);font-weight:700;text-align:center;margin:0 0 24px}
+.login-card .field{margin:0}
+.login-card label{display:block;font-size:14px;margin:16px 0 7px;color:#42516a;font-weight:700}
+.login-card input{min-height:48px;font-size:16px;padding:10px 11px}
+.login-card button{width:100%;margin-top:15px;min-height:48px;font-size:16px}
 .login-card #guestBackButton{background:#666666;color:#ffffff}
-.login-message{display:none;padding:10px 12px;border-radius:7px;margin-top:12px;white-space:pre-wrap}.login-message.ok{display:block;background:#e8f6ed;color:#17683a}.login-message.err{display:block;background:#fdeceb;color:#9f2018}
+.login-card #backLoginButton{background:#e7ebf1;color:#24334b}
+.login-message{display:none;padding:12px;border-radius:8px;margin-top:16px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+.login-message.ok{display:block;background:#e8f6ed;color:#17683a}
+.login-message.err{display:block;background:#fdeceb;color:#9f2018}
+#otpEmail{background:#e8f0fe;cursor:default}
 .hidden{display:none!important}
-@media(max-width:540px){.login-wrap{padding:14px}.login-card{padding:24px 18px}.login-card h1{font-size:30px}.login-card p{font-size:22px}.login-card input,.login-card button{font-size:16px}}
+@media(max-width:540px){.login-wrap{padding:14px}.login-card{padding:22px 18px}.login-card h1{font-size:26px}.login-card p{font-size:20px}.login-card input,.login-card button{font-size:16px}}
 </style>
 </head>
 <body>
@@ -55,7 +60,8 @@ th{background:#f1f4f8;color:#34435b;white-space:nowrap;position:sticky;top:0}
       <button class="secondary" type="button" id="guestBackButton" onclick="window.location.href='./index.html'">Back</button>
     </div>
     <div id="otpSection" class="hidden">
-      <div class="field"><label for="otpInput">Six-digit OTP</label><input id="otpInput" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Enter OTP"></div>
+      <div class="field"><label for="otpEmail">Guest Arrival Email</label><input id="otpEmail" type="email" readonly aria-readonly="true"></div>
+      <div class="field"><label for="otpInput">Six-digit OTP</label><input id="otpInput" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Enter OTP received by email"></div>
       <button class="primary" type="button" id="verifyOtpButton">Verify OTP & Login</button>
       <button class="secondary" type="button" id="resendOtpButton">Resend OTP</button>
       <button class="secondary" type="button" id="backLoginButton">Change Email</button>
@@ -112,12 +118,12 @@ function session(){try{const s=JSON.parse(localStorage.getItem(SESSION_KEY)||"nu
 function requireSession(){const s=session();if(!s){$("appShell").classList.add("hidden");$("loginScreen").classList.remove("hidden");return false}$("loggedEmail").textContent=s.email;$("loginScreen").classList.add("hidden");$("appShell").classList.remove("hidden");return true}
 function loginMessage(message,ok=false){const e=$("loginMessage");e.textContent=message;e.className="login-message "+(ok?"ok":"err")}
 function setLoginBusy(busy,id,label){const e=$(id);e.disabled=busy;if(label)e.textContent=label;else e.textContent=id==="sendOtpButton"?"Send Login OTP":id==="verifyOtpButton"?"Verify OTP & Login":id==="resendOtpButton"?"Resend OTP":e.textContent}
-async function sendArrivalOTP(resend=false){const email=$("loginEmail").value.trim().toLowerCase();if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){loginMessage("Enter a valid email address.");return}loginMessage("Sending OTP…",true);setLoginBusy(true,resend?"resendOtpButton":"sendOtpButton","Sending…");try{const r=await api("requestGuestArrivalOTP",{email});if(!r||r.success!==true)throw new Error(r&&r.message||"Could not send OTP.");$("otpSection").classList.remove("hidden");$("loginDetails").classList.add("hidden");loginMessage(r.message||"OTP sent. It is valid for 5 minutes.",true);$("otpInput").focus()}catch(e){loginMessage(e.message||"Unable to send OTP.")}finally{setLoginBusy(false,resend?"resendOtpButton":"sendOtpButton")}}
+async function sendArrivalOTP(resend=false){const email=$("loginEmail").value.trim().toLowerCase();if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){loginMessage("Enter a valid email address.");return}loginMessage("Sending OTP…",true);setLoginBusy(true,resend?"resendOtpButton":"sendOtpButton","Sending…");try{const r=await api("requestGuestArrivalOTP",{email});if(!r||r.success!==true)throw new Error(r&&r.message||"Could not send OTP.");$("otpEmail").value=email;$("otpSection").classList.remove("hidden");$("loginDetails").classList.add("hidden");loginMessage(r.message||"OTP sent. It is valid for 5 minutes.",true);$("otpInput").focus()}catch(e){loginMessage(e.message||"Unable to send OTP.")}finally{setLoginBusy(false,resend?"resendOtpButton":"sendOtpButton")}}
 async function verifyArrivalOTP(){const email=$("loginEmail").value.trim().toLowerCase(),otp=$("otpInput").value.trim();if(!/^\d{6}$/.test(otp)){loginMessage("Enter the six-digit OTP sent to your email.");return}loginMessage("Verifying OTP…",true);setLoginBusy(true,"verifyOtpButton","Verifying…");try{const r=await api("verifyGuestArrivalOTP",{email,otp});if(!r||r.success!==true)throw new Error(r&&r.message||"OTP verification failed.");localStorage.setItem(SESSION_KEY,JSON.stringify({email:r.email||email,expiresAt:Date.now()+60*60*1000}));$("otpInput").value="";requireSession();await loadRecords();}catch(e){loginMessage(e.message||"OTP verification failed.")}finally{setLoginBusy(false,"verifyOtpButton")}}
 $("sendOtpButton").addEventListener("click",()=>sendArrivalOTP(false));
 $("resendOtpButton").addEventListener("click",()=>sendArrivalOTP(true));
 $("verifyOtpButton").addEventListener("click",verifyArrivalOTP);
-$("backLoginButton").addEventListener("click",()=>{$("otpSection").classList.add("hidden");$("loginDetails").classList.remove("hidden");$("otpInput").value="";loginMessage("");});
+$("backLoginButton").addEventListener("click",()=>{$("otpSection").classList.add("hidden");$("loginDetails").classList.remove("hidden");$("otpInput").value="";$("otpEmail").value="";loginMessage("");});
 $("otpInput").addEventListener("input",function(){this.value=this.value.replace(/[^0-9]/g,"").slice(0,6)});
 $("otpInput").addEventListener("keydown",e=>{if(e.key==="Enter")verifyArrivalOTP()});
 $("loginEmail").addEventListener("keydown",e=>{if(e.key==="Enter")sendArrivalOTP(false)});
