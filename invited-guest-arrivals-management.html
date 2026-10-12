@@ -29,9 +29,35 @@ th{background:#f1f4f8;color:#34435b;white-space:nowrap;position:sticky;top:0}
 .note{font-size:12px;color:var(--muted);margin-top:10px}
 @media(max-width:950px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:540px){main{padding:10px}.card{padding:13px}.grid{grid-template-columns:1fr}.full{grid-column:auto}.toolbar input{max-width:none;width:100%}header{padding:15px}}
+
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:26px;width:min(100%,460px);box-shadow:0 8px 28px #17203312}
+.login-card h1{font-size:24px;color:var(--navy);margin:0 0 8px}.login-card p{color:var(--muted);margin:0 0 18px}
+.login-card .field{margin:14px 0}.login-card button{width:100%;margin-top:10px}
+.login-message{display:none;padding:10px 12px;border-radius:7px;margin-top:12px;white-space:pre-wrap}.login-message.ok{display:block;background:#e8f6ed;color:#17683a}.login-message.err{display:block;background:#fdeceb;color:#9f2018}
+.hidden{display:none!important}
 </style>
 </head>
 <body>
+<section id="loginScreen" class="login-wrap">
+  <div class="login-card">
+    <h1>ICEMD-2026</h1>
+    <p>Invited Guest Arrivals Management</p>
+    <div id="loginDetails">
+      <div class="field"><label for="loginEmail">Authorized Email Address</label><input id="loginEmail" type="email" autocomplete="email" placeholder="Enter your authorized email"></div>
+      <button class="primary" type="button" id="sendOtpButton">Send Login OTP</button>
+    </div>
+    <div id="otpSection" class="hidden">
+      <div class="field"><label for="otpInput">Six-digit OTP</label><input id="otpInput" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Enter OTP"></div>
+      <button class="primary" type="button" id="verifyOtpButton">Verify OTP & Login</button>
+      <button class="secondary" type="button" id="resendOtpButton">Resend OTP</button>
+      <button class="secondary" type="button" id="backLoginButton">Change Email</button>
+    </div>
+    <div id="loginMessage" class="login-message"></div>
+    <div class="note">Access is limited to email addresses listed in the SETTINGS sheet under “Guest Arrival Login Emails”. A verified session remains active for one hour.</div>
+  </div>
+</section>
+<div id="appShell" class="hidden">
 <header>
   <h1>ICEMD-2026 · Invited Guest Arrivals</h1>
   <div class="header-actions"><span id="loggedEmail"></span><button class="secondary" id="backButton" type="button">Back to Home</button><button class="secondary" id="logoutButton" type="button">Logout</button></div>
@@ -66,15 +92,27 @@ th{background:#f1f4f8;color:#34435b;white-space:nowrap;position:sticky;top:0}
     <div id="records" class="tablewrap">Loading records…</div>
   </section>
 </main>
+</div>
 <script>
 const API_URL="https://script.google.com/macros/s/AKfycbxD0VHRLp17LUYiPlYzxPRWwsZUagkVZycolhHfn6Nyt6XN-N2bQD0_uekzWlZc3iOgrA/exec";
-const SESSION_KEY="ICEMD_PROGRAM_MANAGER_SESSION_V1";
+const SESSION_KEY="ICEMD_GUEST_ARRIVAL_SESSION_V1";
 const $=id=>document.getElementById(id);
 let records=[];
 function api(action,params={}){return new Promise((resolve,reject)=>{let u;try{u=new URL(API_URL)}catch(e){reject(e);return}u.searchParams.set("action",action);u.searchParams.set("callback","__arrival_cb_"+Date.now()+"_"+Math.floor(Math.random()*100000));Object.entries(params).forEach(([k,v])=>u.searchParams.set(k,v==null?"":String(v)));const cb=u.searchParams.get("callback"),s=document.createElement("script");let done=false;const finish=()=>{if(done)return;done=true;delete window[cb];s.remove()};window[cb]=d=>{finish();if(d&&d.status==="error")reject(new Error(d.message||"Request failed"));else resolve(d)};s.onerror=()=>{finish();reject(new Error("Could not reach Apps Script. Check deployment access and URL."))};s.src=u.toString();document.body.appendChild(s);setTimeout(()=>{if(!done){finish();reject(new Error("Request timed out."))}},20000)})}
 function showStatus(m,ok=true){const e=$("status");e.textContent=m;e.className="status "+(ok?"ok":"err")}
-function session(){try{const s=JSON.parse(localStorage.getItem(SESSION_KEY)||"null");if(s&&s.email&&Number(s.expiresAt)>Date.now())return s}catch(e){}return null}
-function requireSession(){const s=session();if(!s){location.replace("index.html");return false}$("loggedEmail").textContent=s.email;return true}
+function session(){try{const s=JSON.parse(localStorage.getItem(SESSION_KEY)||"null");if(s&&s.email&&Number(s.expiresAt)>Date.now())return s}catch(e){}localStorage.removeItem(SESSION_KEY);return null}
+function requireSession(){const s=session();if(!s){$("appShell").classList.add("hidden");$("loginScreen").classList.remove("hidden");return false}$("loggedEmail").textContent=s.email;$("loginScreen").classList.add("hidden");$("appShell").classList.remove("hidden");return true}
+function loginMessage(message,ok=false){const e=$("loginMessage");e.textContent=message;e.className="login-message "+(ok?"ok":"err")}
+function setLoginBusy(busy,id,label){const e=$(id);e.disabled=busy;if(label)e.textContent=label;else e.textContent=id==="sendOtpButton"?"Send Login OTP":id==="verifyOtpButton"?"Verify OTP & Login":id==="resendOtpButton"?"Resend OTP":e.textContent}
+async function sendArrivalOTP(resend=false){const email=$("loginEmail").value.trim().toLowerCase();if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)){loginMessage("Enter a valid email address.");return}loginMessage("Sending OTP…",true);setLoginBusy(true,resend?"resendOtpButton":"sendOtpButton","Sending…");try{const r=await api("requestGuestArrivalOTP",{email});if(!r||r.success!==true)throw new Error(r&&r.message||"Could not send OTP.");$("otpSection").classList.remove("hidden");$("loginDetails").classList.add("hidden");loginMessage(r.message||"OTP sent. It is valid for 5 minutes.",true);$("otpInput").focus()}catch(e){loginMessage(e.message||"Unable to send OTP.")}finally{setLoginBusy(false,resend?"resendOtpButton":"sendOtpButton")}}
+async function verifyArrivalOTP(){const email=$("loginEmail").value.trim().toLowerCase(),otp=$("otpInput").value.trim();if(!/^\\d{6}$/.test(otp)){loginMessage("Enter the six-digit OTP sent to your email.");return}loginMessage("Verifying OTP…",true);setLoginBusy(true,"verifyOtpButton","Verifying…");try{const r=await api("verifyGuestArrivalOTP",{email,otp});if(!r||r.success!==true)throw new Error(r&&r.message||"OTP verification failed.");localStorage.setItem(SESSION_KEY,JSON.stringify({email:r.email||email,expiresAt:Date.now()+60*60*1000}));$("otpInput").value="";requireSession();await loadRecords();}catch(e){loginMessage(e.message||"OTP verification failed.")}finally{setLoginBusy(false,"verifyOtpButton")}}
+$("sendOtpButton").addEventListener("click",()=>sendArrivalOTP(false));
+$("resendOtpButton").addEventListener("click",()=>sendArrivalOTP(true));
+$("verifyOtpButton").addEventListener("click",verifyArrivalOTP);
+$("backLoginButton").addEventListener("click",()=>{$("otpSection").classList.add("hidden");$("loginDetails").classList.remove("hidden");$("otpInput").value="";loginMessage("");});
+$("otpInput").addEventListener("input",function(){this.value=this.value.replace(/[^0-9]/g,"").slice(0,6)});
+$("otpInput").addEventListener("keydown",e=>{if(e.key==="Enter")verifyArrivalOTP()});
+$("loginEmail").addEventListener("keydown",e=>{if(e.key==="Enter")sendArrivalOTP(false)});
 function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function formObject(){const o={};new FormData($("arrivalForm")).forEach((v,k)=>o[k]=String(v).trim());return o}
 function clearForm(){ $("arrivalForm").reset(); $("formTitle").textContent="Add / Update Invited Guest Arrival"; }
@@ -84,7 +122,7 @@ async function loadRecords(){try{showStatus("Loading arrival records…");const 
 $("arrivalForm").addEventListener("submit",async e=>{e.preventDefault();if(!requireSession())return;const p=formObject();$("saveButton").disabled=true;try{const r=await api("saveInvitedGuestArrivalRecord",p);showStatus(r.message||"Saved.");clearForm();await loadRecords()}catch(err){showStatus(err.message,false)}finally{$("saveButton").disabled=false}});
 async function deleteRecord(id){if(!confirm("Delete arrival record for "+id+"? This cannot be undone."))return;try{const r=await api("deleteInvitedGuestArrivalRecord",{"Registration ID":id});showStatus(r.message||"Deleted.");await loadRecords()}catch(e){showStatus(e.message,false)}}
 $("clearButton").addEventListener("click",clearForm);$("refreshButton").addEventListener("click",loadRecords);$("search").addEventListener("input",render);
-$("logoutButton").addEventListener("click",()=>{localStorage.removeItem(SESSION_KEY);location.replace("index.html")});
+$("logoutButton").addEventListener("click",()=>{localStorage.removeItem(SESSION_KEY);records=[];$("records").textContent="Login to view arrival records.";$("status").className="status";$("loginEmail").value="";$("otpInput").value="";$("otpSection").classList.add("hidden");$("loginDetails").classList.remove("hidden");loginMessage("");requireSession()});
 $("backButton").addEventListener("click",()=>location.href="index.html");
 if(requireSession())loadRecords();
 </script>
