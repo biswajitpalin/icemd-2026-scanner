@@ -1,1 +1,91 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ICEMD-2026 Invited Guest Arrivals</title>
+<style>
+:root{--navy:#17365d;--green:#198754;--bg:#f3f5f9;--line:#dce3ed;--text:#172033;--muted:#64748b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--text);font-size:15px;line-height:1.45}
+header{background:var(--navy);color:white;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header h1{font-size:clamp(20px,2vw,28px);margin:0}
+.header-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#loggedEmail{overflow-wrap:anywhere;font-size:14px}
+main{padding:18px;max-width:none;margin:auto}
+button{border:0;border-radius:8px;padding:10px 14px;font-weight:700;cursor:pointer;min-height:38px}
+.primary{background:var(--navy);color:#fff}.save{background:var(--green);color:#fff}.secondary{background:#e7ebf1;color:#24334b}.danger{background:#b42318;color:#fff}
+.card{background:white;border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px;box-shadow:0 2px 8px #17203308}
+h2{font-size:20px;margin:0 0 15px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}.full{grid-column:1/-1}label{font-size:13px;font-weight:700;color:#42516a}
+input,select,textarea{width:100%;min-width:0;border:1px solid #cbd4e1;border-radius:8px;padding:10px;font:inherit;background:#fff;color:var(--text);min-height:40px}
+textarea{min-height:70px;resize:vertical}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+.status{padding:10px 12px;border-radius:7px;margin-bottom:14px;display:none;white-space:pre-wrap;overflow-wrap:anywhere}
+.status.ok{display:block;background:#e8f6ed;color:#17683a}.status.err{display:block;background:#fdeceb;color:#9f2018}
+.toolbar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}.toolbar h2{margin:0}.toolbar input{max-width:340px}
+.tablewrap{overflow:auto;width:100%;border-radius:6px}table{border-collapse:collapse;width:100%;min-width:1500px;font-size:13px}
+th,td{text-align:left;padding:9px;border-bottom:1px solid #e8edf3;vertical-align:top;overflow-wrap:anywhere}
+th{background:#f1f4f8;color:#34435b;white-space:nowrap;position:sticky;top:0}
+.rowactions{display:flex;gap:5px;flex-wrap:wrap}.rowactions button{padding:7px 9px;font-size:12px}
+.note{font-size:12px;color:var(--muted);margin-top:10px}
+@media(max-width:950px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:540px){main{padding:10px}.card{padding:13px}.grid{grid-template-columns:1fr}.full{grid-column:auto}.toolbar input{max-width:none;width:100%}header{padding:15px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>ICEMD-2026 · Invited Guest Arrivals</h1>
+  <div class="header-actions"><span id="loggedEmail"></span><button class="secondary" id="backButton" type="button">Back to Home</button><button class="secondary" id="logoutButton" type="button">Logout</button></div>
+</header>
+<main>
+  <div id="status" class="status"></div>
+  <section class="card">
+    <h2 id="formTitle">Add / Update Invited Guest Arrival</h2>
+    <form id="arrivalForm">
+      <div class="grid">
+        <div class="field"><label for="regId">Registration ID *</label><input id="regId" name="Registration ID" required placeholder="Enter invited guest ID"></div>
+        <div class="field"><label for="name">Name *</label><input id="name" name="Name" required></div>
+        <div class="field"><label for="email">Email</label><input id="email" name="Email" type="email"></div>
+        <div class="field"><label for="institute">Institute</label><input id="institute" name="Institute"></div>
+        <div class="field"><label for="arrivalPlace">Arrival Place</label><input id="arrivalPlace" name="Arrival Place" placeholder="Airport / Railway station / Bus stand"></div>
+        <div class="field"><label for="arrivalDate">Arrival Date</label><input id="arrivalDate" name="Arrival Date" type="date"></div>
+        <div class="field"><label for="arrivalTime">Arrival Time</label><input id="arrivalTime" name="Arrival Time" type="time"></div>
+        <div class="field"><label for="hotel">Booked Hotel Name</label><input id="hotel" name="Booked Hotel Name"></div>
+        <div class="field"><label for="room">Room Allotted/Number</label><input id="room" name="Room Allotted/Number"></div>
+        <div class="field"><label for="checkin">Check-in Status</label><select id="checkin" name="Check-in Status"><option value="">Select status</option><option>NOT ARRIVED</option><option>ARRIVED</option><option>CHECKED IN</option><option>NOT REQUIRED</option></select></div>
+        <div class="field"><label for="departureDate">Departure Date</label><input id="departureDate" name="Departure Date" type="date"></div>
+        <div class="field"><label for="departureTime">Departure Time</label><input id="departureTime" name="Departure Time" type="time"></div>
+        <div class="field"><label for="departureStatus">Departure Status</label><select id="departureStatus" name="Departure Status"><option value="">Select status</option><option>PLANNED</option><option>DEPARTED</option><option>NOT DEPARTED</option><option>NOT REQUIRED</option></select></div>
+        <div class="field full"><label for="remarks">Remarks</label><textarea id="remarks" name="Remarks"></textarea></div>
+      </div>
+      <div class="actions"><button class="save" type="submit" id="saveButton">Save Arrival Details</button><button class="secondary" type="button" id="clearButton">Clear Form</button><button class="secondary" type="button" id="refreshButton">Refresh Records</button></div>
+      <div class="note">Saving an existing Registration ID updates that record. Last Updated is filled automatically in the spreadsheet.</div>
+    </form>
+  </section>
+  <section class="card">
+    <div class="toolbar"><h2>Saved Arrival Records</h2><input id="search" placeholder="Search ID, name, institute, hotel…"></div>
+    <div id="records" class="tablewrap">Loading records…</div>
+  </section>
+</main>
+<script>
+const API_URL="https://script.google.com/macros/s/AKfycbxD0VHRLp17LUYiPlYzxPRWwsZUagkVZycolhHfn6Nyt6XN-N2bQD0_uekzWlZc3iOgrA/exec";
+const SESSION_KEY="ICEMD_PROGRAM_MANAGER_SESSION_V1";
+const $=id=>document.getElementById(id);
+let records=[];
+function api(action,params={}){return new Promise((resolve,reject)=>{let u;try{u=new URL(API_URL)}catch(e){reject(e);return}u.searchParams.set("action",action);u.searchParams.set("callback","__arrival_cb_"+Date.now()+"_"+Math.floor(Math.random()*100000));Object.entries(params).forEach(([k,v])=>u.searchParams.set(k,v==null?"":String(v)));const cb=u.searchParams.get("callback"),s=document.createElement("script");let done=false;const finish=()=>{if(done)return;done=true;delete window[cb];s.remove()};window[cb]=d=>{finish();if(d&&d.status==="error")reject(new Error(d.message||"Request failed"));else resolve(d)};s.onerror=()=>{finish();reject(new Error("Could not reach Apps Script. Check deployment access and URL."))};s.src=u.toString();document.body.appendChild(s);setTimeout(()=>{if(!done){finish();reject(new Error("Request timed out."))}},20000)})}
+function showStatus(m,ok=true){const e=$("status");e.textContent=m;e.className="status "+(ok?"ok":"err")}
+function session(){try{const s=JSON.parse(localStorage.getItem(SESSION_KEY)||"null");if(s&&s.email&&Number(s.expiresAt)>Date.now())return s}catch(e){}return null}
+function requireSession(){const s=session();if(!s){location.replace("index.html");return false}$("loggedEmail").textContent=s.email;return true}
+function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function formObject(){const o={};new FormData($("arrivalForm")).forEach((v,k)=>o[k]=String(v).trim());return o}
+function clearForm(){ $("arrivalForm").reset(); $("formTitle").textContent="Add / Update Invited Guest Arrival"; }
+function editRecord(id){const r=records.find(x=>String(x["Registration ID"]||"")===id);if(!r)return;clearForm();for(const el of $("arrivalForm").elements){if(el.name&&r[el.name]!==undefined){let v=r[el.name];if(el.type==="date"&&v)v=String(v).slice(0,10);if(el.type==="time"&&v)v=String(v).slice(0,5);el.value=v==null?"":v}}$("formTitle").textContent="Edit Arrival · "+id;window.scrollTo({top:0,behavior:"smooth"})}
+function render(){const q=$("search").value.toLowerCase();const cols=["Registration ID","Name","Email","Institute","Arrival Place","Arrival Date","Arrival Time","Booked Hotel Name","Room Allotted/Number","Check-in Status","Departure Date","Departure Time","Departure Status","Remarks","Last Updated"];const list=records.filter(r=>JSON.stringify(r).toLowerCase().includes(q));if(!list.length){$("records").innerHTML='<p style="padding:20px;color:#64748b">No arrival records found.</p>';return}let out="<table><thead><tr>"+cols.map(c=>"<th>"+esc(c)+"</th>").join("")+"<th>Actions</th></tr></thead><tbody>";list.forEach(r=>{const id=String(r["Registration ID"]||"");out+="<tr>"+cols.map(c=>"<td>"+esc(r[c])+"</td>").join("")+'<td><div class="rowactions"><button type="button" class="secondary" onclick="editRecord(\''+esc(id).replace(/'/g,"\\'")+'\')">Edit</button><button type="button" class="danger" onclick="deleteRecord(\''+esc(id).replace(/'/g,"\\'")+'\')">Delete</button></div></td></tr>'});$("records").innerHTML=out+"</tbody></table>"}
+async function loadRecords(){try{showStatus("Loading arrival records…");const r=await api("getInvitedGuestArrivalRecords");records=r.data||[];render();showStatus("Loaded "+records.length+" invited guest arrival records.")}catch(e){showStatus(e.message,false)}}
+$("arrivalForm").addEventListener("submit",async e=>{e.preventDefault();if(!requireSession())return;const p=formObject();$("saveButton").disabled=true;try{const r=await api("saveInvitedGuestArrivalRecord",p);showStatus(r.message||"Saved.");clearForm();await loadRecords()}catch(err){showStatus(err.message,false)}finally{$("saveButton").disabled=false}});
+async function deleteRecord(id){if(!confirm("Delete arrival record for "+id+"? This cannot be undone."))return;try{const r=await api("deleteInvitedGuestArrivalRecord",{"Registration ID":id});showStatus(r.message||"Deleted.");await loadRecords()}catch(e){showStatus(e.message,false)}}
+$("clearButton").addEventListener("click",clearForm);$("refreshButton").addEventListener("click",loadRecords);$("search").addEventListener("input",render);
+$("logoutButton").addEventListener("click",()=>{localStorage.removeItem(SESSION_KEY);location.replace("index.html")});
+$("backButton").addEventListener("click",()=>location.href="index.html");
+if(requireSession())loadRecords();
+</script>
+</body></html>
