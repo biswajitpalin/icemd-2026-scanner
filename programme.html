@@ -53,6 +53,43 @@ tbody tr:hover{background:#f8fafc}
 .login-message.err{display:block;background:#fdeceb;color:#9f2018}
 #otpEmail{background:#e8f0fe;cursor:default}
 @media(max-width:540px){.login-shell{padding:14px}.login-card{padding:22px 18px}}
+.manager-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.manager-account {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+#loggedInEmail {
+  color: #fff;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.manager-account button {
+  background: #e7ebf1;
+  color: #17365d;
+}
+
+@media (max-width: 600px) {
+  .manager-header {
+    align-items: flex-start;
+  }
+
+  .manager-account {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
 </style></head><body>
 <section id="managerLogin" class="login-shell">
   <div class="login-card">
@@ -77,7 +114,14 @@ tbody tr:hover{background:#f8fafc}
   </div>
 </section>
 <div id="managerApp" class="hidden">
-<header><h1>ICEMD-2026 · Programme Manager</h1></header>
+<header class="manager-header">
+  <h1>ICEMD-2026 · Programme Manager</h1>
+
+  <div class="manager-account">
+    <span id="loggedInEmail"></span>
+    <button id="logoutButton" type="button" class="secondary">Logout</button>
+  </div>
+</header>
 <main class="wrap"><div id="globalStatus" class="status"></div>
 <div class="tabs"><button class="tab active" data-kind="days">Conference Days</button><button class="tab" data-kind="sessions">Sessions</button><button class="tab" data-kind="talks">Talks / Speakers</button></div>
 <section id="daysPanel" class="kindPanel"><div class="layout"><div class="panel"><h2 id="dayFormTitle">Add Conference Day</h2><form id="dayForm"><input type="hidden" name="originalId"><div class="fields"><div class="field full"><label>Day ID *</label><input name="id" id="dayId" type="text" placeholder="e.g. DAY-001" required pattern="[A-Za-z0-9_-]+" title="Use letters, numbers, hyphens or underscores."></div><div class="field"><label>Day Number *</label><input name="Day Number" type="number" min="1" required></div><div class="field"><label>Date *</label><input name="Date" type="date" required></div><div class="field full"><label>Day Title</label><input name="Day Title" placeholder="e.g. Inauguration and Technical Sessions"></div><div class="field"><label>Status</label><select name="Status"><option>ACTIVE</option><option>INACTIVE</option></select></div><div class="field full"><label>Remarks</label><textarea name="Remarks"></textarea></div></div><div class="actions"><button class="save" type="submit">Save Day</button><button class="secondary" type="button" onclick="resetForm('dayForm')">Clear</button></div></form></div><div class="panel"><div class="toolbar"><h2>Saved Conference Days</h2><input id="daySearch" placeholder="Search days…"></div><div id="daysList" class="tablewrap"><div class="empty">Connect to load records.</div></div></div></div></section>
@@ -245,9 +289,9 @@ function showManagerApp(email) {
   $('managerLogin').classList.add('hidden');
   $('managerApp').classList.remove('hidden');
 
-  if (email) {
-    $('loginEmail').value = email;
-  }
+  const accountEmail = email || '';
+  $('loginEmail').value = accountEmail;
+  $('loggedInEmail').textContent = accountEmail;
 
   loadAll();
 }
@@ -317,4 +361,26 @@ $('otpInput').addEventListener('input',function(){this.value=this.value.replace(
 $('otpInput').addEventListener('keydown',e=>{if(e.key==='Enter')verifyManagerOTP();});
 $('loginEmail').addEventListener('keydown',e=>{if(e.key==='Enter')sendManagerOTP(false);});
 window.addEventListener('load', restoreManagerSession);
+
+function logoutManager() {
+  if (!confirm('Are you sure you want to log out?')) return;
+
+  clearManagerSession();
+
+  $('managerApp').classList.add('hidden');
+  $('managerLogin').classList.remove('hidden');
+
+  $('loginDetails').classList.remove('hidden');
+  $('loginOtpSection').classList.add('hidden');
+  $('sendOtpButton').classList.remove('hidden');
+  $('resendOtpButton').classList.add('hidden');
+
+  $('otpInput').value = '';
+  $('otpEmail').value = '';
+  $('loginEmail').value = '';
+
+  clearLoginMessage();
+}
+
+$('logoutButton').addEventListener('click', logoutManager);
 </script></body></html>
